@@ -16,10 +16,15 @@ public:
     explicit Table(QWidget *parent = 0);
     ~Table();
     void addRow(QLabel *name, QLabel *status, QLabel *rating, QLabel *comment);
+    void deleteRow(int row);
+    void setRowChecked(int row, bool checked);
+    int getCheckedRow() const;
+    int getRowCount() const;
 
 signals:
     void rowChecked();
     void rowsUnchecked();
+    void rowDeleted(int row);
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent *);

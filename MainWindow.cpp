@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->menu->ui->books, SIGNAL(clicked(bool)), this, SLOT(menuButtonClicked()));
     QObject::connect(ui->menu, SIGNAL(clicked()), this, SLOT(menuBackgroundClicked()));
     QObject::connect(ui->addButton, SIGNAL(clicked(bool)), this, SLOT(addButtonClicked()));
+    QObject::connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteButtonClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -44,6 +45,7 @@ void MainWindow::setupNewTable()
     QObject::connect(currentTable, SIGNAL(rowChecked()), this, SLOT(tableRowChecked()));
     QObject::connect(currentTable, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
 }
+
 void MainWindow::unsetupTable()
 {
     if (currentTable) {
@@ -83,16 +85,6 @@ void MainWindow::menuBackgroundClicked()
     }
 }
 
-void MainWindow::addButtonClicked()
-{
-    if (currentTable->isHidden()) currentTable->show();
-    QLabel *name = new QLabel("Название", currentTable);
-    QLabel *status = new QLabel("Статус", currentTable);
-    QLabel *rating = new QLabel("Оценка", currentTable);
-    QLabel *comment = new QLabel("Комментарий", currentTable);
-    currentTable->addRow(name, status, rating, comment);
-}
-
 void MainWindow::tableRowChecked()
 {
     ui->editButton->setEnabled(true);
@@ -103,4 +95,22 @@ void MainWindow::tableRowsUnchecked()
 {
     ui->editButton->setEnabled(false);
     ui->deleteButton->setEnabled(false);
+}
+
+void MainWindow::addButtonClicked()
+{
+    if (currentTable->isHidden()) currentTable->show();
+    QLabel *name = new QLabel("Название", currentTable);
+    QLabel *status = new QLabel("Статус", currentTable);
+    QLabel *rating = new QLabel("Оценка", currentTable);
+    QLabel *comment = new QLabel("Комментарий", currentTable);
+    currentTable->addRow(name, status, rating, comment);
+}
+
+void MainWindow::deleteButtonClicked()
+{
+    if (currentTable && currentTable->getCheckedRow() != -1) {
+        currentTable->deleteRow(currentTable->getCheckedRow());
+        if (currentTable->getRowCount() == 1) currentTable->hide();
+    }
 }

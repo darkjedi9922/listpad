@@ -23,9 +23,10 @@ public:
 public slots:
     void menuButtonClicked();
     void menuBackgroundClicked();
-    void addButtonClicked();
     void tableRowChecked();
     void tableRowsUnchecked();
+    void addButtonClicked();
+    void deleteButtonClicked();
 
 private:
     MenuButton *checkedMenuButton;

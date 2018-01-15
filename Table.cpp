@@ -31,21 +31,49 @@ void Table::addRow(QLabel *name, QLabel *status, QLabel *rating, QLabel *comment
     updateMinHeight();
 }
 
+void Table::deleteRow(int row)
+{
+    if (row == checkedRow) setRowChecked(row, false);
+
+    for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++) {
+        delete ui->gridLayout->itemAtPosition(row, i)->widget();
+    }
+
+    rowCount -= 1;
+    updateMinHeight();
+
+    emit rowDeleted(row);
+}
+
+void Table::setRowChecked(int row, bool checked)
+{
+    if (checked && row != checkedRow) {
+        checkedRow = row;
+        repaint();
+        emit rowChecked();
+    } else if (!checked && row == checkedRow) {
+        checkedRow = -1;
+        repaint();
+        emit rowsUnchecked();
+    }
+}
+
+int Table::getCheckedRow() const
+{
+    return checkedRow;
+}
+int Table::getRowCount() const
+{
+    return rowCount;
+}
+
 void Table::mouseReleaseEvent(QMouseEvent *e)
 {
     try {
         int row = findRow(e->pos());
-        if (checkedRow != row) {
-            checkedRow = row;
-            repaint();
-            emit rowChecked();
-        }
+        setRowChecked(row, true);
     } catch (...) {
-        if (checkedRow != -1) {
-            checkedRow = -1;
-            repaint();
-            emit rowsUnchecked();
-        }
+       if (checkedRow != -1) setRowChecked(checkedRow, false);
     }
 }
 
