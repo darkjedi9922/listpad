@@ -17,10 +17,18 @@ SOURCES += main.cpp\
     LogoWidget.cpp \
     MenuButton.cpp \
     Block.cpp \
+    DesktopButton.cpp \
+    Table.cpp \
+    Menu.cpp \
 
 HEADERS  += MainWindow.h \
     LogoWidget.h \
     MenuButton.h \
     Block.h \
+    DesktopButton.h \
+    Table.h \
+    Menu.h \
 
-FORMS    += MainWindow.ui
+FORMS    += MainWindow.ui \
+    Table.ui \
+    Menu.ui \

@@ -5,6 +5,7 @@
 
 class MenuButton : public QPushButton
 {
+    Q_OBJECT
 public:
     MenuButton(QWidget *parent = 0);
 
@@ -14,11 +15,14 @@ protected:
     virtual void leaveEvent(QEvent *);
 
 private:
-    bool hover;
+    bool hovered;
     QBrush hoverBackgroundBrush;
+    QBrush checkedBackgroundBrush;
     QColor textColor;
+    QColor checkedTextColor;
     QFont textFont;
     QPixmap normalIcon;
+    QPixmap checkedIcon;
 };
 
 #endif // MENUBUTTON_H
