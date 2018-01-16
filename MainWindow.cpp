@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->menu, SIGNAL(clicked()), this, SLOT(menuBackgroundClicked()));
     QObject::connect(ui->addButton, SIGNAL(clicked(bool)), this, SLOT(addButtonClicked()));
     QObject::connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteButtonClicked()));
+    QObject::connect(ui->editButton, SIGNAL(clicked(bool)), this, SLOT(editButtonClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -87,12 +88,14 @@ void MainWindow::menuBackgroundClicked()
 
 void MainWindow::tableRowChecked()
 {
+    currentTable->endRowsEditing();
     ui->editButton->setEnabled(true);
     ui->deleteButton->setEnabled(true);
 }
 
 void MainWindow::tableRowsUnchecked()
 {
+    if (currentTable) currentTable->endRowsEditing();
     ui->editButton->setEnabled(false);
     ui->deleteButton->setEnabled(false);
 }
@@ -100,11 +103,12 @@ void MainWindow::tableRowsUnchecked()
 void MainWindow::addButtonClicked()
 {
     if (currentTable->isHidden()) currentTable->show();
-    QLabel *name = new QLabel("Название", currentTable);
-    QLabel *status = new QLabel("Статус", currentTable);
-    QLabel *rating = new QLabel("Оценка", currentTable);
-    QLabel *comment = new QLabel("Комментарий", currentTable);
-    currentTable->addRow(name, status, rating, comment);
+    QList<QString> list;
+    list.append("Название");
+    list.append("Статус");
+    list.append("Оценка");
+    list.append("Комментарий");
+    currentTable->addRow(list);
 }
 
 void MainWindow::deleteButtonClicked()
@@ -112,5 +116,12 @@ void MainWindow::deleteButtonClicked()
     if (currentTable && currentTable->getCheckedRow() != -1) {
         currentTable->deleteRow(currentTable->getCheckedRow());
         if (currentTable->getRowCount() == 1) currentTable->hide();
+    }
+}
+
+void MainWindow::editButtonClicked()
+{
+    if (currentTable && currentTable->getCheckedRow() != -1) {
+        currentTable->startRowEditing(currentTable->getCheckedRow());
     }
 }

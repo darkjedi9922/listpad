@@ -27,6 +27,7 @@ public slots:
     void tableRowsUnchecked();
     void addButtonClicked();
     void deleteButtonClicked();
+    void editButtonClicked();
 
 private:
     MenuButton *checkedMenuButton;

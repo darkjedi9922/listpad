@@ -2,13 +2,16 @@
 #include <QMouseEvent>
 #include <QPainter>
 
+#include <QDebug>
+
 Table::Table(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Table),
     checkedRowBrush(QColor("#d5d4d4")),
     checkedRow(-1),
     rowHeight(27),
-    rowCount(1)
+    rowCount(1),
+    editingRow(-1)
 {
     ui->setupUi(this);
     updateMinHeight();
@@ -16,16 +19,34 @@ Table::Table(QWidget *parent) :
 
 Table::~Table()
 {
+    endRowsEditing();
     delete ui;
 }
 
-void Table::addRow(QLabel *name, QLabel *status, QLabel *rating, QLabel *comment)
+void Table::addRow(const QList<QString> &list)
 {
-    int row = ui->gridLayout->rowCount();
-    ui->gridLayout->addWidget(name, row, 0);
-    ui->gridLayout->addWidget(status, row, 1);
-    ui->gridLayout->addWidget(rating, row, 2);
-    ui->gridLayout->addWidget(comment, row, 3);
+    QLineEdit *newLineEdit;
+    QPalette pal(palette());
+    pal.setBrush(QPalette::Base, Qt::transparent);
+    pal.setColor(QPalette::Text, Qt::black);
+    pal.setColor(QPalette::HighlightedText, Qt::white);
+    pal.setColor(QPalette::Highlight, "#249dcd");
+
+    int column = 0;
+    int rowToInsert = ui->gridLayout->rowCount();
+    for (QList<QString>::const_iterator it = list.begin(); it != list.end(); it++) {
+        newLineEdit = new QLineEdit(*it, this);
+        newLineEdit->setFrame(false);
+        newLineEdit->setPalette(pal);
+        newLineEdit->setEnabled(false);
+        newLineEdit->setMinimumWidth(QFontMetrics(newLineEdit->font()).width(newLineEdit->text()) + 10);
+        newLineEdit->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored);
+        ui->gridLayout->addWidget(newLineEdit, rowToInsert, column);
+        QObject::connect(newLineEdit, SIGNAL(returnPressed()), this, SLOT(endRowsEditing()));
+        column += 1;
+    }
+
+    startRowEditing(rowToInsert);
 
     rowCount += 1;
     updateMinHeight();
@@ -55,6 +76,45 @@ void Table::setRowChecked(int row, bool checked)
         checkedRow = -1;
         repaint();
         emit rowsUnchecked();
+    }
+}
+
+void Table::startRowEditing(int row)
+{
+    endRowsEditing();
+
+    editingRow = row;
+    int columns = ui->gridLayout->columnCount();
+    // Идем с конца, чтобы первый элемент оказался с курсором
+    for (int i = columns - 1; i >= 0; i--) {
+        QLineEdit *item = getItemAt(row, i);
+        if (item) {
+            QPalette pal(item->palette());
+            pal.setBrush(QPalette::Base, QColor("#003366"));
+            pal.setColor(QPalette::Text, Qt::white);
+            item->setPalette(pal);
+            item->setEnabled(true);
+            item->setFocus();
+            item->setCursorPosition(item->text().length());
+        }
+    }
+}
+void Table::endRowsEditing()
+{
+    if (editingRow != -1) {
+        int columns = ui->gridLayout->columnCount();
+        for (int i = columns - 1; i >= 0; i--) {
+            QLineEdit *item = getItemAt(editingRow, i);
+            if (item) {
+                QPalette pal(item->palette());
+                pal.setBrush(QPalette::Base, Qt::transparent);
+                pal.setColor(QPalette::Text, Qt::black);
+                item->setPalette(pal);
+                item->setEnabled(false);
+                item->setMinimumWidth(QFontMetrics(item->font()).width(item->text()) + 10);
+            }
+        }
+        editingRow = -1;
     }
 }
 
@@ -100,4 +160,11 @@ int Table::findRow(const QPoint &point) const
         if (rowRect.contains(point)) return i;
     }
     throw "Row rect was not found.";
+}
+
+QLineEdit* Table::getItemAt(int row, int column) const
+{
+    QLayoutItem *item = ui->gridLayout->itemAtPosition(row, column);
+    if (item) return static_cast<QLineEdit*>(item->widget());
+    else return NULL;
 }
