@@ -144,6 +144,7 @@ void Table::mouseReleaseEvent(QMouseEvent *e)
         setRowChecked(row, true);
     } catch (...) {
        if (checkedRow != -1) setRowChecked(checkedRow, false);
+       endRowsEditing();
     }
 }
 

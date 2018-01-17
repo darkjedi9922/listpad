@@ -63,28 +63,19 @@ void MainWindow::unsetupTable()
 void MainWindow::hideTable()
 {
     ui->scrollArea->hide();
+    updateBlockMaxHeight();
 }
 void MainWindow::showTable()
 {
     ui->scrollArea->show();
+    updateBlockMaxHeight();
 }
-void MainWindow::updateScrollAreaHeight()
+void MainWindow::updateBlockMaxHeight()
 {
     int tableHeight = 0;
     if (currentTable && !isTableHidden()) tableHeight = 18 + currentTable->sizeHint().height();
-    ui->block->setMaximumHeight(9 + ui->addButton->height() + tableHeight + 9 + 1);
-    /*int tableNormalBottom = ui->scrollArea->geometry().top() + currentTable->height();
-    int maxBottom = ui->logo->geometry().bottom() - ui->logo->layout()->contentsMargins().bottom();
-
-    if (tableNormalBottom <= maxBottom) ui->scrollArea->setMinimumHeight(currentTable->height());
-    else {
-        int difference =
-                ui->logo->height() -
-                ui->block->height() -
-                ui->logo->layout()->contentsMargins().top() -
-                ui->logo->layout()->contentsMargins().bottom();
-        ui->scrollArea->setMaximumHeight(ui->scrollArea->height() + difference);
-    }*/
+    int fix = 4; // костыль. без этого размеры почему то возвращаются правильные, а на экране нет
+    ui->block->setMaximumHeight(9 + ui->addButton->sizeHint().height() + tableHeight + 9 + fix);
 }
 bool MainWindow::isTableHidden() const
 {
@@ -101,6 +92,7 @@ void MainWindow::menuButtonClicked()
         checkedMenuButton = button;
 
         ui->block->show();
+        updateBlockMaxHeight();
         setupNewTable();
     }
     // Qt кнопки сами выключают check'нутость даже, если они уже check'нутые
@@ -143,7 +135,7 @@ void MainWindow::addButtonClicked()
     list.append("Оценка");
     list.append("Комментарий");
     currentTable->addRow(list);
-    updateScrollAreaHeight();
+    updateBlockMaxHeight();
 }
 
 void MainWindow::deleteButtonClicked()
@@ -151,7 +143,7 @@ void MainWindow::deleteButtonClicked()
     if (currentTable && currentTable->getCheckedRow() != -1) {
         currentTable->deleteRow(currentTable->getCheckedRow());
         if (currentTable->getRowCount() == 1) hideTable();
-        else updateScrollAreaHeight();
+        else updateBlockMaxHeight();
     }
 }
 
@@ -160,20 +152,4 @@ void MainWindow::editButtonClicked()
     if (currentTable && currentTable->getCheckedRow() != -1) {
         currentTable->startRowEditing(currentTable->getCheckedRow());
     }
-}
-
-void MainWindow::resizeEvent(QResizeEvent *)
-{
-
-    /*if (currentTable) {
-        int tableNormalBottom = ui->scrollArea->geometry().top() + currentTable->height();
-        int maxBottom = ui->logo->geometry().bottom() - ui->logo->layout()->contentsMargins().bottom();
-
-        if (tableNormalBottom <= maxBottom) {
-            int tableHeight = 0;
-            if (currentTable) tableHeight = - ui->scrollArea->height() + currentTable->height();
-            ui->block->setMaximumHeight(ui->block->sizeHint().height() + tableHeight);
-        }
-        else ui->block->setMaximumHeight(ui->logo->height() - ui->logo->layout()->contentsMargins().top() - ui->logo->layout()->contentsMargins().bottom());
-    } else ui->block->setMaximumHeight(ui->block->sizeHint().height());*/
 }

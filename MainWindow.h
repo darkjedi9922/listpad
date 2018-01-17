@@ -21,7 +21,7 @@ public:
     void unsetupTable();
     void hideTable();
     void showTable();
-    void updateScrollAreaHeight();
+    void updateBlockMaxHeight();
     bool isTableHidden() const;
 
 public slots:
@@ -32,9 +32,6 @@ public slots:
     void addButtonClicked();
     void deleteButtonClicked();
     void editButtonClicked();
-
-protected:
-    virtual void resizeEvent(QResizeEvent *);
 
 private:
     MenuButton *checkedMenuButton;
