@@ -17,11 +17,12 @@ class MainWindow : public QWidget
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void updateBlockMaxHeight();
     void setupNewTable();
     void unsetupTable();
+    void updateScrollBar();
     void hideTable();
     void showTable();
-    void updateBlockMaxHeight();
     bool isTableHidden() const;
 
 public slots:

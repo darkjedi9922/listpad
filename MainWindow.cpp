@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include <QLabel>
-#include <QScrollBar>
+#include "ScrollBar.h"
 
 #include <QDebug>
 
@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->scrollArea->verticalScrollBar()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    ui->scrollArea->setVerticalScrollBar(new ScrollBar(Qt::Vertical, ui->scrollArea));
     ui->block->hide();
 
     QObject::connect(ui->menu->ui->films, SIGNAL(clicked(bool)), this, SLOT(menuButtonClicked()));
@@ -39,6 +40,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::updateBlockMaxHeight()
+{
+    int tableHeight = 0;
+    if (currentTable && !isTableHidden()) tableHeight = 18 + currentTable->sizeHint().height();
+    int fix = 4; // костыль. без этого размеры почему то возвращаются правильные, а на экране нет
+    ui->block->setMaximumHeight(9 + ui->addButton->sizeHint().height() + tableHeight + 9 + fix);
+}
+
 void MainWindow::setupNewTable()
 {
     unsetupTable();
@@ -49,7 +58,6 @@ void MainWindow::setupNewTable()
     QObject::connect(currentTable, SIGNAL(rowChecked()), this, SLOT(tableRowChecked()));
     QObject::connect(currentTable, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
 }
-
 void MainWindow::unsetupTable()
 {
     if (currentTable) {
@@ -58,6 +66,12 @@ void MainWindow::unsetupTable()
         delete currentTable;
         currentTable = NULL;
     }
+}
+
+void MainWindow::updateScrollBar()
+{
+    ScrollBar *bar = static_cast<ScrollBar*>(ui->scrollArea->verticalScrollBar());
+    bar->setDocumentLength(currentTable ? currentTable->height() : 0);
 }
 
 void MainWindow::hideTable()
@@ -69,13 +83,6 @@ void MainWindow::showTable()
 {
     ui->scrollArea->show();
     updateBlockMaxHeight();
-}
-void MainWindow::updateBlockMaxHeight()
-{
-    int tableHeight = 0;
-    if (currentTable && !isTableHidden()) tableHeight = 18 + currentTable->sizeHint().height();
-    int fix = 4; // костыль. без этого размеры почему то возвращаются правильные, а на экране нет
-    ui->block->setMaximumHeight(9 + ui->addButton->sizeHint().height() + tableHeight + 9 + fix);
 }
 bool MainWindow::isTableHidden() const
 {
@@ -136,6 +143,7 @@ void MainWindow::addButtonClicked()
     list.append("Комментарий");
     currentTable->addRow(list);
     updateBlockMaxHeight();
+    updateScrollBar();
 }
 
 void MainWindow::deleteButtonClicked()
@@ -143,7 +151,10 @@ void MainWindow::deleteButtonClicked()
     if (currentTable && currentTable->getCheckedRow() != -1) {
         currentTable->deleteRow(currentTable->getCheckedRow());
         if (currentTable->getRowCount() == 1) hideTable();
-        else updateBlockMaxHeight();
+        else {
+            updateBlockMaxHeight();
+            updateScrollBar();
+        }
     }
 }
 
