@@ -19,7 +19,7 @@ SOURCES += main.cpp\
     Block.cpp \
     DesktopButton.cpp \
     Table.cpp \
-    Menu.cpp \
+    Menu.cpp
 
 HEADERS  += MainWindow.h \
     LogoWidget.h \
@@ -27,7 +27,7 @@ HEADERS  += MainWindow.h \
     Block.h \
     DesktopButton.h \
     Table.h \
-    Menu.h \
+    Menu.h
 
 FORMS    += MainWindow.ui \
     Table.ui \

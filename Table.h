@@ -17,12 +17,14 @@ class Table : public QWidget
 public:
     explicit Table(QWidget *parent = 0);
     ~Table();
+    QSize sizeHint() const;
     void addRow(const QList<QString> &list);
     void deleteRow(int row);
     void setRowChecked(int row, bool checked);
     void startRowEditing(int row);
     int getCheckedRow() const;
     int getRowCount() const;
+    int getRowHeight() const;
 
 public slots:
     void endRowsEditing();

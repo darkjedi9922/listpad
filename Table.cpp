@@ -23,6 +23,11 @@ Table::~Table()
     delete ui;
 }
 
+QSize Table::sizeHint() const
+{
+    return QSize(ui->gridLayout->sizeHint().width(), rowHeight * rowCount);
+}
+
 void Table::addRow(const QList<QString> &list)
 {
     QLineEdit *newLineEdit;
@@ -125,6 +130,11 @@ int Table::getCheckedRow() const
 int Table::getRowCount() const
 {
     return rowCount;
+}
+
+int Table::getRowHeight() const
+{
+    return rowHeight;
 }
 
 void Table::mouseReleaseEvent(QMouseEvent *e)

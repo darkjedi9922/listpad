@@ -19,6 +19,10 @@ public:
     ~MainWindow();
     void setupNewTable();
     void unsetupTable();
+    void hideTable();
+    void showTable();
+    void updateScrollAreaHeight();
+    bool isTableHidden() const;
 
 public slots:
     void menuButtonClicked();
@@ -28,6 +32,9 @@ public slots:
     void addButtonClicked();
     void deleteButtonClicked();
     void editButtonClicked();
+
+protected:
+    virtual void resizeEvent(QResizeEvent *);
 
 private:
     MenuButton *checkedMenuButton;
