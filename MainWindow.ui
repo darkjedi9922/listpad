@@ -53,7 +53,7 @@
   <property name="autoFillBackground">
    <bool>true</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,3">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -70,82 +70,10 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="Menu" name="menu" native="true">
-     <property name="palette">
-      <palette>
-       <active>
-        <colorrole role="Base">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>51</red>
-           <green>51</green>
-           <blue>51</blue>
-          </color>
-         </brush>
-        </colorrole>
-        <colorrole role="Window">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>19</red>
-           <green>19</green>
-           <blue>19</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </active>
-       <inactive>
-        <colorrole role="Base">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>51</red>
-           <green>51</green>
-           <blue>51</blue>
-          </color>
-         </brush>
-        </colorrole>
-        <colorrole role="Window">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>19</red>
-           <green>19</green>
-           <blue>19</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </inactive>
-       <disabled>
-        <colorrole role="Base">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>19</red>
-           <green>19</green>
-           <blue>19</blue>
-          </color>
-         </brush>
-        </colorrole>
-        <colorrole role="Window">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>19</red>
-           <green>19</green>
-           <blue>19</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </disabled>
-      </palette>
-     </property>
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-    </widget>
+    <widget class="Menu" name="menu" native="true"/>
    </item>
    <item>
-    <widget class="QWidget" name="shadow" native="true">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-    </widget>
+    <widget class="ShadowWidget" name="shadow" native="true"/>
    </item>
    <item>
     <widget class="LogoWidget" name="logo" native="true">
@@ -331,44 +259,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QScrollArea" name="scrollArea">
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="lineWidth">
-            <number>0</number>
-           </property>
-           <property name="widgetResizable">
-            <bool>true</bool>
-           </property>
-           <widget class="QWidget" name="scrollAreaWidgetContents">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>579</width>
-              <height>461</height>
-             </rect>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-            </layout>
-           </widget>
-          </widget>
+          <widget class="ScrollArea" name="scrollArea" native="true"/>
          </item>
         </layout>
        </widget>
@@ -414,6 +305,18 @@
    <class>Menu</class>
    <extends>QWidget</extends>
    <header>Menu.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ScrollArea</class>
+   <extends>QWidget</extends>
+   <header>ScrollArea.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ShadowWidget</class>
+   <extends>QWidget</extends>
+   <header>ShadowWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

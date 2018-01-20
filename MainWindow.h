@@ -17,25 +17,42 @@ class MainWindow : public QWidget
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void updateBlockMaxHeight();
-    void setupNewTable();
-    void unsetupTable();
-    void updateScrollBar();
-    void hideTable();
-    void showTable();
-    bool isTableHidden() const;
 
 public slots:
-    void menuButtonClicked();
-    void menuBackgroundClicked();
-    void tableRowChecked();
-    void tableRowsUnchecked();
+    // menu
+    void newMenuButtonChecked(MenuButton*);
+    void menuButtonUnchecked(MenuButton *);
+
+    // table buttons
     void addButtonClicked();
     void deleteButtonClicked();
     void editButtonClicked();
 
+    // table rows
+    void tableRowChecked();
+    void tableRowsUnchecked();
+
+protected:
+    virtual void resizeEvent(QResizeEvent *);
+
 private:
-    MenuButton *checkedMenuButton;
+    void setupStartConnectings();
+
+    // block
+    void openBlock();
+    void closeBlock();
+    void updateBlockMaxHeight();
+
+    // table
+    void setupNewTable();
+    void removeOldTable();
+    void hideTable();
+    void showTable();
+    void updateTableSize();
+
+    // table rows
+    void addTableRow();
+
     Ui::MainWindow *ui;
     Table *currentTable;
 };

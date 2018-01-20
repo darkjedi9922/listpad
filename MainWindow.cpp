@@ -5,117 +5,53 @@
 
 #include <QDebug>
 
+// ==== PUBLIC ====
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    checkedMenuButton = NULL;
     currentTable = NULL;
 
-    ui->menu->setFixedWidth(240);
-
-    QPalette shadowPalette;
-    QPixmap shadowPixmap("images/shadow.png");
-    shadowPalette.setBrush(QPalette::Background, QBrush(shadowPixmap));
-    ui->shadow->setPalette(shadowPalette);
-    ui->shadow->setFixedWidth(shadowPixmap.width());
-
-    ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->scrollArea->verticalScrollBar()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    ui->scrollArea->setVerticalScrollBar(new ScrollBar(Qt::Vertical, ui->scrollArea));
+    ui->setupUi(this);
     ui->block->hide();
+    ui->scrollArea->hide();
 
-    QObject::connect(ui->menu->ui->films, SIGNAL(clicked(bool)), this, SLOT(menuButtonClicked()));
-    QObject::connect(ui->menu->ui->serials, SIGNAL(clicked(bool)), this, SLOT(menuButtonClicked()));
-    QObject::connect(ui->menu->ui->books, SIGNAL(clicked(bool)), this, SLOT(menuButtonClicked()));
-    QObject::connect(ui->menu, SIGNAL(clicked()), this, SLOT(menuBackgroundClicked()));
-    QObject::connect(ui->addButton, SIGNAL(clicked(bool)), this, SLOT(addButtonClicked()));
-    QObject::connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteButtonClicked()));
-    QObject::connect(ui->editButton, SIGNAL(clicked(bool)), this, SLOT(editButtonClicked()));
+    setupStartConnectings();
 }
-
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-void MainWindow::updateBlockMaxHeight()
+// ==== PUBLIC SLOTS ====
+void MainWindow::newMenuButtonChecked(MenuButton *)
 {
-    int tableHeight = 0;
-    if (currentTable && !isTableHidden()) tableHeight = 18 + currentTable->sizeHint().height();
-    int fix = 4; // костыль. без этого размеры почему то возвращаются правильные, а на экране нет
-    ui->block->setMaximumHeight(9 + ui->addButton->sizeHint().height() + tableHeight + 9 + fix);
+    openBlock();
+    //loadTable();
+}
+void MainWindow::menuButtonUnchecked(MenuButton *)
+{
+    closeBlock();
 }
 
-void MainWindow::setupNewTable()
+void MainWindow::addButtonClicked()
 {
-    unsetupTable();
-    currentTable = new Table(ui->block);
-    ui->scrollArea->setWidget(currentTable);
-    hideTable();
-
-    QObject::connect(currentTable, SIGNAL(rowChecked()), this, SLOT(tableRowChecked()));
-    QObject::connect(currentTable, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
+    if (!currentTable) setupNewTable();
+    addTableRow();
 }
-void MainWindow::unsetupTable()
+void MainWindow::deleteButtonClicked()
 {
-    if (currentTable) {
-        tableRowsUnchecked();
-        hideTable();
-        delete currentTable;
-        currentTable = NULL;
-    }
-}
-
-void MainWindow::updateScrollBar()
-{
-    ScrollBar *bar = static_cast<ScrollBar*>(ui->scrollArea->verticalScrollBar());
-    bar->setDocumentLength(currentTable ? currentTable->height() : 0);
-}
-
-void MainWindow::hideTable()
-{
-    ui->scrollArea->hide();
-    updateBlockMaxHeight();
-}
-void MainWindow::showTable()
-{
-    ui->scrollArea->show();
-    updateBlockMaxHeight();
-}
-bool MainWindow::isTableHidden() const
-{
-    return ui->scrollArea->isHidden();
-}
-
-void MainWindow::menuButtonClicked()
-{
-    MenuButton *button = (MenuButton*)QObject::sender();
-    if (button != checkedMenuButton)
-    {
-        if (checkedMenuButton) checkedMenuButton->setChecked(false);
-        button->setChecked(true);
-        checkedMenuButton = button;
-
-        ui->block->show();
+    if (currentTable && currentTable->getCheckedRow() != -1) {
+        currentTable->deleteRow(currentTable->getCheckedRow());
+        updateTableSize();
+        if (currentTable->getRowCount() == 1) ui->scrollArea->hide();
         updateBlockMaxHeight();
-        setupNewTable();
     }
-    // Qt кнопки сами выключают check'нутость даже, если они уже check'нутые
-    // Нам это не нужно
-    // Так что включим check'нутость обратно
-    // (Костыль)
-    else checkedMenuButton->setChecked(true);
 }
-
-void MainWindow::menuBackgroundClicked()
+void MainWindow::editButtonClicked()
 {
-    if (checkedMenuButton) {
-        checkedMenuButton->setChecked(false);
-        checkedMenuButton = NULL;
-        ui->block->hide();
-        unsetupTable();
+    if (currentTable && currentTable->getCheckedRow() != -1) {
+        currentTable->startRowEditing(currentTable->getCheckedRow());
     }
 }
 
@@ -125,7 +61,6 @@ void MainWindow::tableRowChecked()
     ui->editButton->setEnabled(true);
     ui->deleteButton->setEnabled(true);
 }
-
 void MainWindow::tableRowsUnchecked()
 {
     if (currentTable) currentTable->endRowsEditing();
@@ -133,34 +68,94 @@ void MainWindow::tableRowsUnchecked()
     ui->deleteButton->setEnabled(false);
 }
 
-void MainWindow::addButtonClicked()
+// ==== EVENTS ====
+void MainWindow::resizeEvent(QResizeEvent *)
 {
-    if (isTableHidden()) showTable();
-    QList<QString> list;
-    list.append("Название");
-    list.append("Статус");
-    list.append("Оценка");
-    list.append("Комментарий");
-    currentTable->addRow(list);
-    updateBlockMaxHeight();
-    updateScrollBar();
+    updateTableSize();
 }
 
-void MainWindow::deleteButtonClicked()
+// ==== PRIVATE ====
+void MainWindow::setupStartConnectings()
 {
-    if (currentTable && currentTable->getCheckedRow() != -1) {
-        currentTable->deleteRow(currentTable->getCheckedRow());
-        if (currentTable->getRowCount() == 1) hideTable();
-        else {
-            updateBlockMaxHeight();
-            updateScrollBar();
-        }
+    QObject::connect(ui->menu, SIGNAL(newButtonChecked(MenuButton*)), this, SLOT(newMenuButtonChecked(MenuButton*)));
+    QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuButton*)), this, SLOT(menuButtonUnchecked(MenuButton*)));
+    QObject::connect(ui->addButton, SIGNAL(clicked(bool)), this, SLOT(addButtonClicked()));
+    QObject::connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteButtonClicked()));
+    QObject::connect(ui->editButton, SIGNAL(clicked(bool)), this, SLOT(editButtonClicked()));
+}
+
+void MainWindow::openBlock()
+{
+    ui->block->show();
+    updateBlockMaxHeight();
+}
+void MainWindow::closeBlock()
+{
+    ui->block->hide();
+}
+void MainWindow::updateBlockMaxHeight()
+{
+    int tableHeight = 0;
+    if (currentTable && !ui->scrollArea->isHidden()) {
+        tableHeight = 18 + currentTable->sizeHint().height();
+    }
+    int fix = 4; // костыль. без этого размеры почему то возвращаются правильные, а на экране нет
+    ui->block->setMaximumHeight(9 + ui->addButton->sizeHint().height() + tableHeight + 9 + fix);
+}
+
+void MainWindow::setupNewTable()
+{
+    removeOldTable();
+    currentTable = new Table(ui->block);
+    ui->scrollArea->show();
+    ui->scrollArea->setWidget(currentTable);
+    updateTableSize();
+    updateBlockMaxHeight();
+
+    QObject::connect(currentTable, SIGNAL(rowChecked()), this, SLOT(tableRowChecked()));
+    QObject::connect(currentTable, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
+}
+void MainWindow::removeOldTable()
+{
+    if (currentTable) {
+        //tableRowsUnchecked();
+        currentTable->hide();
+        delete currentTable;
+        currentTable = NULL;
+        updateBlockMaxHeight();
+    }
+}
+void MainWindow::hideTable()
+{
+    ui->scrollArea->hide();
+    updateBlockMaxHeight();
+}
+void MainWindow::showTable()
+{
+    ui->scrollArea->show();
+    updateTableSize();
+    updateBlockMaxHeight();
+}
+void MainWindow::updateTableSize()
+{
+    if (currentTable) {
+        int width = ui->scrollArea->width();
+        int height = currentTable->sizeHint().height();
+        currentTable->resize(width, height);
     }
 }
 
-void MainWindow::editButtonClicked()
+void MainWindow::addTableRow()
 {
-    if (currentTable && currentTable->getCheckedRow() != -1) {
-        currentTable->startRowEditing(currentTable->getCheckedRow());
+    if (currentTable) {
+        if (ui->scrollArea->isHidden()) ui->scrollArea->show();
+        QList<QString> list;
+        list.append("Название");
+        list.append("Статус");
+        list.append("Оценка");
+        list.append("Комментарий");
+        currentTable->addRow(list);
+        updateTableSize();
+        updateBlockMaxHeight();
     }
 }

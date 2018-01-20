@@ -1,13 +1,26 @@
 #ifndef SCROLLAREA_H
 #define SCROLLAREA_H
 
-#include <QScrollArea>
+#include <QWidget>
+#include "ScrollBar.h"
 
-class ScrollArea : public QScrollArea
+class ScrollArea : public QWidget
 {
+    Q_OBJECT
 public:
-    ScrollArea(QWidget *parent = 0);
-    virtual QSize sizeHint() const;
+    explicit ScrollArea(QWidget *parent = 0);
+    void setWidget(QWidget *widget);
+    ScrollBar* getVerticalScrollBar() const;
+
+protected:
+    virtual void resizeEvent(QResizeEvent *);
+
+private:
+    ScrollBar *vScrollBar;
+    QWidget *widget;
+
+private slots:
+    void vSliderValueChanged(int value);
 };
 
 #endif // SCROLLAREA_H

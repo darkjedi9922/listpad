@@ -20,7 +20,11 @@ SOURCES += main.cpp\
     DesktopButton.cpp \
     Table.cpp \
     Menu.cpp \
-    ScrollBar.cpp
+    ScrollArea.cpp \
+    ScrollBar.cpp \
+    Slider.cpp \
+    SliderItem.cpp \
+    ShadowWidget.cpp
 
 HEADERS  += MainWindow.h \
     LogoWidget.h \
@@ -29,8 +33,14 @@ HEADERS  += MainWindow.h \
     DesktopButton.h \
     Table.h \
     Menu.h \
-    ScrollBar.h
+    ScrollArea.h \
+    ScrollBar.h \
+    Slider.h \
+    SliderItem.h \
+    ShadowWidget.h
 
 FORMS    += MainWindow.ui \
     Table.ui \
     Menu.ui \
+    ScrollBar.ui \
+    ScrollArea.ui

@@ -1,71 +1,40 @@
 #include "ScrollBar.h"
-#include <QPainter>
-#include <QMouseEvent>
 
-#include <QDebug>
+ScrollBar::ScrollBar(Qt::Orientation orientation, QWidget *parent) : QWidget(parent)
+{
+    layout = new QBoxLayout(QBoxLayout::LeftToRight);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    slider = new Slider(orientation);
 
-ScrollBar::ScrollBar(Qt::Orientation o, QWidget *parent) :
-    QScrollBar(o, parent),
-    documentLength(0),
-    currentValue(0),
-    lastMousePressPoint(0),
-    lastValue(0),
-    moving(false)
-{}
-void ScrollBar::setValue(int value)
-{
-    currentValue = value;
-    repaint();
+    setOrientation(orientation);
+    setMinimum(0);
+
+    this->setLayout(layout);
+    this->layout->addWidget(slider);
+
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
-void ScrollBar::setDocumentLength(int length)
+void ScrollBar::setOrientation(Qt::Orientation orientation)
 {
-    if (length == 0) setMaximum(0);
-    else setMaximum((length - height()) / length);
-    documentLength = length;
+    if (orientation == Qt::Horizontal) layout->setDirection(QBoxLayout::LeftToRight);
+    else layout->setDirection(QBoxLayout::TopToBottom);
+    slider->setOrientation(orientation);
 }
-int ScrollBar::value() const
+void ScrollBar::setMinimum(int min)
 {
-    return currentValue;
+    slider->setMinimum(min);
 }
-int ScrollBar::getDocumentLength() const
+void ScrollBar::setMaximum(int max)
 {
-    return documentLength;
+    slider->setMaximum(max);
 }
-const QRect ScrollBar::calculateSliderRect() const
+void ScrollBar::setSingleStep(int step)
 {
-    return QRect(0, value(), width(), height() * height() / getDocumentLength());
+    slider->setSingleStep(step);
 }
 
-void ScrollBar::paintEvent(QPaintEvent *)
+Slider* ScrollBar::getSlider() const
 {
-    QPainter painter(this);
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::black);
-    painter.drawRect(rect());
-    painter.setBrush(Qt::white);
-    painter.drawRect(calculateSliderRect());
-}
-void ScrollBar::mousePressEvent(QMouseEvent *e)
-{
-    if (calculateSliderRect().contains(e->pos())) {
-        lastMousePressPoint = e->y();
-        lastValue = value();
-        moving = true;
-    }
-}
-void ScrollBar::mouseMoveEvent(QMouseEvent *e)
-{
-    if (moving) {
-        if (e->y() < 0) setValue(0);
-        else if (e->y() > maximum()) setValue(maximum());
-        else {
-            int diff = e->y() - lastMousePressPoint;
-            int newValue = lastValue + diff;
-            if (newValue >= minimum() && newValue <= maximum()) setValue(lastValue + diff);
-        }
-    }
-}
-void ScrollBar::mouseReleaseEvent(QMouseEvent *)
-{
-    moving = false;
+    return slider;
 }

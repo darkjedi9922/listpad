@@ -1,10 +1,48 @@
 #include "ScrollArea.h"
 #include <QDebug>
 
-ScrollArea::ScrollArea(QWidget *parent) : QScrollArea(parent) {}
-QSize ScrollArea::sizeHint() const
+ScrollArea::ScrollArea(QWidget *parent) :
+    QWidget(parent),
+    vScrollBar(new ScrollBar(Qt::Vertical, this)),
+    widget(NULL)
 {
-    if (this->widget()) return widget()->size();
-    else return QScrollArea::sizeHint();
+    vScrollBar->resize(15, height());
+
+    QObject::connect(vScrollBar->getSlider(), SIGNAL(valueChanged(int)), this, SLOT(vSliderValueChanged(int)));
+}
+void ScrollArea::setWidget(QWidget *widget)
+{
+    this->widget = widget;
+    widget->setParent(this);
+    widget->show();
+    vScrollBar->raise();
+}
+ScrollBar* ScrollArea::getVerticalScrollBar() const
+{
+    return vScrollBar;
 }
 
+void ScrollArea::resizeEvent(QResizeEvent *)
+{
+    vScrollBar->resize(vScrollBar->width(), height());
+    vScrollBar->move(width() - vScrollBar->width(), 0);
+
+    if (widget) {
+        if (widget->height() - height() <= 0) {
+            vScrollBar->getSlider()->setSliderFixedLength(0);
+            vScrollBar->setMaximum(0);
+            vScrollBar->hide();
+        } else {
+            vScrollBar->show();
+            vScrollBar->getSlider()->setSliderFixedLength(height() * vScrollBar->getSlider()->height() / widget->height());
+            vScrollBar->setMaximum(widget->height() - height());
+        }
+    } else {
+        vScrollBar->hide();
+    }
+}
+
+void ScrollArea::vSliderValueChanged(int value)
+{
+    if (widget) widget->move(0, -value);
+}

@@ -1,30 +1,25 @@
 #ifndef SCROLLBAR_H
 #define SCROLLBAR_H
 
-#include <QScrollBar>
+#include <QWidget>
+#include <QBoxLayout>
+#include "Slider.h"
 
-class ScrollBar : public QScrollBar
+class ScrollBar : public QWidget
 {
+    Q_OBJECT
 public:
-    ScrollBar(Qt::Orientation, QWidget *parent = 0);
-    void setValue(int value);
-    void setDocumentLength(int length);
-    int value() const;
-    int getDocumentLength() const;
-    const QRect calculateSliderRect() const;
+    ScrollBar(Qt::Orientation orientation, QWidget *parent = 0);
+    void setOrientation(Qt::Orientation orientation);
+    void setMinimum(int min);
+    void setMaximum(int max);
+    void setSingleStep(int step);
 
-protected:
-    virtual void paintEvent(QPaintEvent *);
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
+    Slider *getSlider() const;
 
 private:
-    int documentLength;
-    int currentValue;
-    int lastMousePressPoint;
-    int lastValue;
-    bool moving;
+    QBoxLayout *layout;
+    Slider *slider;
 };
 
 #endif // SCROLLBAR_H
