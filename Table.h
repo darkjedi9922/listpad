@@ -14,10 +14,16 @@ class Table : public QWidget
 {
     Q_OBJECT
 
+signals:
+    void rowChecked();
+    void rowsUnchecked();
+    void rowDeleted(int row);
+
 public:
     explicit Table(QWidget *parent = 0);
     ~Table();
     QSize sizeHint() const;
+
     void addRow(const QList<QString> &list);
     void deleteRow(int row);
     void setRowChecked(int row, bool checked);
@@ -29,14 +35,10 @@ public:
 public slots:
     void endRowsEditing();
 
-signals:
-    void rowChecked();
-    void rowsUnchecked();
-    void rowDeleted(int row);
-
 protected:
     virtual void mouseReleaseEvent(QMouseEvent *);
     virtual void paintEvent(QPaintEvent *);
+    virtual void keyPressEvent(QKeyEvent *);
 
 private:
     void updateMinHeight();

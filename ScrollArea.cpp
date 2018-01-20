@@ -10,19 +10,13 @@ ScrollArea::ScrollArea(QWidget *parent) :
 
     QObject::connect(vScrollBar->getSlider(), SIGNAL(valueChanged(int)), this, SLOT(vSliderValueChanged(int)));
 }
-void ScrollArea::setWidget(QWidget *widget)
+QSize ScrollArea::sizeHint() const
 {
-    this->widget = widget;
-    widget->setParent(this);
-    widget->show();
-    vScrollBar->raise();
-}
-ScrollBar* ScrollArea::getVerticalScrollBar() const
-{
-    return vScrollBar;
+    if (widget) return widget->sizeHint();
+    else return QSize(0, 0);
 }
 
-void ScrollArea::resizeEvent(QResizeEvent *)
+void ScrollArea::update()
 {
     vScrollBar->resize(vScrollBar->width(), height());
     vScrollBar->move(width() - vScrollBar->width(), 0);
@@ -40,6 +34,22 @@ void ScrollArea::resizeEvent(QResizeEvent *)
     } else {
         vScrollBar->hide();
     }
+}
+void ScrollArea::setWidget(QWidget *widget)
+{
+    this->widget = widget;
+    widget->setParent(this);
+    widget->show();
+    vScrollBar->raise();
+}
+ScrollBar* ScrollArea::getVerticalScrollBar() const
+{
+    return vScrollBar;
+}
+
+void ScrollArea::resizeEvent(QResizeEvent *)
+{
+    update();
 }
 
 void ScrollArea::vSliderValueChanged(int value)

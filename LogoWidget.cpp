@@ -4,7 +4,14 @@
 LogoWidget::LogoWidget(QWidget *parent) :
     QWidget(parent),
     icon(QPixmap("images/logo.png"))
-{}
+{
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+}
+QSize LogoWidget::sizeHint() const
+{
+    return icon.size() + icon.size() / 2;
+}
+
 void LogoWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);

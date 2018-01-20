@@ -9,7 +9,11 @@ class ScrollArea : public QWidget
     Q_OBJECT
 public:
     explicit ScrollArea(QWidget *parent = 0);
+    virtual QSize sizeHint() const;
+
+    void update();
     void setWidget(QWidget *widget);
+
     ScrollBar* getVerticalScrollBar() const;
 
 protected:

@@ -31,6 +31,7 @@ public slots:
     // table rows
     void tableRowChecked();
     void tableRowsUnchecked();
+    void tableRowDeleted();
 
 protected:
     virtual void resizeEvent(QResizeEvent *);
@@ -46,8 +47,6 @@ private:
     // table
     void setupNewTable();
     void removeOldTable();
-    void hideTable();
-    void showTable();
     void updateTableSize();
 
     // table rows

@@ -47,9 +47,6 @@
     </disabled>
    </palette>
   </property>
-  <property name="windowTitle">
-   <string>Listpad 2</string>
-  </property>
   <property name="autoFillBackground">
    <bool>true</bool>
   </property>

@@ -8,9 +8,11 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Listpad2
+TARGET = Listpad
 TEMPLATE = app
-
+RC_ICONS = icon.ico
+VERSION = 1.0
+QMAKE_TARGET_COPYRIGHT = Jed Dark
 
 SOURCES += main.cpp\
         MainWindow.cpp \
@@ -44,3 +46,6 @@ FORMS    += MainWindow.ui \
     Menu.ui \
     ScrollBar.ui \
     ScrollArea.ui
+
+RESOURCES += \
+    images.qrc

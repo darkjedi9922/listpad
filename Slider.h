@@ -1,24 +1,42 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include <QSlider>
+#include <QWidget>
 #include "SliderItem.h"
 
-class Slider : public QSlider
+class Slider : public QWidget
 {
     Q_OBJECT
 
+signals:
+    void valueChanged(int newValue);
+
 public:
     Slider(Qt::Orientation orientation, QWidget *parent = 0);
-    void setValue(int value);
-    void setSliderPosition(int position);
-    void setSliderFixedLength(int length);
+
+    // orientation
+    void setOrientation(Qt::Orientation);
+    Qt::Orientation getOrientation() const;
+
+    // steps
+    void setSingleStep(int);
+    int getSingleStep() const;
+
+    // values
+    void setMinimum(int);
+    int getMinimum() const;
+    void setMaximum(int);
+    int getMaximum() const;
+    void setValue(int);
+    void setSliderPosition(int);
+
+    // lengths
+    void setSliderFixedLength(int);
     void setSliderAutoLength();
     int getSliderLength();
     int getLength();
 
 protected:
-    virtual void paintEvent(QPaintEvent *);
     virtual void resizeEvent(QResizeEvent *);
     virtual void mousePressEvent(QMouseEvent *);
     virtual void mouseMoveEvent(QMouseEvent *);
@@ -33,6 +51,11 @@ private:
     int getOrientationValue(int hValue, int vValue);
 
     SliderItem *slider;
+    Qt::Orientation orientation;
+    int singleStep;
+    int minimum;
+    int maximum;
+    int value;
     int sliderFixedLength;
     int lastPixelValue;
     int lastPressPoint;

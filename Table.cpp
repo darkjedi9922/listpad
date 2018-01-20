@@ -1,9 +1,11 @@
 #include "Table.h"
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <QPainter>
 
 #include <QDebug>
 
+// ==== PUBLIC ====
 Table::Table(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Table),
@@ -14,15 +16,14 @@ Table::Table(QWidget *parent) :
     editingRow(-1)
 {
     ui->setupUi(this);
+    setFocusPolicy(Qt::ClickFocus);
     updateMinHeight();
 }
-
 Table::~Table()
 {
     endRowsEditing();
     delete ui;
 }
-
 QSize Table::sizeHint() const
 {
     return QSize(ui->gridLayout->sizeHint().width(), rowHeight * rowCount);
@@ -56,7 +57,6 @@ void Table::addRow(const QList<QString> &list)
     rowCount += 1;
     updateMinHeight();
 }
-
 void Table::deleteRow(int row)
 {
     if (row == checkedRow) setRowChecked(row, false);
@@ -70,7 +70,6 @@ void Table::deleteRow(int row)
 
     emit rowDeleted(row);
 }
-
 void Table::setRowChecked(int row, bool checked)
 {
     if (checked && row != checkedRow) {
@@ -83,7 +82,6 @@ void Table::setRowChecked(int row, bool checked)
         emit rowsUnchecked();
     }
 }
-
 void Table::startRowEditing(int row)
 {
     endRowsEditing();
@@ -104,6 +102,20 @@ void Table::startRowEditing(int row)
         }
     }
 }
+int Table::getCheckedRow() const
+{
+    return checkedRow;
+}
+int Table::getRowCount() const
+{
+    return rowCount;
+}
+int Table::getRowHeight() const
+{
+    return rowHeight;
+}
+
+// ==== PUBLIC SLOTS ====
 void Table::endRowsEditing()
 {
     if (editingRow != -1) {
@@ -121,22 +133,10 @@ void Table::endRowsEditing()
         }
         editingRow = -1;
     }
+    setFocus();
 }
 
-int Table::getCheckedRow() const
-{
-    return checkedRow;
-}
-int Table::getRowCount() const
-{
-    return rowCount;
-}
-
-int Table::getRowHeight() const
-{
-    return rowHeight;
-}
-
+// ==== EVENTS ====
 void Table::mouseReleaseEvent(QMouseEvent *e)
 {
     try {
@@ -147,7 +147,6 @@ void Table::mouseReleaseEvent(QMouseEvent *e)
        endRowsEditing();
     }
 }
-
 void Table::paintEvent(QPaintEvent *)
 {
     if (checkedRow != -1) {
@@ -157,12 +156,27 @@ void Table::paintEvent(QPaintEvent *)
         painter.drawRect(0, ui->gridLayout->cellRect(checkedRow, 0).top(), width(), rowHeight);
     }
 }
+void Table::keyPressEvent(QKeyEvent *e)
+{
+    switch (e->key())
+    {
+    case Qt::Key_F2:
+        if (checkedRow != -1) startRowEditing(checkedRow);
+        break;
+    case Qt::Key_Delete:
+        if (checkedRow != -1) {
+            int row = checkedRow;
+            deleteRow(checkedRow);
+            emit rowDeleted(row);
+        }
+    }
+}
 
+// ==== PRIVATE ====
 void Table::updateMinHeight()
 {
     setMinimumHeight(rowCount * rowHeight);
 }
-
 int Table::findRow(const QPoint &point) const
 {
     for (int i = 1, c = ui->gridLayout->rowCount(); i < c; i++) {
@@ -172,7 +186,6 @@ int Table::findRow(const QPoint &point) const
     }
     throw "Row rect was not found.";
 }
-
 QLineEdit* Table::getItemAt(int row, int column) const
 {
     QLayoutItem *item = ui->gridLayout->itemAtPosition(row, column);

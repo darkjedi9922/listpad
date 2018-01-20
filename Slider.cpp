@@ -4,43 +4,93 @@
 
 #include <QDebug>
 
+// ==== PUBLIC ====
 Slider::Slider(Qt::Orientation orientation, QWidget *parent) :
-    QSlider(orientation, parent),
+    QWidget(parent),
     slider(new SliderItem(this)),
+    orientation(orientation),
+    singleStep(1),
+    minimum(0),
+    maximum(10),
+    value(0),
     sliderFixedLength(-1),
     lastPixelValue(0),
     moving(false)
 {
-    setMinimum(0);
-    setMaximum(10);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     updateSliderItemSize();
     slider->show();
 }
+
+void Slider::setOrientation(Qt::Orientation orientation)
+{
+    this->orientation = orientation;
+    updateSliderItemSize();
+    updateSliderPosition();
+}
+Qt::Orientation Slider::getOrientation() const
+{
+    return orientation;
+}
+
+void Slider::setSingleStep(int step)
+{
+    if (step == 0) step += 1;
+    singleStep = step;
+}
+int Slider::getSingleStep() const
+{
+    return singleStep;
+}
+
+void Slider::setMinimum(int m)
+{
+    minimum = m;
+    if (value < m) setValue(m);
+    updateSliderItemSize();
+}
+int Slider::getMinimum() const
+{
+    return minimum;
+}
+void Slider::setMaximum(int m)
+{
+    maximum = m;
+    if (value > m) setValue(m);
+    updateSliderItemSize();
+}
+int Slider::getMaximum() const
+{
+    return maximum;
+}
 void Slider::setValue(int value)
 {
-    if (value != this->value()) {
-        if (value < 0) {
-            QSlider::setValue(minimum());
+    if (value != this->value) {
+        if (value < minimum) {
+            this->value = minimum;
             setSliderPosition(0);
-        } else if (value > maximum()) {
-            QSlider::setValue(maximum());
+            emit valueChanged(this->value);
+        } else if (value > maximum) {
+            this->value = maximum;
             setSliderPosition(getLength() - getSliderLength());
+            emit valueChanged(this->value);
         } else {
-            if (value % this->singleStep() != 0) {
-                if (value > this->value()) value += singleStep() - value % singleStep();
-                else if (value < this->value()) value -= singleStep() - value % singleStep();
+            if (value % singleStep != 0) {
+                if (value > this->value) value += singleStep - value % singleStep;
+                else if (value < this->value) value -= singleStep - value % singleStep;
             }
-            QSlider::setValue(value);
+            this->value = value;
             setSliderPosition(calcPixelValueFromReal(value));
+            emit valueChanged(this->value);
         }
     }
 }
 void Slider::setSliderPosition(int position)
 {
-    if (orientation() == Qt::Horizontal) slider->move(position, slider->geometry().y());
+    if (orientation == Qt::Horizontal) slider->move(position, slider->geometry().y());
     else slider->move(slider->geometry().x(), position);
 }
+
 void Slider::setSliderFixedLength(int length)
 {
     this->sliderFixedLength = length;
@@ -60,13 +110,7 @@ int Slider::getLength()
     return getOrientationValue(width(), height());
 }
 
-void Slider::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::black);
-    painter.drawRect(rect());
-}
+// ==== EVENTS ====
 void Slider::resizeEvent(QResizeEvent *)
 {
     updateSliderItemSize();
@@ -76,7 +120,7 @@ void Slider::mousePressEvent(QMouseEvent *e)
 {
     if (slider->geometry().contains(e->pos())) {
         moving = true;
-        if (orientation() == Qt::Horizontal) {
+        if (orientation == Qt::Horizontal) {
             lastPressPoint = e->x();
             lastPixelValue = slider->geometry().x();
         } else {
@@ -90,7 +134,9 @@ void Slider::mouseMoveEvent(QMouseEvent *e)
     if (moving) {
         float newPixelValue = lastPixelValue + getOrientationValue(e->x(), e->y()) - lastPressPoint;
         int realValue = this->calcRealValueFromPixel(newPixelValue);
-        if (realValue % this->singleStep() == 0) this->setValue(realValue);
+        if (realValue % singleStep == 0) {
+            this->setValue(realValue);
+        }
     }
 }
 void Slider::mouseReleaseEvent(QMouseEvent *)
@@ -98,35 +144,36 @@ void Slider::mouseReleaseEvent(QMouseEvent *)
     moving = false;
 }
 
+// ==== PRIVATE ====
 void Slider::updateSliderItemSize()
 {
     int sliderLength = (sliderFixedLength == -1 ? calcSliderAutoLength() : sliderFixedLength);
-    if (orientation() == Qt::Horizontal) slider->setFixedSize(sliderLength, height());
+    if (orientation == Qt::Horizontal) slider->setFixedSize(sliderLength, height());
     else slider->setFixedSize(width(), sliderLength);
     repaint();
 }
 void Slider::updateSliderPosition()
 {
-    this->setSliderPosition(this->calcPixelValueFromReal(this->value()));
+    this->setSliderPosition(this->calcPixelValueFromReal(value));
     repaint();
 }
 int Slider::calcSliderAutoLength()
 {
-    if (maximum() - minimum() + 1 == 0) return getLength();
-    else return (getLength() / (maximum() - minimum() + 1));
+    if (maximum - minimum + 1 == 0) return getLength();
+    else return (getLength() / (maximum - minimum + 1));
 }
 int Slider::calcRealValueFromPixel(int pxValue)
 {
     if (getLength() - getSliderLength() == 0) return 0;
-    else return (minimum() + pxValue * (maximum() - minimum()) / (getLength() - getSliderLength()));
+    else return (minimum + pxValue * (maximum - minimum) / (getLength() - getSliderLength()));
 }
 int Slider::calcPixelValueFromReal(int realValue)
 {
-    if (maximum() - minimum() == 0) return 0;
-    return ((realValue - minimum()) * (getLength() - getSliderLength()) / (maximum() - minimum()));
+    if (maximum - minimum == 0) return 0;
+    return ((realValue - minimum) * (getLength() - getSliderLength()) / (maximum - minimum));
 }
 int Slider::getOrientationValue(int hValue, int vValue)
 {
-    if (orientation() == Qt::Horizontal) return hValue;
+    if (orientation == Qt::Horizontal) return hValue;
     else return vValue;
 }

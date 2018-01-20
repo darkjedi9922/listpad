@@ -1,11 +1,10 @@
 #include "SliderItem.h"
 #include <QPainter>
 
-SliderItem::SliderItem(QWidget *parent) : QWidget(parent) {}
-void SliderItem::paintEvent(QPaintEvent *)
+SliderItem::SliderItem(QWidget *parent) : QWidget(parent)
 {
-    QPainter painter(this);
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::white);
-    painter.drawRect(rect());
+    setAutoFillBackground(true);
+    QPalette pal;
+    pal.setBrush(QPalette::Background, QBrush(QColor("#249dcd")));
+    setPalette(pal);
 }
