@@ -25,13 +25,32 @@ MainWindow::~MainWindow()
 }
 
 // ==== PUBLIC SLOTS ====
+void MainWindow::blockMousePressed()
+{
+    if (currentTable) {
+        currentTable->uncheckRows();
+        currentTable->setFocus();
+    }
+}
+void MainWindow::logoMousePressed()
+{
+    if (currentTable) {
+        currentTable->uncheckRows();
+        currentTable->setFocus();
+    }
+}
+
 void MainWindow::newMenuButtonChecked(MenuButton *)
 {
     openBlock();
     //loadTable();
+    if (currentTable) currentTable->setFocus();
 }
 void MainWindow::menuButtonUnchecked(MenuButton *)
 {
+    if (currentTable) {
+        currentTable->uncheckRows();
+    }
     closeBlock();
 }
 
@@ -52,23 +71,32 @@ void MainWindow::editButtonClicked()
     }
 }
 
-void MainWindow::tableRowChecked()
+void MainWindow::tableRowChecked(int row)
 {
-    currentTable->endRowsEditing();
+    updateTableScrollingByRow(row);
+
     ui->editButton->setEnabled(true);
     ui->deleteButton->setEnabled(true);
 }
 void MainWindow::tableRowsUnchecked()
 {
-    if (currentTable) currentTable->endRowsEditing();
     ui->editButton->setEnabled(false);
     ui->deleteButton->setEnabled(false);
+}
+void MainWindow::tableRowAdded()
+{
+    if (ui->scrollArea->isHidden()) ui->scrollArea->show();
+    updateTableSize();
 }
 void MainWindow::tableRowDeleted()
 {
     updateTableSize();
     if (currentTable->getRowCount() == 1) ui->scrollArea->hide();
-    updateBlockMaxHeight();
+    currentTable->setFocus();
+}
+void MainWindow::tableRowEdited()
+{
+    updateScrollAreaMinWidth();
 }
 
 // ==== EVENTS ====
@@ -80,6 +108,8 @@ void MainWindow::resizeEvent(QResizeEvent *)
 // ==== PRIVATE ====
 void MainWindow::setupStartConnectings()
 {
+    QObject::connect(ui->logo, SIGNAL(mousePressed()), this, SLOT(logoMousePressed()));
+    QObject::connect(ui->block, SIGNAL(mousePressed()), this, SLOT(blockMousePressed()));
     QObject::connect(ui->menu, SIGNAL(newButtonChecked(MenuButton*)), this, SLOT(newMenuButtonChecked(MenuButton*)));
     QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuButton*)), this, SLOT(menuButtonUnchecked(MenuButton*)));
     QObject::connect(ui->addButton, SIGNAL(clicked(bool)), this, SLOT(addButtonClicked()));
@@ -105,6 +135,12 @@ void MainWindow::updateBlockMaxHeight()
     int fix = 4; // костыль. без этого размеры почему то возвращаются правильные, а на экране нет
     ui->block->setMaximumHeight(9 + ui->addButton->sizeHint().height() + tableHeight + 9 + fix);
 }
+void MainWindow::updateScrollAreaMinWidth()
+{
+    if (currentTable) {
+        ui->scrollArea->setMinimumWidth(currentTable->sizeHint().width());
+    }
+}
 
 void MainWindow::setupNewTable()
 {
@@ -112,13 +148,15 @@ void MainWindow::setupNewTable()
     currentTable = new Table(ui->block);
     ui->scrollArea->show();
     ui->scrollArea->setWidget(currentTable);
-    float fix = 1.5; // table size hint width в данный момент кода почему то возвращает не то значение
-    ui->scrollArea->setMinimumWidth(currentTable->sizeHint().width() * fix);
+    updateScrollAreaMinWidth();
     updateTableSize();
+    currentTable->setFocus();
 
-    QObject::connect(currentTable, SIGNAL(rowChecked()), this, SLOT(tableRowChecked()));
+    QObject::connect(currentTable, SIGNAL(rowChecked(int)), this, SLOT(tableRowChecked(int)));
     QObject::connect(currentTable, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
+    QObject::connect(currentTable, SIGNAL(rowAdded(int)), this, SLOT(tableRowAdded()));
     QObject::connect(currentTable, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
+    QObject::connect(currentTable, SIGNAL(editingFinished()), this, SLOT(tableRowEdited()));
 }
 void MainWindow::removeOldTable()
 {
@@ -146,17 +184,32 @@ void MainWindow::updateTableSize()
 
 void MainWindow::addTableRow()
 {
-    if (ui->scrollArea->isHidden()) ui->scrollArea->show();
     if (!currentTable) setupNewTable();
 
     QList<QString> list;
-    list.append("Название");
-    list.append("Статус");
-    list.append("Оценка");
-    list.append("Комментарий");
-    currentTable->addRow(list);
+    list << "" << "" << "" << "";
+    if (currentTable->getCheckedRow() == -1) currentTable->appendRow(list);
+    else currentTable->insertRowAfter(list, currentTable->getCheckedRow());
+}
+void MainWindow::updateTableScrollingByRow(int row)
+{
+    QRect rowRect = currentTable->getRowRect(row);
+    int scrollValue = ui->scrollArea->getVerticalScrollBar()->getValue();
+    int rowGlobalTop = rowRect.top() - scrollValue;
+    if (rowGlobalTop < 0) ui->scrollArea->getVerticalScrollBar()->setValue(scrollValue + rowGlobalTop);
+    else {
 
-    updateTableSize();
-    int sliderMaximum = ui->scrollArea->getVerticalScrollBar()->getSlider()->getMaximum();
-    ui->scrollArea->getVerticalScrollBar()->getSlider()->setValue(sliderMaximum);
+        /*
+         * В данный момент таблица еще не обновила свой размер,
+         * поэтому для правильного расчета обновим его тут сами
+         */
+        /*int fix = 0;
+        if (rowGlobalTop == 0) fix = currentTable->getRowHeight();*/
+
+        int rowGlobalBottom = rowRect.bottom() - scrollValue;
+        int scrollAreaHeight = ui->scrollArea->height();
+        if (rowGlobalBottom > scrollAreaHeight) {
+            ui->scrollArea->getVerticalScrollBar()->setValue(scrollValue + rowGlobalBottom - scrollAreaHeight + 1);
+        }
+    }
 }

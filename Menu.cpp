@@ -15,6 +15,14 @@ Menu::~Menu()
     delete ui;
 }
 
+void Menu::uncheckButton()
+{
+    if (checkedButton) {
+        checkedButton->setChecked(false);
+        emit buttonUnchecked(checkedButton);
+        checkedButton = NULL;
+    }
+}
 MenuButton* Menu::getCheckedButton() const
 {
     return checkedButton;
@@ -41,14 +49,6 @@ void Menu::setButtonChecked(MenuButton *button)
         button->setChecked(true);
         checkedButton = button;
         emit newButtonChecked(button);
-    }
-}
-void Menu::uncheckButton()
-{
-    if (checkedButton) {
-        checkedButton->setChecked(false);
-        emit buttonUnchecked(checkedButton);
-        checkedButton = NULL;
     }
 }
 

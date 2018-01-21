@@ -20,6 +20,7 @@ public:
     explicit Menu(QWidget *parent = 0);
     ~Menu();
 
+    void uncheckButton();
     MenuButton* getCheckedButton() const;
 
 protected:
@@ -29,7 +30,6 @@ private:
     void setupConnectings();
 
     void setButtonChecked(MenuButton *button);
-    void uncheckButton();
 
     Ui::Menu *ui;
     MenuButton *checkedButton;

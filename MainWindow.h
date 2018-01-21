@@ -19,6 +19,9 @@ public:
     ~MainWindow();
 
 public slots:
+    void blockMousePressed();
+    void logoMousePressed();
+
     // menu
     void newMenuButtonChecked(MenuButton*);
     void menuButtonUnchecked(MenuButton *);
@@ -29,9 +32,11 @@ public slots:
     void editButtonClicked();
 
     // table rows
-    void tableRowChecked();
+    void tableRowChecked(int row);
     void tableRowsUnchecked();
+    void tableRowAdded();
     void tableRowDeleted();
+    void tableRowEdited();
 
 protected:
     virtual void resizeEvent(QResizeEvent *);
@@ -43,6 +48,7 @@ private:
     void openBlock();
     void closeBlock();
     void updateBlockMaxHeight();
+    void updateScrollAreaMinWidth();
 
     // table
     void setupNewTable();
@@ -51,6 +57,7 @@ private:
 
     // table rows
     void addTableRow();
+    void updateTableScrollingByRow(int row);
 
     Ui::MainWindow *ui;
     Table *currentTable;

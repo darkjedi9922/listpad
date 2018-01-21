@@ -38,3 +38,12 @@ Slider* ScrollBar::getSlider() const
 {
     return slider;
 }
+
+void ScrollBar::setValue(int value)
+{
+    slider->setValue(value);
+}
+int ScrollBar::getValue() const
+{
+    return slider->getValue();
+}

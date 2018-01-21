@@ -17,7 +17,6 @@ Table::Table(QWidget *parent) :
 {
     ui->setupUi(this);
     setFocusPolicy(Qt::ClickFocus);
-    updateMinHeight();
 }
 Table::~Table()
 {
@@ -26,11 +25,13 @@ Table::~Table()
 }
 QSize Table::sizeHint() const
 {
-    return QSize(ui->gridLayout->sizeHint().width(), rowHeight * rowCount);
+    return QSize(ui->gridLayout->minimumSize().width() * 1.5, rowHeight * rowCount);
 }
 
-void Table::addRow(const QList<QString> &list)
+void Table::insertRowAfter(const QList<QString> &list, int row)
 {
+    endRowsEditing();
+
     QLineEdit *newLineEdit;
     QPalette pal(palette());
     pal.setBrush(QPalette::Base, Qt::transparent);
@@ -39,7 +40,13 @@ void Table::addRow(const QList<QString> &list)
     pal.setColor(QPalette::Highlight, "#249dcd");
 
     int column = 0;
-    int rowToInsert = ui->gridLayout->rowCount();
+    int rowToInsert = row + 1;
+
+    // Перемещаем все следующие ряды на 1 вниз (освобождаем место)
+    for (int i = ui->gridLayout->rowCount() - 1; i >= rowToInsert; --i) {
+        replaceRow(i, i + 1);
+    }
+
     for (QList<QString>::const_iterator it = list.begin(); it != list.end(); it++) {
         newLineEdit = new QLineEdit(*it, this);
         newLineEdit->setFrame(false);
@@ -52,39 +59,74 @@ void Table::addRow(const QList<QString> &list)
         column += 1;
     }
 
-    startRowEditing(rowToInsert);
-
     rowCount += 1;
-    updateMinHeight();
+    emit rowAdded(rowToInsert);
+
+    startRowEditing(rowToInsert);
+}
+void Table::appendRow(const QList<QString> &list)
+{
+    insertRowAfter(list, ui->gridLayout->rowCount() - 1);
 }
 void Table::deleteRow(int row)
 {
-    if (row == checkedRow) setRowChecked(row, false);
+    if (row == checkedRow) uncheckRows();
 
     for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++) {
         delete ui->gridLayout->itemAtPosition(row, i)->widget();
     }
 
     rowCount -= 1;
-    updateMinHeight();
-
     emit rowDeleted(row);
 }
-void Table::setRowChecked(int row, bool checked)
+
+void Table::checkRow(int row)
 {
-    if (checked && row != checkedRow) {
+    if (row != checkedRow) {
+        endRowsEditing();
         checkedRow = row;
         repaint();
-        emit rowChecked();
-    } else if (!checked && row == checkedRow) {
+        emit rowChecked(row);
+    }
+}
+void Table::uncheckRows()
+{
+    if (checkedRow != -1) {
+        endRowsEditing();
         checkedRow = -1;
         repaint();
         emit rowsUnchecked();
     }
 }
+int Table::getCheckedRow() const
+{
+    return checkedRow;
+}
+
+int Table::getRowCount() const
+{
+    return rowCount;
+}
+int Table::getRowHeight() const
+{
+    return rowHeight;
+}
+const QRect Table::getRowRect(int row) const
+{
+    if (hasRow(row)) {
+        int top = 0;
+        for (int i = 0; i < row; i++) if (hasRow(i)) top += rowHeight;
+        return QRect(0, top, width(), rowHeight);
+    }
+    //if (hasRow(row)) return QRect(0, ui->gridLayout->cellRect(row, 0).top(), width(), rowHeight);
+    else return QRect(0, 0, 0, 0);
+}
+
+// ==== PUBLIC SLOTS ====
 void Table::startRowEditing(int row)
 {
     endRowsEditing();
+    checkRow(row);
 
     editingRow = row;
     int columns = ui->gridLayout->columnCount();
@@ -102,20 +144,6 @@ void Table::startRowEditing(int row)
         }
     }
 }
-int Table::getCheckedRow() const
-{
-    return checkedRow;
-}
-int Table::getRowCount() const
-{
-    return rowCount;
-}
-int Table::getRowHeight() const
-{
-    return rowHeight;
-}
-
-// ==== PUBLIC SLOTS ====
 void Table::endRowsEditing()
 {
     if (editingRow != -1) {
@@ -133,18 +161,22 @@ void Table::endRowsEditing()
         }
         editingRow = -1;
     }
+    emit editingFinished();
     setFocus();
 }
 
 // ==== EVENTS ====
+void Table::mousePressEvent(QMouseEvent *)
+{
+    // не нужно передавать виджетам ниже это событие
+}
 void Table::mouseReleaseEvent(QMouseEvent *e)
 {
     try {
         int row = findRow(e->pos());
-        setRowChecked(row, true);
+        checkRow(row);
     } catch (...) {
-       if (checkedRow != -1) setRowChecked(checkedRow, false);
-       endRowsEditing();
+        uncheckRows();
     }
 }
 void Table::paintEvent(QPaintEvent *)
@@ -153,7 +185,7 @@ void Table::paintEvent(QPaintEvent *)
         QPainter painter(this);
         painter.setPen(Qt::NoPen);
         painter.setBrush(checkedRowBrush);
-        painter.drawRect(0, ui->gridLayout->cellRect(checkedRow, 0).top(), width(), rowHeight);
+        painter.drawRect(getRowRect(checkedRow));
     }
 }
 void Table::keyPressEvent(QKeyEvent *e)
@@ -169,13 +201,66 @@ void Table::keyPressEvent(QKeyEvent *e)
             deleteRow(checkedRow);
             emit rowDeleted(row);
         }
+        break;
+    case Qt::Key_Down:
+        if (checkedRow == -1) {
+            int firstRow = findRowAfter(0);
+            if (firstRow != -1) checkRow(firstRow);
+        } else {
+            int rowAfter = findRowAfter(checkedRow);
+            if (rowAfter != -1) {
+                uncheckRows();
+                checkRow(rowAfter);
+            }
+        }
+        break;
+    case Qt::Key_Up:
+        if (checkedRow == -1) {
+            int lastRow = findRowBefore(ui->gridLayout->rowCount());
+            if (lastRow != -1) checkRow(lastRow);
+        }
+        else {
+            int rowBefore = findRowBefore(checkedRow);
+            if (rowBefore != -1) {
+                uncheckRows();
+                checkRow(rowBefore);
+            }
+        }
+        break;
     }
 }
 
 // ==== PRIVATE ====
-void Table::updateMinHeight()
+void Table::replaceRow(int from, int to)
 {
-    setMinimumHeight(rowCount * rowHeight);
+    int columns = ui->gridLayout->columnCount();
+    for (int i = 0; i < columns; i++) {
+        QLayoutItem *item = ui->gridLayout->itemAtPosition(from, i);
+        if (item) {
+            ui->gridLayout->removeItem(item);
+            ui->gridLayout->addItem(item, to, i);
+        }
+    }
+}
+bool Table::hasRow(int row) const
+{
+    int columns = ui->gridLayout->columnCount();
+    for (int i = 0; i < columns; i++) {
+        if (ui->gridLayout->itemAtPosition(row, i)) return true;
+    }
+    return false;
+}
+int Table::findRowBefore(int row) const
+{
+    if (row <= 1) return -1;
+    else if (hasRow(row - 1)) return (row - 1);
+    else return findRowBefore(row - 1);
+}
+int Table::findRowAfter(int row) const
+{
+    if (row >= ui->gridLayout->rowCount()) return -1;
+    else if (hasRow(row + 1)) return (row + 1);
+    else return findRowAfter(row + 1);
 }
 int Table::findRow(const QPoint &point) const
 {

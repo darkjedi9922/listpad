@@ -19,3 +19,7 @@ void LogoWidget::paintEvent(QPaintEvent *)
                        rect().center().y() - icon.height() / 2,
                        icon);
 }
+void LogoWidget::mousePressEvent(QMouseEvent *)
+{
+    emit mousePressed();
+}

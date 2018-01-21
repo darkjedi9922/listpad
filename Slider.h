@@ -28,7 +28,9 @@ public:
     void setMaximum(int);
     int getMaximum() const;
     void setValue(int);
+    int getValue() const;
     void setSliderPosition(int);
+    int getSliderPosition() const;
 
     // lengths
     void setSliderFixedLength(int);

@@ -85,10 +85,19 @@ void Slider::setValue(int value)
         }
     }
 }
+int Slider::getValue() const
+{
+    return value;
+}
 void Slider::setSliderPosition(int position)
 {
     if (orientation == Qt::Horizontal) slider->move(position, slider->geometry().y());
     else slider->move(slider->geometry().x(), position);
+}
+int Slider::getSliderPosition() const
+{
+    if (orientation == Qt::Horizontal) return slider->geometry().x();
+    else return slider->geometry().y();
 }
 
 void Slider::setSliderFixedLength(int length)

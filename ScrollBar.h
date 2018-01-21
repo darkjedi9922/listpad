@@ -17,6 +17,9 @@ public:
 
     Slider *getSlider() const;
 
+    void setValue(int);
+    int getValue() const;
+
 private:
     QBoxLayout *layout;
     Slider *slider;
