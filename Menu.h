@@ -28,6 +28,7 @@ protected:
 
 private:
     void setupConnectings();
+    void setupMenuIds();
 
     void setButtonChecked(MenuButton *button);
 

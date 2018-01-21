@@ -28,7 +28,7 @@ signals:
 public:
     explicit Table(QWidget *parent = 0);
     ~Table();
-    QSize sizeHint() const;
+    virtual QSize sizeHint() const;
 
     // adding
     void insertRowAfter(const QList<QString> &list, int row);
@@ -39,6 +39,8 @@ public:
     void checkRow(int row);
     void uncheckRows();
     int getCheckedRow() const;
+
+    int getEditingRow() const;
 
     // geometry
     int getRowCount() const;

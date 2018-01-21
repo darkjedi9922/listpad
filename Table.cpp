@@ -25,7 +25,7 @@ Table::~Table()
 }
 QSize Table::sizeHint() const
 {
-    return QSize(ui->gridLayout->minimumSize().width() * 1.5, rowHeight * rowCount);
+    return QSize(ui->gridLayout->minimumSize().width() * 1.1, rowHeight * rowCount);
 }
 
 void Table::insertRowAfter(const QList<QString> &list, int row)
@@ -61,7 +61,6 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
 
     rowCount += 1;
     emit rowAdded(rowToInsert);
-
     startRowEditing(rowToInsert);
 }
 void Table::appendRow(const QList<QString> &list)
@@ -101,6 +100,11 @@ void Table::uncheckRows()
 int Table::getCheckedRow() const
 {
     return checkedRow;
+}
+
+int Table::getEditingRow() const
+{
+    return editingRow;
 }
 
 int Table::getRowCount() const

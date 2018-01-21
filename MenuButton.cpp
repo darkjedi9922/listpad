@@ -1,7 +1,10 @@
 #include "MenuButton.h"
 #include <QPainter>
 
+// ==== PUBLIC ====
 MenuButton::MenuButton(QWidget *parent) : QPushButton(parent),
+    menuId(0),
+    hovered(false),
     hoverBackgroundBrush(QBrush(QColor("#383838"))),
     checkedBackgroundBrush(QColor("#0b0b0b")),
     textColor(QColor("#c5c5c5")),
@@ -10,11 +13,20 @@ MenuButton::MenuButton(QWidget *parent) : QPushButton(parent),
     normalIcon(QPixmap("images/folder.png")),
     checkedIcon(QPixmap("images/checkedFolder.png"))
 {
-    hovered = false;
     setFixedHeight(36);
     setCheckable(true);
 }
 
+void MenuButton::setMenuId(int id)
+{
+    menuId = id;
+}
+int MenuButton::getMenuId() const
+{
+    return menuId;
+}
+
+// ==== EVENTS ====
 void MenuButton::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);

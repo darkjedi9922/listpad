@@ -9,6 +9,7 @@ Menu::Menu(QWidget *parent) :
     ui->setupUi(this);
     setFixedWidth(240);
     setupConnectings();
+    setupMenuIds();
 }
 Menu::~Menu()
 {
@@ -40,6 +41,14 @@ void Menu::setupConnectings()
     QObject::connect(ui->films, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
     QObject::connect(ui->serials, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
     QObject::connect(ui->books, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
+}
+void Menu::setupMenuIds()
+{
+    int menus = ui->verticalLayout->count();
+    for (int i = 0; i < menus; i++) {
+        QLayoutItem *item = ui->verticalLayout->itemAt(i);
+        if (item && item->widget()) static_cast<MenuButton*>(item->widget())->setMenuId(i);
+    }
 }
 
 void Menu::setButtonChecked(MenuButton *button)

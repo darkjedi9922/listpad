@@ -8,6 +8,8 @@ class MenuButton : public QPushButton
     Q_OBJECT
 public:
     MenuButton(QWidget *parent = 0);
+    void setMenuId(int id);
+    int getMenuId() const;
 
 protected:
     virtual void paintEvent(QPaintEvent *);
@@ -15,6 +17,7 @@ protected:
     virtual void leaveEvent(QEvent *);
 
 private:
+    int menuId;
     bool hovered;
     QBrush hoverBackgroundBrush;
     QBrush checkedBackgroundBrush;

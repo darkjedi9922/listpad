@@ -19,8 +19,7 @@ public:
     ~MainWindow();
 
 public slots:
-    void blockMousePressed();
-    void logoMousePressed();
+    void resetTableFocus();
 
     // menu
     void newMenuButtonChecked(MenuButton*);
@@ -34,7 +33,6 @@ public slots:
     // table rows
     void tableRowChecked(int row);
     void tableRowsUnchecked();
-    void tableRowAdded();
     void tableRowDeleted();
     void tableRowEdited();
 
@@ -45,14 +43,12 @@ private:
     void setupStartConnectings();
 
     // block
-    void openBlock();
-    void closeBlock();
     void updateBlockMaxHeight();
     void updateScrollAreaMinWidth();
 
     // table
-    void setupNewTable();
-    void removeOldTable();
+    void setupTable();
+    void removeTable();
     void updateTableSize();
 
     // table rows
