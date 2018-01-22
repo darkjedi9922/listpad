@@ -16,6 +16,15 @@ Menu::~Menu()
     delete ui;
 }
 
+void Menu::checkButton(MenuButton *button)
+{
+    if (checkedButton != button) {
+        if (checkedButton) uncheckButton();
+        button->setChecked(true);
+        checkedButton = button;
+        emit buttonChecked(button);
+    }
+}
 void Menu::uncheckButton()
 {
     if (checkedButton) {
@@ -51,16 +60,6 @@ void Menu::setupMenuIds()
     }
 }
 
-void Menu::setButtonChecked(MenuButton *button)
-{
-    if (checkedButton != button) {
-        if (checkedButton) checkedButton->setChecked(false);
-        button->setChecked(true);
-        checkedButton = button;
-        emit newButtonChecked(button);
-    }
-}
-
 // ==== PRIVATE SLOTS ====
 void Menu::buttonClickedSlot()
 {
@@ -68,5 +67,5 @@ void Menu::buttonClickedSlot()
     // Qt кнопки сами выключают check'нутость даже, если они уже check'нутые
     // Нам это не нужно, так что включим check'нутость обратно (костыль)
     if (button == checkedButton) button->setChecked(true);
-    else setButtonChecked(button);
+    else checkButton(button);
 }

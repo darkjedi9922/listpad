@@ -85,7 +85,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="Block" name="block" native="true">
+       <widget class="Content" name="content" native="true">
         <property name="palette">
          <palette>
           <active>
@@ -207,58 +207,6 @@
         <property name="autoFillBackground">
          <bool>true</bool>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <property name="spacing">
-          <number>18</number>
-         </property>
-         <item>
-          <layout class="QHBoxLayout" name="buttonsLayout">
-           <item>
-            <widget class="DesktopButton" name="addButton">
-             <property name="text">
-              <string>Добавить</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="DesktopButton" name="deleteButton">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Удалить</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="DesktopButton" name="editButton">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Редактировать</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="ScrollArea" name="scrollArea" native="true"/>
-         </item>
-        </layout>
        </widget>
       </item>
       <item>
@@ -288,32 +236,21 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Block</class>
-   <extends>QWidget</extends>
-   <header>Block.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>DesktopButton</class>
-   <extends>QPushButton</extends>
-   <header>DesktopButton.h</header>
-  </customwidget>
-  <customwidget>
    <class>Menu</class>
    <extends>QWidget</extends>
    <header>Menu.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ScrollArea</class>
-   <extends>QWidget</extends>
-   <header>ScrollArea.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ShadowWidget</class>
    <extends>QWidget</extends>
    <header>ShadowWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Content</class>
+   <extends>QWidget</extends>
+   <header>Content.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

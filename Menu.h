@@ -13,13 +13,14 @@ class Menu : public QWidget
     Q_OBJECT
 
 signals:
-    void newButtonChecked(MenuButton*);
+    void buttonChecked(MenuButton*);
     void buttonUnchecked(MenuButton*);
 
 public:
     explicit Menu(QWidget *parent = 0);
     ~Menu();
 
+    void checkButton(MenuButton *button);
     void uncheckButton();
     MenuButton* getCheckedButton() const;
 
@@ -29,8 +30,6 @@ protected:
 private:
     void setupConnectings();
     void setupMenuIds();
-
-    void setButtonChecked(MenuButton *button);
 
     Ui::Menu *ui;
     MenuButton *checkedButton;

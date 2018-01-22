@@ -129,22 +129,24 @@ const QRect Table::getRowRect(int row) const
 // ==== PUBLIC SLOTS ====
 void Table::startRowEditing(int row)
 {
-    endRowsEditing();
-    checkRow(row);
+    if (row != -1) {
+        endRowsEditing();
+        checkRow(row);
 
-    editingRow = row;
-    int columns = ui->gridLayout->columnCount();
-    // Идем с конца, чтобы первый элемент оказался с курсором
-    for (int i = columns - 1; i >= 0; i--) {
-        QLineEdit *item = getItemAt(row, i);
-        if (item) {
-            QPalette pal(item->palette());
-            pal.setBrush(QPalette::Base, QColor("#003366"));
-            pal.setColor(QPalette::Text, Qt::white);
-            item->setPalette(pal);
-            item->setEnabled(true);
-            item->setFocus();
-            item->setCursorPosition(item->text().length());
+        editingRow = row;
+        int columns = ui->gridLayout->columnCount();
+        // Идем с конца, чтобы первый элемент оказался с курсором
+        for (int i = columns - 1; i >= 0; i--) {
+            QLineEdit *item = getItemAt(row, i);
+            if (item) {
+                QPalette pal(item->palette());
+                pal.setBrush(QPalette::Base, QColor("#003366"));
+                pal.setColor(QPalette::Text, Qt::white);
+                item->setPalette(pal);
+                item->setEnabled(true);
+                item->setFocus();
+                item->setCursorPosition(item->text().length());
+            }
         }
     }
 }

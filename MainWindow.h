@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "MenuButton.h"
-#include "Table.h"
+#include "Content.h"
 
 namespace Ui
 {
@@ -19,44 +19,15 @@ public:
     ~MainWindow();
 
 public slots:
-    void resetTableFocus();
-
-    // menu
-    void newMenuButtonChecked(MenuButton*);
+    void menuButtonChecked(MenuButton*);
     void menuButtonUnchecked(MenuButton *);
 
-    // table buttons
-    void addButtonClicked();
-    void deleteButtonClicked();
-    void editButtonClicked();
-
-    // table rows
-    void tableRowChecked(int row);
-    void tableRowsUnchecked();
-    void tableRowDeleted();
-    void tableRowEdited();
-
 protected:
-    virtual void resizeEvent(QResizeEvent *);
+    virtual void mousePressEvent(QMouseEvent *);
 
 private:
-    void setupStartConnectings();
-
-    // block
-    void updateBlockMaxHeight();
-    void updateScrollAreaMinWidth();
-
-    // table
-    void setupTable();
-    void removeTable();
-    void updateTableSize();
-
-    // table rows
-    void addTableRow();
-    void updateTableScrollingByRow(int row);
-
     Ui::MainWindow *ui;
-    Table *currentTable;
+    Content *content;
 };
 
 #endif // MAINWINDOW_H

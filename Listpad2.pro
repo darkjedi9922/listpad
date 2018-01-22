@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     ScrollBar.cpp \
     Slider.cpp \
     SliderItem.cpp \
-    ShadowWidget.cpp
+    ShadowWidget.cpp \
+    Content.cpp \
 
 HEADERS  += MainWindow.h \
     LogoWidget.h \
@@ -39,13 +40,15 @@ HEADERS  += MainWindow.h \
     ScrollBar.h \
     Slider.h \
     SliderItem.h \
-    ShadowWidget.h
+    ShadowWidget.h \
+    Content.h \
 
 FORMS    += MainWindow.ui \
     Table.ui \
     Menu.ui \
     ScrollBar.ui \
-    ScrollArea.ui
+    ScrollArea.ui \
+    Content.ui \
 
 RESOURCES += \
     images.qrc

@@ -14,7 +14,3 @@ void Block::paintEvent(QPaintEvent *)
     painter.setBrush(background);
     painter.drawRoundedRect(rect(), backgroundRadius.x(), backgroundRadius.y());
 }
-void Block::mousePressEvent(QMouseEvent *)
-{
-    emit mousePressed();
-}
