@@ -10,8 +10,8 @@ MenuButton::MenuButton(QWidget *parent) : QPushButton(parent),
     textColor(QColor("#c5c5c5")),
     checkedTextColor(QColor("#979797")),
     textFont(QFont("Arial", 12, 100)),
-    normalIcon(QPixmap("images/folder.png")),
-    checkedIcon(QPixmap("images/checkedFolder.png"))
+    normalIcon(QPixmap(":images/folder.png")),
+    checkedIcon(QPixmap(":images/checkedFolder.png"))
 {
     setFixedHeight(36);
     setCheckable(true);

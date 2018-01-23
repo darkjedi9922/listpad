@@ -7,9 +7,9 @@ DesktopButton::DesktopButton(QWidget *parent) : QPushButton(parent),
     textFont(QFont("Arial", 10)),
     normalBackground(QBrush(QColor("#003366"))),
     normalTextColor(QColor("#e4e4e4")),
-    hoverBackgroundPartOne(QPixmap("images/button_blue/btn-hlb.png")),
-    hoverBackgroundPartTwo(QPixmap("images/button_blue/btn-hb.png")),
-    hoverBackgroundPartThree(QPixmap("images/button_blue/btn-hrb.png")),
+    hoverBackgroundPartOne(QPixmap(":images/button_blue/btn-hlb.png")),
+    hoverBackgroundPartTwo(QPixmap(":images/button_blue/btn-hb.png")),
+    hoverBackgroundPartThree(QPixmap(":images/button_blue/btn-hrb.png")),
     hoverTextColor(QColor("#249dcd"))
 {
     hovered = false;

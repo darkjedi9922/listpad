@@ -1,5 +1,4 @@
 #include "ScrollArea.h"
-#include <QDebug>
 
 ScrollArea::ScrollArea(QWidget *parent) :
     QWidget(parent),

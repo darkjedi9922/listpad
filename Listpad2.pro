@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Listpad
 TEMPLATE = app
-RC_ICONS = icon.ico
+RC_ICONS = images/icon.ico
 VERSION = 1.0
 QMAKE_TARGET_COPYRIGHT = Jed Dark
 

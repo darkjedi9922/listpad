@@ -1,5 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>icon.ico</file>
+        <file>images/checkedFolder.png</file>
+        <file>images/folder.png</file>
+        <file>images/icon.ico</file>
+        <file>images/logo.png</file>
+        <file>images/shadow.png</file>
+        <file>images/button_blue/btn-hb.png</file>
+        <file>images/button_blue/btn-hlb.png</file>
+        <file>images/button_blue/btn-hrb.png</file>
     </qresource>
 </RCC>

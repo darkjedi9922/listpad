@@ -2,8 +2,6 @@
 #include <QPainter>
 #include <QMouseEvent>
 
-#include <QDebug>
-
 // ==== PUBLIC ====
 Slider::Slider(Qt::Orientation orientation, QWidget *parent) :
     QWidget(parent),

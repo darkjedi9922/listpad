@@ -20,6 +20,11 @@ public:
 
     void show();
     void hide();
+    void loadTable(int id);
+    void saveTable();
+    void emptyTable();
+
+    int getCurrentTableId() const;
 
 public slots:
     void tableRowChecked(int row);
@@ -36,7 +41,8 @@ protected:
     virtual void resizeEvent(QResizeEvent *);
 
 private:
-    void addTableRow();
+    void addTableRow(const QList<QString> &list);
+    void addTableEmptyRow();
     void updateTableSize();
     void updateTableScrollingByRow(int row);
     void updateScrollAreaMaxHeight();
@@ -44,6 +50,7 @@ private:
 
     Ui::Content *ui;
     Table *table;
+    int tableId;
 };
 
 #endif // CONTENT_H

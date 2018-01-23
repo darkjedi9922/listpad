@@ -30,10 +30,15 @@ public:
     ~Table();
     virtual QSize sizeHint() const;
 
+    QList<QString> getRealRow(int row) const;
+    bool hasRealRow(int row) const;
+
     // adding
     void insertRowAfter(const QList<QString> &list, int row);
     void appendRow(const QList<QString> &list);
     void deleteRow(int row);
+    void empty();
+    int getLastAddedRow() const;
 
     // checking
     void checkRow(int row);
@@ -43,7 +48,9 @@ public:
     int getEditingRow() const;
 
     // geometry
+    int getColumnCount() const;
     int getRowCount() const;
+    int getRowRealCount() const;
     int getRowHeight() const;
     const QRect getRowRect(int row) const;
 
@@ -61,7 +68,6 @@ private:
     void replaceRow(int from, int to);
 
     // finding
-    bool hasRow(int row) const;
     int findRowBefore(int row) const;
     int findRowAfter(int row) const;
     int findRow(const QPoint &point) const;
@@ -73,6 +79,7 @@ private:
     int rowHeight;
     int rowCount;
     int editingRow;
+    int lastAddedRow;
 };
 
 #endif // TABLE_H

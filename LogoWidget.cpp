@@ -3,7 +3,7 @@
 
 LogoWidget::LogoWidget(QWidget *parent) :
     QWidget(parent),
-    icon(QPixmap("images/logo.png"))
+    icon(QPixmap(":images/logo.png"))
 {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }

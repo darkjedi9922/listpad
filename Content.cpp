@@ -1,16 +1,19 @@
 #include "Content.h"
 #include "ui_Content.h"
+#include <QFile>
+#include <QXmlStreamReader>
 
 // ==== PUBLIC ====
 Content::Content(QWidget *parent) :
     Block(parent),
     ui(new Ui::Content),
-    table(new Table)
+    table(new Table),
+    tableId(-1)
 {
     ui->setupUi(this);
     ui->scrollArea->setWidget(table);
     ui->scrollArea->hide();
-    ui->scrollArea->getVerticalScrollBar()->setFixedWidth(10);
+    ui->scrollArea->getVerticalScrollBar()->setFixedWidth(12);
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
@@ -39,13 +42,82 @@ QSize Content::sizeHint() const
 void Content::show()
 {
     Block::show();
-    //table->setFocus();
+    ui->scrollArea->getVerticalScrollBar()->setValue(0);
+    ui->scrollArea->update();
+    table->setFocus();
 }
 void Content::hide()
 {
     table->uncheckRows();
-    ui->scrollArea->hide();
     Block::hide();
+}
+void Content::loadTable(int id)
+{
+    tableId = id;
+    QString filename = QString("data/table%1.xml").arg(id);
+    QFile file(filename);
+    if (file.exists())
+    {
+        file.open(QFile::ReadOnly | QFile::Text);
+        QXmlStreamReader reader(&file);
+        int columns = table->getColumnCount();
+        do {
+            reader.readNext();
+            if (reader.isStartElement() && reader.name() == "row")
+            {
+                QList<QString> newRow;
+                for (int i = 0; i < columns; i++) newRow << reader.attributes().at(i).value().toString();
+                addTableRow(newRow);
+            }
+        }
+        while (!reader.atEnd());
+        file.close();
+    }
+}
+void Content::saveTable()
+{
+    if (tableId != -1)
+    {
+        QString filename = QString("data/table%1.xml").arg(tableId);
+        QFile file(filename);
+        file.open(QIODevice::WriteOnly);
+
+        QXmlStreamWriter writer(&file);
+        writer.setAutoFormatting(true);
+        writer.writeStartDocument();
+        writer.writeStartElement("table");
+
+        for (int i = 1; i < table->getRowRealCount(); i++)
+        {
+            if (table->hasRealRow(i))
+            {
+                QList<QString> row = table->getRealRow(i);
+                writer.writeStartElement("row");
+                writer.writeAttribute("title", row.at(0));
+                writer.writeAttribute("status", row.at(1));
+                writer.writeAttribute("rating", row.at(2));
+                writer.writeAttribute("comment", row.at(3));
+                writer.writeEndElement();
+            }
+        }
+
+        writer.writeEndElement();
+        writer.writeEndDocument();
+        file.close();
+    }
+}
+void Content::emptyTable()
+{
+    if (tableId != -1) {
+        tableId = -1;
+        table->empty();
+        ui->scrollArea->hide();
+    }
+}
+
+int Content::getCurrentTableId() const
+{
+    return tableId;
 }
 
 // ==== PUBLIC SLOTS ====
@@ -79,10 +151,9 @@ void Content::resetTableState()
 
 void Content::addButtonClicked()
 {
-    if (ui->scrollArea->isHidden()) ui->scrollArea->show();
-    addTableRow();
-    updateTableSize();
+    addTableEmptyRow();
     updateTableScrollingByRow(table->getEditingRow());
+    table->startRowEditing(table->getLastAddedRow());
 }
 void Content::deleteButtonClicked()
 {
@@ -100,13 +171,22 @@ void Content::resizeEvent(QResizeEvent *)
 }
 
 // ==== PRIVATE ====
-void Content::addTableRow()
+void Content::addTableRow(const QList<QString> &list)
+{
+    if (ui->scrollArea->isHidden()) ui->scrollArea->show();
+
+    if (table->getCheckedRow() == -1) table->appendRow(list);
+    else table->insertRowAfter(list, table->getCheckedRow());
+
+    updateTableSize();
+}
+void Content::addTableEmptyRow()
 {
     QList<QString> list;
     list << "" << "" << "" << "";
-    if (table->getCheckedRow() == -1) table->appendRow(list);
-    else table->insertRowAfter(list, table->getCheckedRow());
+    addTableRow(list);
 }
+
 void Content::updateTableSize()
 {
     if (!ui->scrollArea->isHidden())

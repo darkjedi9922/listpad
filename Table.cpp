@@ -3,8 +3,6 @@
 #include <QKeyEvent>
 #include <QPainter>
 
-#include <QDebug>
-
 // ==== PUBLIC ====
 Table::Table(QWidget *parent) :
     QWidget(parent),
@@ -13,7 +11,8 @@ Table::Table(QWidget *parent) :
     checkedRow(-1),
     rowHeight(27),
     rowCount(1),
-    editingRow(-1)
+    editingRow(-1),
+    lastAddedRow(-1)
 {
     ui->setupUi(this);
     setFocusPolicy(Qt::ClickFocus);
@@ -26,6 +25,25 @@ Table::~Table()
 QSize Table::sizeHint() const
 {
     return QSize(ui->gridLayout->minimumSize().width() * 1.1, rowHeight * rowCount);
+}
+
+QList<QString> Table::getRealRow(int row) const
+{
+    QList<QString> list;
+    for (int i = 0; i < getColumnCount(); i++) {
+        QLineEdit *item = getItemAt(row, i);
+        if (item) list << item->text();
+        else list << "";
+    }
+    return list;
+}
+bool Table::hasRealRow(int row) const
+{
+    int columns = ui->gridLayout->columnCount();
+    for (int i = 0; i < columns; i++) {
+        if (ui->gridLayout->itemAtPosition(row, i)) return true;
+    }
+    return false;
 }
 
 void Table::insertRowAfter(const QList<QString> &list, int row)
@@ -61,7 +79,7 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
 
     rowCount += 1;
     emit rowAdded(rowToInsert);
-    startRowEditing(rowToInsert);
+    lastAddedRow = rowToInsert;
 }
 void Table::appendRow(const QList<QString> &list)
 {
@@ -69,14 +87,28 @@ void Table::appendRow(const QList<QString> &list)
 }
 void Table::deleteRow(int row)
 {
-    if (row == checkedRow) uncheckRows();
+    if (hasRealRow(row))
+    {
+        if (row == checkedRow) uncheckRows();
 
-    for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++) {
-        delete ui->gridLayout->itemAtPosition(row, i)->widget();
+        for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++)
+        {
+            QLayoutItem *item = ui->gridLayout->itemAtPosition(row, i);
+            if (item) delete ui->gridLayout->itemAtPosition(row, i)->widget();
+        }
+
+        rowCount -= 1;
+        emit rowDeleted(row);
     }
-
-    rowCount -= 1;
-    emit rowDeleted(row);
+}
+void Table::empty()
+{
+    int rows = ui->gridLayout->rowCount();
+    for (int i = 1; i < rows; i++) deleteRow(i);
+}
+int Table::getLastAddedRow() const
+{
+    return lastAddedRow;
 }
 
 void Table::checkRow(int row)
@@ -107,9 +139,17 @@ int Table::getEditingRow() const
     return editingRow;
 }
 
+int Table::getColumnCount() const
+{
+    return ui->gridLayout->columnCount();
+}
 int Table::getRowCount() const
 {
     return rowCount;
+}
+int Table::getRowRealCount() const
+{
+    return ui->gridLayout->rowCount();
 }
 int Table::getRowHeight() const
 {
@@ -117,12 +157,12 @@ int Table::getRowHeight() const
 }
 const QRect Table::getRowRect(int row) const
 {
-    if (hasRow(row)) {
+    if (hasRealRow(row)) {
         int top = 0;
-        for (int i = 0; i < row; i++) if (hasRow(i)) top += rowHeight;
+        for (int i = 0; i < row; i++) if (hasRealRow(i)) top += rowHeight;
         return QRect(0, top, width(), rowHeight);
     }
-    //if (hasRow(row)) return QRect(0, ui->gridLayout->cellRect(row, 0).top(), width(), rowHeight);
+    //if (hasRealRow(row)) return QRect(0, ui->gridLayout->cellRect(row, 0).top(), width(), rowHeight);
     else return QRect(0, 0, 0, 0);
 }
 
@@ -248,24 +288,16 @@ void Table::replaceRow(int from, int to)
         }
     }
 }
-bool Table::hasRow(int row) const
-{
-    int columns = ui->gridLayout->columnCount();
-    for (int i = 0; i < columns; i++) {
-        if (ui->gridLayout->itemAtPosition(row, i)) return true;
-    }
-    return false;
-}
 int Table::findRowBefore(int row) const
 {
     if (row <= 1) return -1;
-    else if (hasRow(row - 1)) return (row - 1);
+    else if (hasRealRow(row - 1)) return (row - 1);
     else return findRowBefore(row - 1);
 }
 int Table::findRowAfter(int row) const
 {
     if (row >= ui->gridLayout->rowCount()) return -1;
-    else if (hasRow(row + 1)) return (row + 1);
+    else if (hasRealRow(row + 1)) return (row + 1);
     else return findRowAfter(row + 1);
 }
 int Table::findRow(const QPoint &point) const

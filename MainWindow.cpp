@@ -1,8 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-#include <QDebug>
-
 // ==== PUBLIC ====
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
@@ -16,16 +14,22 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 MainWindow::~MainWindow()
 {
+    ui->content->saveTable();
     delete ui;
 }
 
 // ==== PUBLIC SLOTS ====
-void MainWindow::menuButtonChecked(MenuButton *)
+void MainWindow::menuButtonChecked(MenuButton *menu)
 {
+    if (ui->content->getCurrentTableId() != menu->getMenuId()) {
+        ui->content->emptyTable();
+        ui->content->loadTable(menu->getMenuId());
+    }
     ui->content->show();
 }
 void MainWindow::menuButtonUnchecked(MenuButton *)
 {
+    ui->content->saveTable();
     ui->content->hide();
 }
 
