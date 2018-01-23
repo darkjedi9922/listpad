@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 MainWindow::~MainWindow()
 {
+    ui->content->resetTableState();
     ui->content->saveTable();
     saveSettings();
 
@@ -37,6 +38,7 @@ void MainWindow::menuButtonChecked(MenuButton *menu)
 }
 void MainWindow::menuButtonUnchecked(MenuButton *)
 {
+    ui->content->resetTableState();
     ui->content->saveTable();
     ui->content->hide();
 }

@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     if (maximized) {
         window.showMaximized();
     } else {
-        QRect geometry = window.getSettings()->value("geometry", QRect(250, 250, 800, 400)).toRect();
+        QRect geometry = window.getSettings()->value("geometry", QRect(100, 100, 1000, 600)).toRect();
         window.show();
         window.setGeometry(geometry);
     }

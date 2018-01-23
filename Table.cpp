@@ -58,8 +58,6 @@ bool Table::isStringsEmpty(int row) const
 
 void Table::insertRowAfter(const QList<QString> &list, int row)
 {
-    endRowsEditing();
-
     QLineEdit *newLineEdit;
     QPalette pal(palette());
     pal.setBrush(QPalette::Base, Qt::transparent);
@@ -88,8 +86,8 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
     }
 
     rowCount += 1;
-    emit rowAdded(rowToInsert);
     lastAddedRow = rowToInsert;
+    emit rowAdded(rowToInsert);
 }
 void Table::appendRow(const QList<QString> &list)
 {
