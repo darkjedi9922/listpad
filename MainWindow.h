@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "MenuButton.h"
 #include "Content.h"
+#include <QSettings>
 
 namespace Ui
 {
@@ -17,6 +18,7 @@ class MainWindow : public QWidget
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    QSettings* getSettings() const;
 
 public slots:
     void menuButtonChecked(MenuButton*);
@@ -26,8 +28,10 @@ protected:
     virtual void mousePressEvent(QMouseEvent *);
 
 private:
+    void saveSettings();
+
     Ui::MainWindow *ui;
-    Content *content;
+    QSettings *settings;
 };
 
 #endif // MAINWINDOW_H

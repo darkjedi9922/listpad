@@ -4,7 +4,8 @@
 // ==== PUBLIC ====
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    settings(new QSettings("settings.ini", QSettings::IniFormat))
 {
     ui->setupUi(this);
     ui->content->hide();
@@ -15,7 +16,14 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     ui->content->saveTable();
+    saveSettings();
+
     delete ui;
+    delete settings;
+}
+QSettings* MainWindow::getSettings() const
+{
+    return settings;
 }
 
 // ==== PUBLIC SLOTS ====
@@ -37,4 +45,11 @@ void MainWindow::menuButtonUnchecked(MenuButton *)
 void MainWindow::mousePressEvent(QMouseEvent *)
 {
     if (!ui->content->isHidden()) ui->content->resetTableState();
+}
+
+// ==== PRIVATE ====
+void MainWindow::saveSettings()
+{
+    settings->setValue("maximized", isMaximized());
+    settings->setValue("geometry", geometry());
 }

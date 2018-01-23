@@ -1,2 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<table/>
+<table>
+    <row title="Машина Времени" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Пит и его дракон" status="просмотрено" rating="0/10" comment=""/>
+    <row title="Дом странных детей мисс Перегрин" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Сноуден" status="просмотрено" rating="5/10" comment=""/>
+    <row title="Кубо: Легенда о самурае" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Аисты" status="просмотрено" rating="2/10" comment=""/>
+    <row title="Таймлесс 1" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Таймлесс 2" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Таймлесс 3" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Другой Мир" status="не нравится" rating="-9/10" comment=""/>
+    <row title="Король Лев 1, 2, 3" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Хранители Снов" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Холодное Сердце" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Константин" status="просмотрено" rating="5/10" comment=""/>
+    <row title="Город Героев" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Мумия 1, 2, 3" status="просмотрено" rating="7/10" comment=""/>
+    <row title="5 Элемент" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Голодные Игры" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Как приручить дракона" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Эрагон" status="просмотрено" rating="4/10" comment=""/>
+    <row title="Эпик" status="просмотрено" rating="1/10" comment=""/>
+    <row title="Притяжение" status="просмотрено" rating="6/10" comment=""/>
+    <row title="Гарри Поттер" status="просмотрено" rating="20/10" comment=""/>
+    <row title="Черная молния" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Звездные Войны" status="просмотрено" rating="20/10" comment=""/>
+    <row title="Всегда говори да" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Джек Ричер 2" status="просмотрено" rating="5/10" comment=""/>
+    <row title="Ёлки 5" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Форсаж" status="ну такое..." rating="1/10" comment=""/>
+    <row title="Фантастические твари и где они обитают" status="просмотрено" rating="20/10" comment=""/>
+    <row title="Шаг Вперед" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Шаг Вперед 2" status="просмотрено" rating="6/10" comment=""/>
+    <row title="Красавица и чудовище (мультики)" status="просмотрено" rating="6/10" comment=""/>
+    <row title="Красавица и чудовище (фильм)" status="просмотрено" rating="5/10" comment=""/>
+    <row title="Прибытие" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Кредо убийцы" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Монстр-траки" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Пираты Карибского моря" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Щелкунчик" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Зеленый Фонарь" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Три богатыря и морской царь" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Игра Эндера" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Сердце Дракона 1, 2, 3" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Союзники" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Терминатор 1" status="просмотрено" rating="4/10" comment=""/>
+    <row title="Хранители" status="просмотрено" rating="4/10" comment=""/>
+    <row title="Ла ла лэнд" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Пассажиры" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Начало" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Кинг-конг" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Призрак в доспехах" status="просмотрено" rating="6/10" comment=""/>
+    <row title="Могучие рейнджеры" status="просмотрено" rating="6/10" comment=""/>
+    <row title="Зверопой" status="просмотрено" rating="6/10" comment=""/>
+    <row title="Зверополис" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Бросок кобры" status="просмотрено" rating="20/10" comment=""/>
+    <row title="Звездные Войны: Изгой-Один" status="просмотрено" rating="20/10" comment=""/>
+    <row title="Шерлок Холмс (ЖЧ)" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Лемони Сникет: 33 несчастья" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Семейка Аддамс" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Защитники" status="просмотрено" rating="2/10" comment=""/>
+    <row title="Балерина (мультик 2017)" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Неуязвимый" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Сплит" status="просмотрено" rating="4/10" comment=""/>
+    <row title="Джон Картер" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Астерикс и Обеликс" status="" rating="" comment=""/>
+    <row title="Секрет (Тайна)" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Сумерки" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Ночь в музее" status="" rating="" comment=""/>
+    <row title="Трансформеры 1, 2, 3" status="просмотрено" rating="11/10" comment=""/>
+    <row title="Трансформеры 4" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Трансформеры 5" status="просмотрено" rating="9/10" comment="формат съемки раздражающе раздражающий"/>
+    <row title="Книга жизни" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Кунг Фу Йога (Доспехи Бога :/ )" status="пытался" rating="0/10" comment="Треш."/>
+    <row title="Лего Фильм: Бэтмен" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Босс-молокосос" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Макс Стил" status="просмотрено" rating="4/10" comment=""/>
+    <row title="Семь сестер/Тайна 7 сестер" status="просмотрено" rating="10/10" comment="(Х)"/>
+    <row title="Похищение" status="" rating="" comment=""/>
+    <row title="Бегущий по лезвию" status="не нравится" rating="0/10" comment=""/>
+    <row title="Трещина во времени (излом времени)" status="" rating="" comment=""/>
+    <row title="Мэри Поппинс" status="" rating="" comment=""/>
+    <row title="Холодное сердце 2" status="" rating="" comment=""/>
+    <row title="Ральф ломает интернет" status="" rating="" comment=""/>
+    <row title="Суперсемейка 2" status="" rating="" comment=""/>
+    <row title="История игрушек 4" status="" rating="" comment=""/>
+    <row title="Пираты карибского моря 5" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Эйс Вентура" status="" rating="" comment=""/>
+    <row title="Черный Лебедь" status="не нравится" rating="-1/10" comment=""/>
+    <row title="Первому игроку приготовиться" status="" rating="" comment=""/>
+    <row title="Тихоокеанский рубеж" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Дюнкерк" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Чудо-женщина" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Философы. Урок выживания" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Дикая штучка" status="просмотрено" rating="10/10" comment=""/>
+    <row title="Конг: Остров черепа" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Годзилла (старая)" status="" rating="" comment=""/>
+    <row title="Мумия (2017)" status="просмотрено" rating="7.5/10" comment="Попытка возродить классику. Но, возможно, со своей линией."/>
+    <row title="Темная башня" status="треш" rating="0/10" comment="Это. Просто. Кошмар."/>
+    <row title="Реальная белка" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Реальная белка 2" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Гадкий Я 1, 2" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Гадкий Я 3" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Кингсман" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Кингсман 2" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Лара Крофт" status="" rating="" comment=""/>
+    <row title="Суини Тодд, демон-парикмахер с Флит-стрит" status="пытался" rating="0/10" comment="что-то слишком страшное"/>
+    <row title="Сокровище нации" status="" rating="" comment=""/>
+    <row title="Реальные упыри" status="просмотрено" rating="7/10" comment=""/>
+    <row title="Тачки 3" status="" rating="" comment=""/>
+    <row title="Планета Обезьян" status="" rating="" comment=""/>
+    <row title="Скайлайн" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Скайлайн 2" status="просмотрено" rating="8/10" comment=""/>
+    <row title="Маленький вампир" status="" rating="" comment=""/>
+    <row title="Валериан и город тысячи планет" status="" rating="" comment=""/>
+    <row title="Мир Юрского периода 2" status="" rating="" comment=""/>
+    <row title="Тайна Коко" status="" rating="" comment=""/>
+    <row title="Восемь подруг мисс Оушен" status="" rating="" comment=""/>
+    <row title="Идеальный голос 3" status="" rating="" comment=""/>
+    <row title="Джуманджи 2" status="" rating="" comment=""/>
+    <row title="Фердинанд" status="" rating="" comment=""/>
+    <row title="Пенелопа" status="просмотрено" rating="9/10" comment=""/>
+    <row title="Я Франкейштейн" status="просмотрено" rating="9.6/10" comment=""/>
+    <row title="Запрещенный прием" status="просмотрено" rating="9/10" comment=""/>
+</table>

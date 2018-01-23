@@ -23,7 +23,7 @@ signals:
     void rowsUnchecked();
     void rowAdded(int row);
     void rowDeleted(int row);
-    void editingFinished();
+    void editingFinished(int row);
 
 public:
     explicit Table(QWidget *parent = 0);
@@ -32,6 +32,7 @@ public:
 
     QList<QString> getRealRow(int row) const;
     bool hasRealRow(int row) const;
+    bool isStringsEmpty(int row) const;
 
     // adding
     void insertRowAfter(const QList<QString> &list, int row);

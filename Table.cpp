@@ -45,6 +45,16 @@ bool Table::hasRealRow(int row) const
     }
     return false;
 }
+bool Table::isStringsEmpty(int row) const
+{
+    int columns = getColumnCount();
+    for (int i = 0; i < columns; i++)
+    {
+        QLineEdit *item = getItemAt(row, i);
+        if (item && !item->text().isEmpty()) return false;
+    }
+    return true;
+}
 
 void Table::insertRowAfter(const QList<QString> &list, int row)
 {
@@ -205,10 +215,11 @@ void Table::endRowsEditing()
                 item->setMinimumWidth(QFontMetrics(item->font()).width(item->text()) + 10);
             }
         }
+        int row = editingRow;
         editingRow = -1;
+        emit editingFinished(row);
+        setFocus();
     }
-    emit editingFinished();
-    setFocus();
 }
 
 // ==== EVENTS ====

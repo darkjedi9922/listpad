@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<table/>
+<table>
+    <row title="Сумерки" status="прочитано" rating="10/10" comment=""/>
+    <row title="Старая Республика: Роковой Союз" status="прочитано" rating="15/10" comment=""/>
+    <row title="Старая Республика: Обманутые" status="прочитано" rating="15/10" comment=""/>
+    <row title="Старая Республика: Уничтожение" status="прочитано" rating="13/10" comment=""/>
+    <row title="Трилогия Бейна" status="прочитано" rating="20/10" comment=""/>
+    <row title="Плэгас" status="прочитано" rating="30/10" comment=""/>
+    <row title="" status="" rating="" comment=""/>
+</table>

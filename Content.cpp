@@ -24,7 +24,7 @@ Content::Content(QWidget *parent) :
     QObject::connect(table, SIGNAL(rowChecked(int)), this, SLOT(tableRowChecked(int)));
     QObject::connect(table, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
     QObject::connect(table, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
-    QObject::connect(table, SIGNAL(editingFinished()), this, SLOT(tableRowEdited()));
+    QObject::connect(table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEdited(int)));
 }
 Content::~Content()
 {
@@ -139,8 +139,9 @@ void Content::tableRowDeleted()
     if (table->getRowCount() == 1) ui->scrollArea->hide();
     else table->setFocus();
 }
-void Content::tableRowEdited()
+void Content::tableRowEdited(int row)
 {
+    if (table->isStringsEmpty(row)) table->deleteRow(row);
     updateTableSize();
 }
 void Content::resetTableState()
