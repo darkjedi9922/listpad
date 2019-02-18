@@ -4,7 +4,7 @@
 Menu::Menu(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Menu),
-    checkedButton(NULL)
+    checkedButton(nullptr)
 {
     ui->setupUi(this);
     setFixedWidth(240);
@@ -30,7 +30,7 @@ void Menu::uncheckButton()
     if (checkedButton) {
         checkedButton->setChecked(false);
         emit buttonUnchecked(checkedButton);
-        checkedButton = NULL;
+        checkedButton = nullptr;
     }
 }
 MenuButton* Menu::getCheckedButton() const
@@ -47,16 +47,26 @@ void Menu::mouseReleaseEvent(QMouseEvent *)
 // ==== PRIVATE ====
 void Menu::setupConnectings()
 {
-    QObject::connect(ui->films, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
-    QObject::connect(ui->serials, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
-    QObject::connect(ui->books, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
+    walkButtons([](Menu* self, MenuButton* button, int) {
+        QObject::connect(button, SIGNAL(clicked(bool)), self, SLOT(buttonClickedSlot()));
+    });
 }
 void Menu::setupMenuIds()
 {
-    int menus = ui->verticalLayout->count();
-    for (int i = 0; i < menus; i++) {
-        QLayoutItem *item = ui->verticalLayout->itemAt(i);
-        if (item && item->widget()) static_cast<MenuButton*>(item->widget())->setMenuId(i);
+    walkButtons([](Menu*, MenuButton* button, int index) {
+        button->setMenuId(index);
+    });
+}
+
+void Menu::walkButtons(void (*handler)(Menu* self, MenuButton*, int index))
+{
+    int buttonCount = ui->buttonLayout->count();
+    for (int i = 0; i < buttonCount; i++) {
+        QLayoutItem *item = ui->buttonLayout->itemAt(i);
+        if (item && item->widget()) {
+            auto button = static_cast<MenuButton*>(item->widget());
+            handler(this, button, i);
+        }
     }
 }
 

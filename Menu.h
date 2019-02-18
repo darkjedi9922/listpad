@@ -17,7 +17,7 @@ signals:
     void buttonUnchecked(MenuButton*);
 
 public:
-    explicit Menu(QWidget *parent = 0);
+    explicit Menu(QWidget *parent = nullptr);
     ~Menu();
 
     void checkButton(MenuButton *button);
@@ -30,6 +30,7 @@ protected:
 private:
     void setupConnectings();
     void setupMenuIds();
+    void walkButtons(void (handler)(Menu* self, MenuButton*, int index));
 
     Ui::Menu *ui;
     MenuButton *checkedButton;

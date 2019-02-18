@@ -1,4 +1,8 @@
+# Buld directores.
 Debug
 Release
+build
+
+# Left qt files.
 *.user
 *.pro.user.*
