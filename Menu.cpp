@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "tools/LayoutIterator.h"
 
 // ==== PUBLIC ====
 Menu::Menu(QWidget *parent) :
@@ -47,27 +48,18 @@ void Menu::mouseReleaseEvent(QMouseEvent *)
 // ==== PRIVATE ====
 void Menu::setupConnectings()
 {
-    walkButtons([](Menu* self, MenuButton* button, int) {
-        QObject::connect(button, SIGNAL(clicked(bool)), self, SLOT(buttonClickedSlot()));
-    });
+    LayoutIterator<MenuButton> buttonIterator(ui->buttonLayout);
+    while (auto button = buttonIterator.next()) {
+        QObject::connect(button, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
+    }
 }
 void Menu::setupMenuIds()
 {
-    walkButtons([](Menu*, MenuButton* button, int index) {
-        button->setMenuId(index);
-    });
-}
-
-void Menu::walkButtons(void (*handler)(Menu* self, MenuButton*, int index))
-{
-    int buttonCount = ui->buttonLayout->count();
-    for (int i = 0; i < buttonCount; i++) {
-        QLayoutItem *item = ui->buttonLayout->itemAt(i);
-        if (item && item->widget()) {
-            auto button = static_cast<MenuButton*>(item->widget());
-            handler(this, button, i);
-        }
-    }
+    LayoutIterator<MenuButton> buttonIt(ui->buttonLayout);
+    int index = 0;
+    while (auto button = buttonIt.next()) {
+        button->setMenuId(index++);
+    };
 }
 
 // ==== PRIVATE SLOTS ====

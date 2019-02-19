@@ -30,7 +30,6 @@ protected:
 private:
     void setupConnectings();
     void setupMenuIds();
-    void walkButtons(void (handler)(Menu* self, MenuButton*, int index));
 
     Ui::Menu *ui;
     MenuButton *checkedButton;

@@ -42,6 +42,7 @@ HEADERS  += MainWindow.h \
     SliderItem.h \
     ShadowWidget.h \
     Content.h \
+    tools/LayoutIterator.h
 
 FORMS    += MainWindow.ui \
     Table.ui \
