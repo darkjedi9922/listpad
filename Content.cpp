@@ -1,6 +1,7 @@
 #include "Content.h"
 #include "ui_Content.h"
 #include <QFile>
+#include <QDir>
 #include <QXmlStreamReader>
 
 // ==== PUBLIC ====
@@ -78,6 +79,8 @@ void Content::saveTable()
 {
     if (tableId != -1)
     {
+        createDataDirectoryIfItDoesNotExist();
+
         QString filename = QString("data/table%1.xml").arg(tableId);
         QFile file(filename);
         file.open(QIODevice::WriteOnly);
@@ -186,6 +189,14 @@ void Content::addTableEmptyRow()
     QList<QString> list;
     list << "" << "" << "" << "";
     addTableRow(list);
+}
+
+void Content::createDataDirectoryIfItDoesNotExist()
+{
+    QDir appDirectory("./");
+    if (!appDirectory.exists("data")) {
+        appDirectory.mkdir("data");
+    }
 }
 
 void Content::updateTableSize()

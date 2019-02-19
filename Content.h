@@ -43,6 +43,7 @@ protected:
 private:
     void addTableRow(const QList<QString> &list);
     void addTableEmptyRow();
+    void createDataDirectoryIfItDoesNotExist();
     void updateTableSize();
     void updateTableScrollingByRow(int row);
     void updateScrollAreaMaxHeight();
