@@ -80,7 +80,7 @@
   <property name="autoFillBackground">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="buttonLayout">
+  <layout class="QVBoxLayout" name="ltButtons">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -97,29 +97,16 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="MenuButton" name="films">
-     <property name="autoFillBackground">
-      <bool>false</bool>
+    <layout class="QVBoxLayout" name="ltCategories">
+     <property name="spacing">
+      <number>0</number>
      </property>
-     <property name="text">
-      <string>Фильмы</string>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
+    </layout>
    </item>
    <item>
-    <widget class="MenuButton" name="serials">
+    <widget class="MenuButton" name="addCategory">
      <property name="text">
-      <string>Сериалы</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="MenuButton" name="books">
-     <property name="text">
-      <string>Книги</string>
+      <string>Добавить категорию</string>
      </property>
     </widget>
    </item>

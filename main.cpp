@@ -6,8 +6,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QSettings settings("settings.ini", QSettings::IniFormat);
+    Core::Data data("./data/main.xml");
     MainWindow window;
     window.setSettings(&settings);
+    window.setData(&data);
 
     bool maximized = settings.value("maximized", false).toBool();
     if (maximized) {

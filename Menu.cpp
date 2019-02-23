@@ -9,12 +9,16 @@ Menu::Menu(QWidget *parent) :
 {
     ui->setupUi(this);
     setFixedWidth(240);
-    setupConnectings();
-    setupMenuIds();
 }
 Menu::~Menu()
 {
     delete ui;
+}
+
+void Menu::setCategories(const QMap<int, Core::Table *> &categories)
+{
+    this->categories = categories;
+    setupUiButtons();
 }
 
 void Menu::checkButton(MenuButton *button)
@@ -46,20 +50,24 @@ void Menu::mouseReleaseEvent(QMouseEvent *)
 }
 
 // ==== PRIVATE ====
-void Menu::setupConnectings()
+void Menu::setupUiButtons()
 {
-    LayoutIterator<MenuButton> buttonIterator(ui->buttonLayout);
-    while (auto button = buttonIterator.next()) {
+    removeUiButtons();
+    foreach (Core::Table* table, categories) {
+        MenuButton* button = new MenuButton;
+        button->setText(table->getName());
+        button->setMenuId(table->getId());
+        ui->ltCategories->addWidget(button);
         QObject::connect(button, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
     }
 }
-void Menu::setupMenuIds()
+
+void Menu::removeUiButtons()
 {
-    LayoutIterator<MenuButton> buttonIt(ui->buttonLayout);
-    int index = 0;
-    while (auto button = buttonIt.next()) {
-        button->setMenuId(index++);
-    };
+    QLayoutItem *child;
+    while ((child = ui->ltCategories->takeAt(0)) != nullptr) {
+        delete child;
+    }
 }
 
 // ==== PRIVATE SLOTS ====

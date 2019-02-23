@@ -3,6 +3,7 @@
 
 #include "Block.h"
 #include "Table.h"
+#include "core/Data.h"
 
 namespace Ui
 {
@@ -17,6 +18,8 @@ public:
     explicit Content(QWidget *parent = 0);
     ~Content();
     virtual QSize sizeHint() const;
+
+    void setTables(const QMap<int, Core::Table *> &);
 
     void show();
     void hide();
@@ -50,6 +53,7 @@ private:
     void updateScrollAreaMinWidth();
 
     Ui::Content *ui;
+    QMap<int, Core::Table*> tables;
     Table *table;
     int tableId;
 };

@@ -21,9 +21,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::setData(Core::Data *data)
+{
+    this->data = data;
+    if (!data) return;
+    ui->content->setTables(data->getTables());
+    ui->menu->setCategories(data->getTables());
+}
+
 void MainWindow::setSettings(QSettings *settings)
 {
     this->settings = settings;
+}
+
+Core::Data* MainWindow::getData() const
+{
+    return data;
 }
 
 QSettings* MainWindow::getSettings() const

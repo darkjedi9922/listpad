@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDir>
 #include <QXmlStreamReader>
+#include "core/TableRows.h"
 
 // ==== PUBLIC ====
 Content::Content(QWidget *parent) :
@@ -44,6 +45,11 @@ QSize Content::sizeHint() const
     return QSize(100, height);
 }
 
+void Content::setTables(const QMap<int, Core::Table*> &tables)
+{
+    this->tables = tables;
+}
+
 void Content::show()
 {
     Block::show();
@@ -59,24 +65,11 @@ void Content::hide()
 void Content::loadTable(int id)
 {
     tableId = id;
-    QString filename = QString("data/table%1.xml").arg(id);
-    QFile file(filename);
-    if (file.exists())
-    {
-        file.open(QFile::ReadOnly | QFile::Text);
-        QXmlStreamReader reader(&file);
-        int columns = table->getColumnCount();
-        do {
-            reader.readNext();
-            if (reader.isStartElement() && reader.name() == "row")
-            {
-                QList<QString> newRow;
-                for (int i = 0; i < columns; i++) newRow << reader.attributes().at(i).value().toString();
-                addTableRow(newRow);
-            }
-        }
-        while (!reader.atEnd());
-        file.close();
+    Core::Table *table = tables.value(id, nullptr);
+    if (!table) return;
+    Core::TableRows rows(table->getFilename());
+    for (const QList<QString> &row : rows.getRows()) {
+        addTableRow(row);
     }
 }
 void Content::saveTable()

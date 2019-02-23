@@ -5,6 +5,7 @@
 #include "MenuButton.h"
 #include "Content.h"
 #include <QSettings>
+#include "core/Data.h"
 
 namespace Ui
 {
@@ -19,8 +20,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void setData(Core::Data *);
     void setSettings(QSettings *);
 
+    Core::Data* getData() const;
     QSettings* getSettings() const;
 
 public slots:
@@ -34,6 +37,7 @@ private:
     void saveSettings();
 
     Ui::MainWindow *ui;
+    Core::Data *data;
     QSettings *settings;
 };
 
