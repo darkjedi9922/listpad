@@ -4,8 +4,7 @@
 // ==== PUBLIC ====
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainWindow),
-    settings(new QSettings("settings.ini", QSettings::IniFormat))
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->content->hide();
@@ -20,8 +19,13 @@ MainWindow::~MainWindow()
     saveSettings();
 
     delete ui;
-    delete settings;
 }
+
+void MainWindow::setSettings(QSettings *settings)
+{
+    this->settings = settings;
+}
+
 QSettings* MainWindow::getSettings() const
 {
     return settings;
@@ -52,6 +56,7 @@ void MainWindow::mousePressEvent(QMouseEvent *)
 // ==== PRIVATE ====
 void MainWindow::saveSettings()
 {
+    if (!settings) return;
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", geometry());
 }

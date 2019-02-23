@@ -18,6 +18,9 @@ class MainWindow : public QWidget
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    void setSettings(QSettings *);
+
     QSettings* getSettings() const;
 
 public slots:

@@ -5,13 +5,15 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QSettings settings("settings.ini", QSettings::IniFormat);
     MainWindow window;
+    window.setSettings(&settings);
 
-    bool maximized = window.getSettings()->value("maximized", false).toBool();
+    bool maximized = settings.value("maximized", false).toBool();
     if (maximized) {
         window.showMaximized();
     } else {
-        QRect geometry = window.getSettings()->value("geometry", QRect(100, 100, 1000, 600)).toRect();
+        QRect geometry = settings.value("geometry", QRect(100, 100, 1000, 600)).toRect();
         window.show();
         window.setGeometry(geometry);
     }
