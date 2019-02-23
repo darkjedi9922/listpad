@@ -29,7 +29,11 @@ Content::Content(QWidget *parent) :
 }
 Content::~Content()
 {
+    delete table;
     delete ui;
+
+    table = nullptr;
+    ui = nullptr;
 }
 QSize Content::sizeHint() const
 {
