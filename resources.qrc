@@ -8,5 +8,6 @@
         <file>images/button_blue/btn-hb.png</file>
         <file>images/button_blue/btn-hlb.png</file>
         <file>images/button_blue/btn-hrb.png</file>
+        <file>fonts/arial.ttf</file>
     </qresource>
 </RCC>
