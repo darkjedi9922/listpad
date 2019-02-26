@@ -34,6 +34,10 @@ protected:
 private:
     void setupUiButtons();
     void removeUiButtons();
+    void setupCategoryButton(MenuButton *, int newId);
+    void addButton(MenuButton *);
+    void startButtonEditing(MenuButton *);
+    int findMaxCategoryId() const;
 
     Ui::Menu *ui;
     QMap<int, Core::Table*> categories;
@@ -41,6 +45,8 @@ private:
 
 private slots:
     void buttonClickedSlot();
+    void startCategoryAdding();
+    void categoryEditedAfterAdding();
 };
 
 #endif // MENU_H

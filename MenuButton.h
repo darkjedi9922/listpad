@@ -2,14 +2,25 @@
 #define MENUBUTTON_H
 
 #include <QPushButton>
+#include <QLineEdit>
+#include <QEvent>
 
 class MenuButton : public QPushButton
 {
     Q_OBJECT
 public:
     MenuButton(QWidget *parent = nullptr);
+    ~MenuButton();
+
     void setMenuId(int id);
     int getMenuId() const;
+
+public slots:
+    void startEditing();
+    void endEditing();
+
+signals:
+    void edited();
 
 protected:
     virtual void paintEvent(QPaintEvent *);
@@ -17,6 +28,8 @@ protected:
     virtual void leaveEvent(QEvent *);
 
 private:
+    QRect calcTextRect() const;
+
     int menuId;
     bool hovered;
     QBrush hoverBackgroundBrush;
@@ -26,6 +39,7 @@ private:
     QFont textFont;
     QPixmap normalIcon;
     QPixmap checkedIcon;
+    QLineEdit *editingInput;
 };
 
 #endif // MENUBUTTON_H
