@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "tools/LayoutIterator.h"
+#include <QMouseEvent>
 
 // ==== PUBLIC ====
 Menu::Menu(QWidget *parent) :
@@ -44,9 +45,11 @@ MenuButton* Menu::getCheckedButton() const
 }
 
 // ==== EVENTS ====
-void Menu::mouseReleaseEvent(QMouseEvent *)
+void Menu::mouseReleaseEvent(QMouseEvent *e)
 {
-    uncheckButton();
+    // addCategory кнопка в меню находится ниже других, поэтому ориентируемся на нее.
+    if (e->y() > ui->addCategory->geometry().bottom())
+        uncheckButton();
 }
 
 // ==== PRIVATE ====
