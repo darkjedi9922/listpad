@@ -1,12 +1,15 @@
 #include "Menu.h"
 #include "tools/LayoutIterator.h"
 #include <QMouseEvent>
+#include <QMenu>
 
 // ==== PUBLIC ====
 Menu::Menu(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Menu),
-    checkedButton(nullptr)
+    contextMenu(new QMenu),
+    checkedButton(nullptr),
+    contextMenuButton(nullptr)
 {
     ui->setupUi(this);
     ui->addCategory->setCheckable(false);
@@ -14,10 +17,16 @@ Menu::Menu(QWidget *parent) :
 
     QObject::connect(ui->addCategory, SIGNAL(clicked(bool)),
                      this, SLOT(startCategoryAdding()));
+
+    setupContextMenu();
 }
 Menu::~Menu()
 {
+    delete contextMenu;
+    contextMenu = nullptr;
+
     delete ui;
+    ui = nullptr;
 }
 
 void Menu::setCategories(const QMap<int, Core::Table *> &categories)
@@ -82,7 +91,10 @@ void Menu::removeUiButtons()
 void Menu::setupCategoryButton(MenuButton *button, int newId)
 {
     button->setMenuId(newId);
+    button->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(button, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
+    QObject::connect(button, SIGNAL(customContextMenuRequested(const QPoint &)),
+                     SLOT(openCategoryContextMenu(const QPoint &)));
 }
 
 /**
@@ -101,6 +113,29 @@ int Menu::findMaxCategoryId() const
         if (id > max) max = id;
     }
     return max;
+}
+
+void Menu::setupContextMenu()
+{
+    contextMenu->setStyleSheet("QMenu {"
+                               "    background: #05080e;"
+                               "    font-family: Calibri;"
+                               "    font-size: 12pt;"
+                               "    font-weight: bold;"
+                               "    color: #249dcd;"
+                               "}"
+                               "::item {"
+                               "    padding: 10px 20px;"
+                               "    background: transparent;"
+                               "}"
+                               "::item:selected {"
+                               "    background: #203153;"
+                               "}");
+
+    contextMenu->addAction("Переименовать", [=] {
+        contextMenuButton->startEditing();
+    });
+    contextMenu->addAction("Удалить");
 }
 
 // ==== PRIVATE SLOTS ====
@@ -141,4 +176,11 @@ void Menu::categoryEditedAfterAdding()
 
     QObject::disconnect(newButton, SIGNAL(edited()),
                         this, SLOT(categoryEditedAfterAdding()));
+}
+
+void Menu::openCategoryContextMenu(const QPoint &pos)
+{
+    MenuButton* button = static_cast<MenuButton*>(QObject::sender());
+    contextMenuButton = button;
+    contextMenu->popup(button->mapToGlobal(pos));
 }

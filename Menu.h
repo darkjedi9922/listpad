@@ -38,15 +38,19 @@ private:
     void addButton(MenuButton *);
     void startButtonEditing(MenuButton *);
     int findMaxCategoryId() const;
+    void setupContextMenu();
 
     Ui::Menu *ui;
+    QMenu *contextMenu;
     QMap<int, Core::Table*> categories;
     MenuButton *checkedButton;
+    MenuButton *contextMenuButton;
 
 private slots:
     void buttonClickedSlot();
     void startCategoryAdding();
     void categoryEditedAfterAdding();
+    void openCategoryContextMenu(const QPoint &pos);
 };
 
 #endif // MENU_H
