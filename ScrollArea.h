@@ -8,7 +8,7 @@ class ScrollArea : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ScrollArea(QWidget *parent = 0);
+    explicit ScrollArea(QWidget *parent = nullptr);
     virtual QSize sizeHint() const;
 
     void update();

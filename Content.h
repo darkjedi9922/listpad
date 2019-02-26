@@ -15,7 +15,7 @@ class Content : public Block
     Q_OBJECT
 
 public:
-    explicit Content(QWidget *parent = 0);
+    explicit Content(QWidget *parent = nullptr);
     ~Content();
     virtual QSize sizeHint() const;
 

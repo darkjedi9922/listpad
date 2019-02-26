@@ -6,7 +6,7 @@
 class SliderItem : public QWidget
 {
 public:
-    explicit SliderItem(QWidget *parent = 0);
+    explicit SliderItem(QWidget *parent = nullptr);
 };
 
 #endif // SLIDERSLIDER_H

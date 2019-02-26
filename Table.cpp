@@ -322,5 +322,5 @@ QLineEdit* Table::getItemAt(int row, int column) const
 {
     QLayoutItem *item = ui->gridLayout->itemAtPosition(row, column);
     if (item) return static_cast<QLineEdit*>(item->widget());
-    else return NULL;
+    else return nullptr;
 }

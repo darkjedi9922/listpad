@@ -12,7 +12,7 @@ signals:
     void valueChanged(int newValue);
 
 public:
-    Slider(Qt::Orientation orientation, QWidget *parent = 0);
+    Slider(Qt::Orientation orientation, QWidget *parent = nullptr);
 
     // orientation
     void setOrientation(Qt::Orientation);

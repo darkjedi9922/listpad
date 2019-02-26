@@ -9,7 +9,7 @@ class ScrollBar : public QWidget
 {
     Q_OBJECT
 public:
-    ScrollBar(Qt::Orientation orientation, QWidget *parent = 0);
+    ScrollBar(Qt::Orientation orientation, QWidget *parent = nullptr);
     void setOrientation(Qt::Orientation orientation);
     void setMinimum(int min);
     void setMaximum(int max);

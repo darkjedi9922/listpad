@@ -8,7 +8,7 @@ class Block : public QWidget
     Q_OBJECT
 
 public:
-    explicit Block(QWidget *parent = 0);
+    explicit Block(QWidget *parent = nullptr);
 
 protected:
     virtual void paintEvent(QPaintEvent *);

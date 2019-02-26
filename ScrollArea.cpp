@@ -3,7 +3,7 @@
 ScrollArea::ScrollArea(QWidget *parent) :
     QWidget(parent),
     vScrollBar(new ScrollBar(Qt::Vertical, this)),
-    widget(NULL)
+    widget(nullptr)
 {
     vScrollBar->resize(15, height());
 

@@ -6,7 +6,7 @@
 class DesktopButton : public QPushButton
 {
 public:
-    DesktopButton(QWidget *parent = 0);
+    DesktopButton(QWidget *parent = nullptr);
     QSize sizeHint() const;
 
 protected:
