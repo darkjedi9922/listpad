@@ -9,6 +9,7 @@ Menu::Menu(QWidget *parent) :
     checkedButton(nullptr)
 {
     ui->setupUi(this);
+    ui->addCategory->setCheckable(false);
     setFixedWidth(240);
 }
 Menu::~Menu()
