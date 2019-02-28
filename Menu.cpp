@@ -35,6 +35,13 @@ void Menu::setCategories(const QMap<int, Core::Table *> &categories)
     setupUiButtons();
 }
 
+void Menu::deleteCategory(MenuButton* category)
+{
+    category->hide();
+    ui->ltCategories->takeAt(ui->ltCategories->indexOf(category));
+    categories.remove(category->getMenuId());
+}
+
 void Menu::checkButton(MenuButton *button)
 {
     if (checkedButton != button) {
@@ -135,7 +142,9 @@ void Menu::setupContextMenu()
     contextMenu->addAction("Переименовать", [=] {
         contextMenuButton->startEditing();
     });
-    contextMenu->addAction("Удалить");
+    contextMenu->addAction("Удалить", [=] {
+        deleteCategory(contextMenuButton);
+    });
 }
 
 // ==== PRIVATE SLOTS ====

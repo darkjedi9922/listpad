@@ -23,9 +23,11 @@ public:
     ~Menu();
 
     void setCategories(const QMap<int, Core::Table*> &);
+    void deleteCategory(MenuButton *category);
 
     void checkButton(MenuButton *button);
     void uncheckButton();
+
     MenuButton* getCheckedButton() const;
 
 protected:
