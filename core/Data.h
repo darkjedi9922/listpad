@@ -17,12 +17,13 @@ public:
     QString getFile() const noexcept;
     const QMap<int, Table *> &getTables() const noexcept;
 
-    /*void addTable(const Core::Table &table);
-    void renameTable(int id, const QString &name);
-    void removeTable(int id);*/
+    void addTable(const Core::Table &table);
+    //void renameTable(int id, const QString &name);
+    //void removeTable(int id);
 
 private:
     void loadTables() noexcept;
+    void saveTables() noexcept;
     void clearTables() noexcept;
 
     QString filename;

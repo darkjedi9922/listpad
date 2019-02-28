@@ -28,12 +28,12 @@ int Table::getId() const
     return id;
 }
 
-QString Table::getName() const
+const QString& Table::getName() const
 {
     return name;
 }
 
-QString Table::getFilename() const
+const QString& Table::getFilename() const
 {
     return filename;
 }

@@ -15,8 +15,8 @@ public:
     void setFilename(const QString &);
 
     int getId() const;
-    QString getName() const;
-    QString getFilename() const;
+    const QString &getName() const;
+    const QString &getFilename() const;
 
 private:
     int id;

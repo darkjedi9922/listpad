@@ -9,8 +9,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->content->hide();
 
-    QObject::connect(ui->menu, SIGNAL(buttonChecked(MenuButton*)), this, SLOT(menuButtonChecked(MenuButton*)));
-    QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuButton*)), this, SLOT(menuButtonUnchecked(MenuButton*)));
+    QObject::connect(ui->menu, SIGNAL(buttonChecked(MenuButton*)),
+                     this, SLOT(menuButtonChecked(MenuButton*)));
+    QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuButton*)),
+                     this, SLOT(menuButtonUnchecked(MenuButton*)));
+    QObject::connect(ui->menu, &Menu::categoryAdded, [=] (int id) {
+        this->addCategoryToDatabase(id, ui->menu->getCategoryName(id));
+    });
 }
 MainWindow::~MainWindow()
 {
@@ -26,7 +31,12 @@ void MainWindow::setData(Core::Data *data)
     this->data = data;
     if (!data) return;
     ui->content->setTables(data->getTables());
-    ui->menu->setCategories(data->getTables());
+
+    QMap<int, QString> categories;
+    foreach (Core::Table *table, data->getTables()) {
+        categories.insert(table->getId(), table->getName());
+    }
+    ui->menu->setCategories(categories);
 }
 
 void MainWindow::setSettings(QSettings *settings)
@@ -67,6 +77,12 @@ void MainWindow::mousePressEvent(QMouseEvent *)
 }
 
 // ==== PRIVATE ====
+void MainWindow::addCategoryToDatabase(int id, const QString &name)
+{
+    Core::Table category(id, name, QString("./data/table%1.xml").arg(id));
+    data->addTable(category);
+}
+
 void MainWindow::saveSettings()
 {
     if (!settings) return;

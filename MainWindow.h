@@ -34,6 +34,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent *);
 
 private:
+    void addCategoryToDatabase(int id, const QString &name);
     void saveSettings();
 
     Ui::MainWindow *ui;

@@ -29,7 +29,7 @@ Menu::~Menu()
     ui = nullptr;
 }
 
-void Menu::setCategories(const QMap<int, Core::Table *> &categories)
+void Menu::setCategories(const QMap<int, QString> &categories)
 {
     this->categories = categories;
     setupUiButtons();
@@ -40,6 +40,11 @@ void Menu::deleteCategory(MenuButton* category)
     category->hide();
     ui->ltCategories->takeAt(ui->ltCategories->indexOf(category));
     categories.remove(category->getMenuId());
+}
+
+QString Menu::getCategoryName(int id) const
+{
+    return categories[id];
 }
 
 void Menu::checkButton(MenuButton *button)
@@ -76,10 +81,13 @@ void Menu::mouseReleaseEvent(QMouseEvent *e)
 void Menu::setupUiButtons()
 {
     removeUiButtons();
-    foreach (Core::Table* table, categories) {
+
+    QMapIterator<int, QString> i(categories);
+    while (i.hasNext()) {
+        i.next();
         MenuButton* button = new MenuButton;
-        button->setText(table->getName());
-        setupCategoryButton(button, table->getId());
+        button->setText(i.value());
+        setupCategoryButton(button, i.key());
         ui->ltCategories->addWidget(button);
     }
 }
@@ -107,9 +115,9 @@ void Menu::setupCategoryButton(MenuButton *button, int newId)
 /**
  * Чисто визуальное добавление кнопки.
  */
-void Menu::addButton(MenuButton *button)
+void Menu::addCategory(MenuButton *category)
 {
-    ui->ltCategories->addWidget(button);
+    ui->ltCategories->addWidget(category);
 }
 
 int Menu::findMaxCategoryId() const
@@ -159,12 +167,12 @@ void Menu::buttonClickedSlot()
 
 void Menu::startCategoryAdding()
 {
-    // Эта кнопка потом будет привязана к слою, и при очистке слоя, автоматически
-    // будет вызван delete.
+    // Эта кнопка привязывается к слою, и при очистке слоя, автоматически будет
+    // вызван delete.
     MenuButton *newButton = new MenuButton();
     newButton->setText("Новая категория");
 
-    addButton(newButton);
+    addCategory(newButton);
     QObject::connect(newButton, SIGNAL(edited()), SLOT(categoryEditedAfterAdding()));
     newButton->startEditing();
 }
@@ -181,10 +189,14 @@ void Menu::categoryEditedAfterAdding()
     // обработчик события завершения редактирования, который отправит запрос на
     // сохранение нового имени. Так как эта кнопка еще только в процессе добавления,
     // нам не нужно ее переименовывать (в теории этой категории еще нет).
-    this->setupCategoryButton(newButton, this->findMaxCategoryId() + 1);
+    int id = this->findMaxCategoryId() + 1;
+    categories.insert(id, newButton->text());
+    setupCategoryButton(newButton, id);
 
     QObject::disconnect(newButton, SIGNAL(edited()),
                         this, SLOT(categoryEditedAfterAdding()));
+
+    emit categoryAdded(id);
 }
 
 void Menu::openCategoryContextMenu(const QPoint &pos)
