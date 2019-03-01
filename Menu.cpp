@@ -101,7 +101,8 @@ void Menu::removeUiButtons()
 }
 
 /**
- * Метод для первоначальной настройки новой кнопки категории.
+ * Метод для первоначальной настройки новой кнопки категории, которая уже является
+ * добавленной и переименованой (точнее, начально именованой).
  */
 void Menu::setupCategoryButton(MenuButton *button, int newId)
 {
@@ -110,6 +111,10 @@ void Menu::setupCategoryButton(MenuButton *button, int newId)
     QObject::connect(button, SIGNAL(clicked(bool)), this, SLOT(buttonClickedSlot()));
     QObject::connect(button, SIGNAL(customContextMenuRequested(const QPoint &)),
                      SLOT(openCategoryContextMenu(const QPoint &)));
+    QObject::connect(button, &MenuButton::edited, [=] {
+        categories[newId] = button->text();
+        emit this->categoryRenamed(newId);
+    });
 }
 
 /**

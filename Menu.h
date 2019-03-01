@@ -15,7 +15,17 @@ class Menu : public QWidget
 signals:
     void buttonChecked(MenuButton*);
     void buttonUnchecked(MenuButton*);
+
+    /**
+     * Выбрасывается, при визуальном добавлении через контекстное меню.
+     */
     void categoryAdded(int id);
+
+    /**
+     * Выбрасывается при переименовании категории, которая уже была добавлена (то
+     * есть, начальное переименование при создании - не в счет).
+     */
+    void categoryRenamed(int id);
 
 public:
     explicit Menu(QWidget *parent = nullptr);

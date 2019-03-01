@@ -16,6 +16,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->menu, &Menu::categoryAdded, [=] (int id) {
         this->addCategoryToDatabase(id, ui->menu->getCategoryName(id));
     });
+    QObject::connect(ui->menu, &Menu::categoryRenamed, [=] (int id) {
+        this->data->renameTable(id, ui->menu->getCategoryName(id));
+        this->data->saveTables();
+    });
 }
 MainWindow::~MainWindow()
 {
@@ -81,6 +85,7 @@ void MainWindow::addCategoryToDatabase(int id, const QString &name)
 {
     Core::Table category(id, name, QString("./data/table%1.xml").arg(id));
     data->addTable(category);
+    data->saveTables();
 }
 
 void MainWindow::saveSettings()

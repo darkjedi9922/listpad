@@ -33,9 +33,15 @@ const QMap<int, Table*>& Data::getTables() const noexcept
 void Data::addTable(const Core::Table &table)
 {
     if (tables.contains(table.getId()))
-        throw "Table adding error: Table exists yet.";
+        throw "Table adding error: The table exists yet.";
     tables[table.getId()] = new Core::Table(table);
-    saveTables();
+}
+
+void Data::renameTable(int id, const QString &name)
+{
+    if (!tables.contains(id))
+        throw "Table renaming error: The table does not exist.";
+    tables[id]->setName(name);
 }
 
 void Data::loadTables() noexcept

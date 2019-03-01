@@ -6,6 +6,9 @@
 
 namespace Core { class Data; };
 
+/**
+ * Для сохранения изменений нужно вызывать метод saveTables().
+ */
 class Core::Data
 {
 public:
@@ -13,17 +16,16 @@ public:
     ~Data();
 
     void setFile(const QString &file) noexcept;
-
     QString getFile() const noexcept;
     const QMap<int, Table *> &getTables() const noexcept;
 
     void addTable(const Core::Table &table);
-    //void renameTable(int id, const QString &name);
+    void renameTable(int id, const QString &name);
     //void removeTable(int id);
+    void saveTables() noexcept;
 
 private:
     void loadTables() noexcept;
-    void saveTables() noexcept;
     void clearTables() noexcept;
 
     QString filename;
