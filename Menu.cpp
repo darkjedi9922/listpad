@@ -38,8 +38,10 @@ void Menu::setCategories(const QMap<int, QString> &categories)
 void Menu::deleteCategory(MenuButton* category)
 {
     category->hide();
+    int id = category->getMenuId();
     ui->ltCategories->takeAt(ui->ltCategories->indexOf(category));
-    categories.remove(category->getMenuId());
+    categories.remove(id);
+    emit categoryDeleted(id);
 }
 
 QString Menu::getCategoryName(int id) const

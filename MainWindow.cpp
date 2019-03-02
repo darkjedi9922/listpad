@@ -20,6 +20,14 @@ MainWindow::MainWindow(QWidget *parent) :
         this->data->renameTable(id, ui->menu->getCategoryName(id));
         this->data->saveTables();
     });
+    QObject::connect(ui->menu, &Menu::categoryDeleted, [=] (int id) {
+        if (ui->content->getCurrentTableId() == id) {
+            ui->content->hide();
+            ui->content->loadTable(-1);
+        }
+        data->removeTable(id);
+        data->saveTables();
+    });
 }
 MainWindow::~MainWindow()
 {
@@ -62,6 +70,7 @@ QSettings* MainWindow::getSettings() const
 void MainWindow::menuButtonChecked(MenuButton *menu)
 {
     if (ui->content->getCurrentTableId() != menu->getMenuId()) {
+        ui->content->saveTable();
         ui->content->emptyTable();
         ui->content->loadTable(menu->getMenuId());
     }

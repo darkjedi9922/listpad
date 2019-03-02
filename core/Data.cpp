@@ -44,6 +44,13 @@ void Data::renameTable(int id, const QString &name)
     tables[id]->setName(name);
 }
 
+void Data::removeTable(int id)
+{
+    if (!tables.contains(id)) return;
+    QFile::remove(tables[id]->getFilename());
+    tables.remove(id);
+}
+
 void Data::loadTables() noexcept
 {
     clearTables();

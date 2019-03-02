@@ -27,6 +27,8 @@ signals:
      */
     void categoryRenamed(int id);
 
+    void categoryDeleted(int id);
+
 public:
     explicit Menu(QWidget *parent = nullptr);
     ~Menu();

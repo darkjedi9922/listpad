@@ -21,7 +21,7 @@ public:
 
     void addTable(const Core::Table &table);
     void renameTable(int id, const QString &name);
-    //void removeTable(int id);
+    void removeTable(int id);
     void saveTables() noexcept;
 
 private:

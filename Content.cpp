@@ -64,6 +64,7 @@ void Content::hide()
 }
 void Content::loadTable(int id)
 {
+    emptyTable();
     tableId = id;
     Core::Table *table = tables.value(id, nullptr);
     if (!table) return;
