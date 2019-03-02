@@ -48,7 +48,7 @@
    </palette>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
+   <iconset resource="resources.qrc">
     <normaloff>:/images/icon.ico</normaloff>:/images/icon.ico</iconset>
   </property>
   <property name="autoFillBackground">
@@ -259,7 +259,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="images.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>
