@@ -23,7 +23,8 @@ set (LIBS)
 
 # qt .ui
 file (GLOB QTUI
-    "*.ui")
+    "*.ui"
+    "*/*.ui")
 
 # qt .qrc
 file (GLOB QRC
