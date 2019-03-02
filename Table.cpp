@@ -121,21 +121,11 @@ int Table::getLastAddedRow() const
 
 void Table::checkRow(int row)
 {
-    if (row != checkedRow) {
-        endRowsEditing();
-        checkedRow = row;
-        repaint();
-        emit rowChecked(row);
-    }
+    if (checkRowWithoutEmit(row)) emit rowChecked(row);
 }
 void Table::uncheckRows()
 {
-    if (checkedRow != -1) {
-        endRowsEditing();
-        checkedRow = -1;
-        repaint();
-        emit rowsUnchecked();
-    }
+    if (uncheckRowsWithoutEmit()) emit rowsUnchecked();
 }
 int Table::getCheckedRow() const
 {
@@ -264,8 +254,9 @@ void Table::keyPressEvent(QKeyEvent *e)
         } else {
             int rowAfter = findRowAfter(checkedRow);
             if (rowAfter != -1) {
-                uncheckRows();
-                checkRow(rowAfter);
+                uncheckRowsWithoutEmit();
+                checkRowWithoutEmit(rowAfter);
+                emit rowRechecked(rowAfter);
             }
         }
         break;
@@ -277,8 +268,9 @@ void Table::keyPressEvent(QKeyEvent *e)
         else {
             int rowBefore = findRowBefore(checkedRow);
             if (rowBefore != -1) {
-                uncheckRows();
-                checkRow(rowBefore);
+                uncheckRowsWithoutEmit();
+                checkRowWithoutEmit(rowBefore);
+                emit rowRechecked(rowBefore);
             }
         }
         break;
@@ -297,6 +289,29 @@ void Table::replaceRow(int from, int to)
         }
     }
 }
+
+bool Table::checkRowWithoutEmit(int row)
+{
+    if (row != checkedRow) {
+        endRowsEditing();
+        checkedRow = row;
+        repaint();
+        return true;
+    }
+    return false;
+}
+
+bool Table::uncheckRowsWithoutEmit()
+{
+    if (checkedRow != -1) {
+        endRowsEditing();
+        checkedRow = -1;
+        repaint();
+        return true;
+    }
+    return false;
+}
+
 int Table::findRowBefore(int row) const
 {
     if (row <= 1) return -1;

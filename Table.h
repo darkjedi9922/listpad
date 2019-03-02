@@ -20,13 +20,14 @@ class Table : public QWidget
 
 signals:
     void rowChecked(int row);
+    void rowRechecked(int row);
     void rowsUnchecked();
     void rowAdded(int row);
     void rowDeleted(int row);
     void editingFinished(int row);
 
 public:
-    explicit Table(QWidget *parent = 0);
+    explicit Table(QWidget *parent = nullptr);
     ~Table();
     virtual QSize sizeHint() const;
 
@@ -67,6 +68,8 @@ protected:
 
 private:
     void replaceRow(int from, int to);
+    bool checkRowWithoutEmit(int row);
+    bool uncheckRowsWithoutEmit();
 
     // finding
     int findRowBefore(int row) const;
