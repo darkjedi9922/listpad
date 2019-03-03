@@ -10,8 +10,6 @@ MenuButton::MenuButton(QWidget *parent) : QPushButton(parent),
     textColor(QColor("#c5c5c5")),
     checkedTextColor(QColor("#979797")),
     textFont(QFont("Arial", 12, 200)),
-    normalIcon(QPixmap(":images/folder.png")),
-    checkedIcon(QPixmap(":images/checkedFolder.png")),
     editingInput(nullptr)
 {
     setFixedHeight(36);
@@ -92,9 +90,9 @@ void MenuButton::paintEvent(QPaintEvent *)
     painter.drawRect(rect());
 
     // Иконка
-    painter.drawPixmap(18, rect().center().y() - normalIcon.height() / 2,
-                       normalIcon.width(), normalIcon.height(),
-                       (isChecked() ? checkedIcon : normalIcon));
+    auto iconMode = isChecked() ? QIcon::Selected : QIcon::Normal;
+    // QIcon::paint() уместит иконку в QRect без растягивания картинки.
+    icon().paint(&painter, 18, 0, height() - 18, height(), Qt::AlignCenter, iconMode);
 
     // Текст
     if (isChecked()) painter.setPen(checkedTextColor);
@@ -115,6 +113,7 @@ void MenuButton::leaveEvent(QEvent *)
 
 QRect MenuButton::calcTextRect() const
 {
-    return QRect(18 + normalIcon.width() + 9, 0,
-                 width() - 18 - normalIcon.width() - 9, height());
+    int spacingBetween = 9;
+    return QRect(height() + spacingBetween, 0,
+                 width() - height() - spacingBetween, height());
 }

@@ -12,6 +12,7 @@ Menu::Menu(QWidget *parent) :
     contextMenuButton(nullptr)
 {
     ui->setupUi(this);
+    ui->addCategory->setIcon(QIcon(":/images/plus-circle.png"));
     ui->addCategory->setCheckable(false);
     setFixedWidth(240);
 
@@ -87,7 +88,7 @@ void Menu::setupUiButtons()
     QMapIterator<int, QString> i(categories);
     while (i.hasNext()) {
         i.next();
-        MenuButton* button = new MenuButton;
+        MenuButton* button = allocCategoryButton();
         button->setText(i.value());
         setupCategoryButton(button, i.key());
         ui->ltCategories->addWidget(button);
@@ -162,6 +163,17 @@ void Menu::setupContextMenu()
     });
 }
 
+MenuButton* Menu::allocCategoryButton()
+{
+    QIcon icon;
+    icon.addFile(":/images/folder.png", QSize(), QIcon::Normal);
+    icon.addFile(":/images/checkedFolder.png", QSize(), QIcon::Selected);
+
+    auto button = new MenuButton;
+    button->setIcon(icon);
+    return button;
+}
+
 // ==== PRIVATE SLOTS ====
 void Menu::buttonClickedSlot()
 {
@@ -176,7 +188,7 @@ void Menu::startCategoryAdding()
 {
     // Эта кнопка привязывается к слою, и при очистке слоя, автоматически будет
     // вызван delete.
-    MenuButton *newButton = new MenuButton();
+    MenuButton *newButton = allocCategoryButton();
     newButton->setText("Новая категория");
 
     addCategory(newButton);

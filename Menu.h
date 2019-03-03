@@ -53,6 +53,7 @@ private:
     void startButtonEditing(MenuButton *);
     int findMaxCategoryId() const;
     void setupContextMenu();
+    MenuButton* allocCategoryButton();
 
     Ui::Menu *ui;
     QMenu *contextMenu;

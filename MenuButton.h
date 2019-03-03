@@ -37,8 +37,6 @@ private:
     QColor textColor;
     QColor checkedTextColor;
     QFont textFont;
-    QPixmap normalIcon;
-    QPixmap checkedIcon;
     QLineEdit *editingInput;
 };
 

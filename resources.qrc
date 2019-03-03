@@ -9,5 +9,6 @@
         <file>images/button_blue/btn-hlb.png</file>
         <file>images/button_blue/btn-hrb.png</file>
         <file>fonts/arial.ttf</file>
+        <file>images/plus-circle.png</file>
     </qresource>
 </RCC>
