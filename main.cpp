@@ -14,8 +14,9 @@ int main(int argc, char *argv[])
 
     // В Linux по-умолчанию нет шрифта Arial. А, если есть, он почему-то может быть
     // не тем. Загрузим и будем использовать свой. Имя шрифта узнал через qDedbug().
-    // QString family = QFontDatabase::applicationFontFamilies(id).at(0); // Имя.
-    /*int id =*/ QFontDatabase::addApplicationFont(":/fonts/arial.ttf"); // Arial.
+    /* int id = */ QFontDatabase::addApplicationFont(":/fonts/arial.ttf"); // Arial.
+    /* int id = */ QFontDatabase::addApplicationFont(":/fonts/arialbd.ttf");
+    //qDebug() << QFontDatabase::applicationFontFamilies(id).at(0); // Имя.
 
     bool maximized = settings.value("maximized", false).toBool();
     if (maximized) {
