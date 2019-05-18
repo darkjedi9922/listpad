@@ -19,7 +19,7 @@ public:
     ~Content();
     virtual QSize sizeHint() const;
 
-    void setTables(const QMap<int, Core::Table *> &);
+    void setData(Core::Data *data);
 
     void show();
     void hide();
@@ -54,7 +54,7 @@ private:
     void updateScrollAreaMinWidth();
 
     Ui::Content *ui;
-    QMap<int, Core::Table*> tables;
+    Core::Data *data;
     Table *table;
     int tableId;
 };

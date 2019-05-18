@@ -9,6 +9,7 @@
 Content::Content(QWidget *parent) :
     Block(parent),
     ui(new Ui::Content),
+    data(nullptr),
     table(new Table),
     tableId(-1)
 {
@@ -46,9 +47,9 @@ QSize Content::sizeHint() const
     return QSize(100, height);
 }
 
-void Content::setTables(const QMap<int, Core::Table*> &tables)
+void Content::setData(Core::Data *data)
 {
-    this->tables = tables;
+    this->data = data;
 }
 
 void Content::show()
@@ -67,7 +68,7 @@ void Content::loadTable(int id)
 {
     emptyTable();
     tableId = id;
-    Core::Table *table = tables.value(id, nullptr);
+    Core::Table *table = data->getTables().value(id, nullptr);
     if (!table) return;
     Core::TableRows rows(table->getFilename());
     for (const QList<QString> &row : rows.getRows()) {

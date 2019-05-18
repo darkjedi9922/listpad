@@ -42,7 +42,7 @@ void MainWindow::setData(Core::Data *data)
 {
     this->data = data;
     if (!data) return;
-    ui->content->setTables(data->getTables());
+    ui->content->setData(data);
 
     QMap<int, QString> categories;
     foreach (Core::Table *table, data->getTables()) {
