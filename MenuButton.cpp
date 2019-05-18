@@ -36,25 +36,30 @@ int MenuButton::getMenuId() const
 
 void MenuButton::startEditing()
 {
-    editingInput = new QLineEdit(this->text(), this);
-    this->setText("");
+    if (!editingInput) {
+        editingInput = new QLineEdit(this);
+        editingInput->setStyleSheet(
+            QString("QLineEdit {"
+                    "   border: 0px;"
+                    "   background: %1;"
+                    "   color: %2;"
+                    "   font-family: %3;"
+                    "   font-size: %4pt;"
+                    // textFont.weight() выдает 72. При том, что оно установлено в 200...
+                    // (200 - должно быть bold).
+                    "   font-weight: bold"
+                    "}")
+                    .arg("transparent")
+                    .arg(textColor.name())
+                    .arg(textFont.family())
+                    .arg(textFont.pointSize())
+        );
+    }
+
+    editingInput->setText(this->text());
     editingInput->setGeometry(this->calcTextRect());
-    editingInput->setStyleSheet(
-        QString("QLineEdit {"
-                "   border: 0px;"
-                "   background: %1;"
-                "   color: %2;"
-                "   font-family: %3;"
-                "   font-size: %4pt;"
-                // textFont.weight() выдает 72. При том, что оно установлено в 200...
-                // (200 - должно быть bold).
-                "   font-weight: bold"
-                "}")
-                .arg("transparent")
-                .arg(textColor.name())
-                .arg(textFont.family())
-                .arg(textFont.pointSize())
-    );
+
+    this->setText("");
 
     editingInput->selectAll();
     editingInput->show();
@@ -65,16 +70,12 @@ void MenuButton::startEditing()
 void MenuButton::endEditing()
 {
     // Когда мы будем hide() input, он вызовет еще один сигнал editingFinished(),
-    // который приведет к новому вызову данного слота. В нем он delete, а потом,
-    // когда выполнение функции вернется на уровень обратно, данный метод снова
-    // попытается delete, а delete уже нечего. Чтобы не приводить к второму вызову
-    // сигнала, отключаем объект от слотов совсем.
+    // который приведет к новому вызову данного слота. Чтобы не приводить к второму
+    // вызову сигнала, отключаем объект от слотов совсем.
     editingInput->disconnect();
 
     setText(editingInput->text());
     editingInput->hide();
-    delete editingInput;
-    editingInput = nullptr;
     emit edited();
 }
 
