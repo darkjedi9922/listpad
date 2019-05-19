@@ -14,7 +14,6 @@ Menu::Menu(QWidget *parent) :
     ui->setupUi(this);
     ui->addCategory->setIcon(QIcon(":/images/plus-circle.png"));
     ui->addCategory->setCheckable(false);
-    setFixedWidth(240);
 
     QObject::connect(ui->addCategory, SIGNAL(clicked(bool)),
                      this, SLOT(startCategoryAdding()));
@@ -28,6 +27,19 @@ Menu::~Menu()
 
     delete ui;
     ui = nullptr;
+}
+
+QSize Menu::sizeHint() const
+{
+    return QSize(
+        QWidget::sizeHint().width(),
+        ui->ltButtons->sizeHint().height()
+    );
+}
+
+int Menu::countButtons()
+{
+    return ui->ltCategories->count() + 1;
 }
 
 void Menu::setCategories(const QMap<int, QString> &categories)
@@ -126,6 +138,7 @@ void Menu::setupCategoryButton(MenuButton *button, int newId)
 void Menu::addCategory(MenuButton *category)
 {
     ui->ltCategories->addWidget(category);
+    emit categoryReallyAdded(category->getMenuId());
 }
 
 int Menu::findMaxCategoryId() const

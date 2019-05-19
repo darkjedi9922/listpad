@@ -32,6 +32,7 @@ public slots:
 
 protected:
     virtual void mousePressEvent(QMouseEvent *);
+    virtual void showEvent(QShowEvent *);
 
 private:
     void addCategoryToDatabase(int id, const QString &name);

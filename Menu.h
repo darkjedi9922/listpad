@@ -17,6 +17,11 @@ signals:
     void buttonUnchecked(MenuButton*);
 
     /**
+     * Выбрасывается, при чисто визуальном добавлении.
+     */
+    void categoryReallyAdded(int id);
+
+    /**
      * Выбрасывается, при визуальном добавлении через контекстное меню.
      */
     void categoryAdded(int id);
@@ -32,6 +37,10 @@ signals:
 public:
     explicit Menu(QWidget *parent = nullptr);
     ~Menu();
+
+    virtual QSize sizeHint() const;
+
+    int countButtons();
 
     void setCategories(const QMap<int, QString> &);
     void deleteCategory(MenuButton *category);

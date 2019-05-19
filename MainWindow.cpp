@@ -8,11 +8,30 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->content->hide();
+    ui->menuScroll->setWidget(ui->menu);
+
+    ui->menu->setFixedWidth(240);
+    ui->menuScroll->setFixedWidth(240);
 
     QObject::connect(ui->menu, SIGNAL(buttonChecked(MenuButton*)),
                      this, SLOT(menuButtonChecked(MenuButton*)));
     QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuButton*)),
                      this, SLOT(menuButtonUnchecked(MenuButton*)));
+    QObject::connect(ui->menu, &Menu::categoryReallyAdded, [&] () {
+        // Костыльное исправление размера виджета внутри скроллбара.
+        auto sizeHint = ui->menu->sizeHint();
+        int heightHint = sizeHint.height();
+        int buttonCount = ui->menu->countButtons();
+
+        // sizeHint возвращает высоту, когда кнопки еще не было - учитываем это.
+        int oneButtonHeight = heightHint / (buttonCount - 1);
+
+        // Екстра-костыль: после добавления кнопки sizeHint почему-то остается
+        // прежним, будто никакой кнопки не добавлялось. Поэтому вручную расчитываем
+        // новый размер sizeHint на основе количества кнопок и высоты одной кнопки
+        // (которую тоже костыльно расчитываем).
+        ui->menu->resize(sizeHint.width(), oneButtonHeight * buttonCount);
+    });
     QObject::connect(ui->menu, &Menu::categoryAdded, [=] (int id) {
         this->addCategoryToDatabase(id, ui->menu->getCategoryName(id));
     });
@@ -21,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent) :
         this->data->saveTables();
     });
     QObject::connect(ui->menu, &Menu::categoryDeleted, [=] (int id) {
+        // Костыльное исправление размера виджета внутри скроллбара.
+        ui->menu->resize(ui->menu->sizeHint());
+
         if (ui->content->getCurrentTableId() == id) {
             ui->content->hide();
             ui->content->loadTable(-1);
@@ -87,6 +109,12 @@ void MainWindow::menuButtonUnchecked(MenuButton *)
 void MainWindow::mousePressEvent(QMouseEvent *)
 {
     if (!ui->content->isHidden()) ui->content->resetTableState();
+}
+
+void MainWindow::showEvent(QShowEvent *)
+{
+    // Костыльное исправление размера виджета внутри скроллбара.
+    ui->menu->resize(ui->menu->sizeHint());
 }
 
 // ==== PRIVATE ====
