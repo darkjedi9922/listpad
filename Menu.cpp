@@ -138,6 +138,7 @@ void Menu::setupCategoryButton(MenuButton *button, int newId)
 void Menu::addCategory(MenuButton *category)
 {
     ui->ltCategories->addWidget(category);
+    category->show();
     emit categoryReallyAdded(category->getMenuId());
 }
 

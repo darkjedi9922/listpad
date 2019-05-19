@@ -19,18 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
                      this, SLOT(menuButtonUnchecked(MenuButton*)));
     QObject::connect(ui->menu, &Menu::categoryReallyAdded, [&] () {
         // Костыльное исправление размера виджета внутри скроллбара.
-        auto sizeHint = ui->menu->sizeHint();
-        int heightHint = sizeHint.height();
-        int buttonCount = ui->menu->countButtons();
-
-        // sizeHint возвращает высоту, когда кнопки еще не было - учитываем это.
-        int oneButtonHeight = heightHint / (buttonCount - 1);
-
-        // Екстра-костыль: после добавления кнопки sizeHint почему-то остается
-        // прежним, будто никакой кнопки не добавлялось. Поэтому вручную расчитываем
-        // новый размер sizeHint на основе количества кнопок и высоты одной кнопки
-        // (которую тоже костыльно расчитываем).
-        ui->menu->resize(sizeHint.width(), oneButtonHeight * buttonCount);
+        ui->menu->resize(ui->menu->sizeHint());
     });
     QObject::connect(ui->menu, &Menu::categoryAdded, [=] (int id) {
         this->addCategoryToDatabase(id, ui->menu->getCategoryName(id));
