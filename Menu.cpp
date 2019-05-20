@@ -84,14 +84,6 @@ MenuButton* Menu::getCheckedButton() const
     return checkedButton;
 }
 
-// ==== EVENTS ====
-void Menu::mouseReleaseEvent(QMouseEvent *e)
-{
-    // addCategory кнопка в меню находится ниже других, поэтому ориентируемся на нее.
-    if (e->y() > ui->addCategory->geometry().bottom())
-        uncheckButton();
-}
-
 // ==== PRIVATE ====
 void Menu::setupUiButtons()
 {

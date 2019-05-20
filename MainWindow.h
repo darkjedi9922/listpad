@@ -32,6 +32,7 @@ public slots:
 
 protected:
     virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
     virtual void showEvent(QShowEvent *);
 
 private:

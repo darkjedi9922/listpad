@@ -51,9 +51,6 @@ public:
 
     MenuButton* getCheckedButton() const;
 
-protected:
-    virtual void mouseReleaseEvent(QMouseEvent *);
-
 private:
     void setupUiButtons();
     void removeUiButtons();

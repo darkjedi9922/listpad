@@ -99,7 +99,17 @@ void MainWindow::mousePressEvent(QMouseEvent *)
 {
     if (!ui->content->isHidden()) ui->content->resetTableState();
 }
+void MainWindow::mouseReleaseEvent(QMouseEvent *e)
+{
+    // Узнаем находится ли нажатая позиция только в menuScroll, при этом не в menu
+    auto menuScrollPos = ui->menuScroll->mapTo(this, e->pos());
+    auto menuPos = ui->menu->mapTo(this, e->pos());
+    bool menuScrollContains = ui->menuScroll->rect().contains(menuScrollPos);
+    bool menuContains = ui->menu->rect().contains(menuPos);
+    bool onlyMenuScrollClick = menuScrollContains && !menuContains;
 
+    if (onlyMenuScrollClick) ui->menu->uncheckButton();
+}
 void MainWindow::showEvent(QShowEvent *)
 {
     // Костыльное исправление размера виджета внутри скроллбара.
