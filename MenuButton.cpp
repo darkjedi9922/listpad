@@ -116,5 +116,5 @@ QRect MenuButton::calcTextRect() const
 {
     int spacingBetween = 9;
     return QRect(height() + spacingBetween, 0,
-                 width() - height() - spacingBetween, height());
+                 width() - height() - 18 - spacingBetween, height());
 }
