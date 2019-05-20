@@ -38,6 +38,7 @@ protected:
 private:
     void addCategoryToDatabase(int id, const QString &name);
     void saveSettings();
+    void menuResized();
 
     Ui::MainWindow *ui;
     Core::Data *data;

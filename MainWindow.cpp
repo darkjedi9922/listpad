@@ -18,8 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuButton*)),
                      this, SLOT(menuButtonUnchecked(MenuButton*)));
     QObject::connect(ui->menu, &Menu::categoryReallyAdded, [&] () {
-        // Костыльное исправление размера виджета внутри скроллбара.
-        ui->menu->resize(ui->menu->sizeHint());
+        this->menuResized();
     });
     QObject::connect(ui->menu, &Menu::categoryAdded, [=] (int id) {
         this->addCategoryToDatabase(id, ui->menu->getCategoryName(id));
@@ -29,8 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
         this->data->saveTables();
     });
     QObject::connect(ui->menu, &Menu::categoryDeleted, [=] (int id) {
-        // Костыльное исправление размера виджета внутри скроллбара.
-        ui->menu->resize(ui->menu->sizeHint());
+        this->menuResized();
 
         if (ui->content->getCurrentTableId() == id) {
             ui->content->hide();
@@ -129,4 +127,13 @@ void MainWindow::saveSettings()
     if (!settings) return;
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", geometry());
+}
+
+void MainWindow::menuResized()
+{
+    // Костыльное исправление размера виджета внутри скроллбара.
+    ui->menu->resize(ui->menu->sizeHint());
+
+    // Настройки скроллбара не подстраиваются под новый размер меню автоматически.
+    ui->menuScroll->update();
 }
