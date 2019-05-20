@@ -20,9 +20,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    // Загрузка всех категорий происходит здесь.
     void setData(Core::Data *);
-    void setSettings(QSettings *);
 
+    void setSettings(QSettings *);
     Core::Data* getData() const;
     QSettings* getSettings() const;
 

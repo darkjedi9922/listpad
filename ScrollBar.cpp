@@ -34,6 +34,14 @@ void ScrollBar::setSingleStep(int step)
     slider->setSingleStep(step);
 }
 
+int ScrollBar::getMinimum()
+{
+    return slider->getMinimum();
+}
+int ScrollBar::getMaximum()
+{
+    return slider->getMaximum();
+}
 Slider* ScrollBar::getSlider() const
 {
     return slider;

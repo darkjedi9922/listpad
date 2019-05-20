@@ -15,6 +15,8 @@ public:
     void setMaximum(int max);
     void setSingleStep(int step);
 
+    int getMinimum();
+    int getMaximum();
     Slider *getSlider() const;
 
     void setValue(int);

@@ -19,6 +19,11 @@ MainWindow::MainWindow(QWidget *parent) :
                      this, SLOT(menuButtonUnchecked(MenuButton*)));
     QObject::connect(ui->menu, &Menu::categoryReallyAdded, [&] () {
         this->menuResized();
+
+        // При добавлении новой категории, нужно прокрутить вниз на случай, если
+        // новая категория окажется ниже видимой области.
+        auto vScrollBar = ui->menuScroll->getVerticalScrollBar();
+        vScrollBar->setValue(vScrollBar->getMaximum());
     });
     QObject::connect(ui->menu, &Menu::categoryAdded, [=] (int id) {
         this->addCategoryToDatabase(id, ui->menu->getCategoryName(id));
