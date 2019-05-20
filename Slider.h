@@ -14,6 +14,8 @@ signals:
 public:
     Slider(Qt::Orientation orientation, QWidget *parent = nullptr);
 
+    SliderItem* getSliderItem() const;
+
     // orientation
     void setOrientation(Qt::Orientation);
     Qt::Orientation getOrientation() const;

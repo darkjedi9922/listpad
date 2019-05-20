@@ -20,6 +20,11 @@ Slider::Slider(Qt::Orientation orientation, QWidget *parent) :
     slider->show();
 }
 
+SliderItem* Slider::getSliderItem() const
+{
+    return slider;
+}
+
 void Slider::setOrientation(Qt::Orientation orientation)
 {
     this->orientation = orientation;

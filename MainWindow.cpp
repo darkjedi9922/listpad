@@ -13,6 +13,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menu->setFixedWidth(240);
     ui->menuScroll->setFixedWidth(240);
 
+    auto menuScrollBar = ui->menuScroll->getVerticalScrollBar();
+    auto menuSliderItem = menuScrollBar->getSlider()->getSliderItem();
+    menuScrollBar->setFixedWidth(6);
+    menuSliderItem->setBrush(QColor("#979797"));
+
     QObject::connect(ui->menu, SIGNAL(buttonChecked(MenuButton*)),
                      this, SLOT(menuButtonChecked(MenuButton*)));
     QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuButton*)),
