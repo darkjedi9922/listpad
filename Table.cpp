@@ -11,7 +11,7 @@ Table::Table(QWidget *parent) :
     checkedRealRow(-1),
     rowHeight(27),
     rowCount(1),
-    visibleRowCount(1),
+    visibleRealRowCount(1),
     editingRow(-1),
     lastAddedRow(-1)
 {
@@ -25,7 +25,7 @@ Table::~Table()
 }
 QSize Table::sizeHint() const
 {
-    return QSize(ui->gridLayout->minimumSize().width() * 1.1, rowHeight * visibleRowCount);
+    return QSize(ui->gridLayout->minimumSize().width() * 1.1, rowHeight * visibleRealRowCount);
 }
 
 QList<QString> Table::getRealRow(int row) const
@@ -75,13 +75,13 @@ void Table::setRealRowVisible(int row, bool v)
             if (firstColumn->height() != 0) return;
             // Показываем первую колонку и считаем, что строка стала видима.
             firstColumn->setFixedHeight(rowHeight);
-            visibleRowCount += 1;
+            visibleRealRowCount += 1;
         } else {
             // Если нужно скрыть, а первая колонка уже скрыта - строка уже скрыта.
             if (!v && firstColumn->height() == 0) return;
             // Скрываем первую колонку и считаем, что строка стала скрыта.
             firstColumn->setFixedHeight(0);
-            visibleRowCount -= 1;
+            visibleRealRowCount -= 1;
 
             if (checkedRealRow == row) uncheckRows();
         }
@@ -124,7 +124,7 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
     }
 
     rowCount += 1;
-    visibleRowCount += 1;
+    visibleRealRowCount += 1;
     lastAddedRow = rowToInsert;
     emit rowAdded(rowToInsert);
 }
@@ -145,7 +145,7 @@ void Table::deleteRow(int row)
         }
 
         rowCount -= 1;
-        visibleRowCount -= 1;
+        visibleRealRowCount -= 1;
         emit rowDeleted(row);
     }
 }

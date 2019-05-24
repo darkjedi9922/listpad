@@ -85,7 +85,7 @@ private:
     int checkedRealRow;
     int rowHeight;
     int rowCount;
-    int visibleRowCount;
+    int visibleRealRowCount;
     int editingRow;
     int lastAddedRow;
 };
