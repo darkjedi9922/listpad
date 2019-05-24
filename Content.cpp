@@ -69,6 +69,7 @@ void Content::hide()
 {
     table->uncheckRows();
     Block::hide();
+    eSearch->reset();
 }
 void Content::loadTable(int id)
 {

@@ -1,15 +1,16 @@
 #include "engines/SearchEngine.h"
 #include <QStringList>
 
-#include <QDebug>
-#include <QTime>
-#include <QtConcurrent/QtConcurrent>
-
 SearchEngine::SearchEngine(QLineEdit *searchLine, Table *table)
 {
     this->searchLine = searchLine;
     this->table = table;
     initTextChangedHanler();
+}
+
+void SearchEngine::reset()
+{
+    searchLine->setText("");
 }
 
 void SearchEngine::initTextChangedHanler()

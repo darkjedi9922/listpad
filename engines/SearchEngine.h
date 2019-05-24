@@ -10,6 +10,8 @@ class SearchEngine : public QObject
 public:
     explicit SearchEngine(QLineEdit *searchLine, Table *table);
 
+    void reset();
+
 signals:
     void searchResultsChanged();
 
