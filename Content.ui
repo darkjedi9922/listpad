@@ -63,21 +63,15 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="searchLine">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <widget class="SearchLine" name="searchLine" native="true">
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>30</height>
+        </size>
        </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="placeholderText">
-        <string>Поиск</string>
+       <property name="autoFillBackground">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -98,6 +92,12 @@
    <class>ScrollArea</class>
    <extends>QWidget</extends>
    <header>ScrollArea.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SearchLine</class>
+   <extends>QWidget</extends>
+   <header>widgets/elements/SearchLine.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

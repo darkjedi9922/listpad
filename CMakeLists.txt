@@ -11,12 +11,18 @@ project(Listpad)
 # headers
 file (GLOB HEADERS
     "*.h"
-    "*/*.h")
+    "core/*.h"
+    "engines/*.h"
+    "tools/*.h"
+    "widgets/elements/*.h")
 
 # sources
 file (GLOB SRCS
     "*.cpp"
-    "*/*.cpp")
+    "core/*.cpp"
+    "engines/*.cpp"
+    "tools/*.cpp"
+    "widgets/elements/*.cpp")
 
 # libs
 set (LIBS)
@@ -24,7 +30,7 @@ set (LIBS)
 # qt .ui
 file (GLOB QTUI
     "*.ui"
-    "*/*.ui")
+    "widgets/elements/*.ui")
 
 # qt .qrc
 file (GLOB QRC

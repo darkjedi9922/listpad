@@ -11,6 +11,7 @@ Content::Content(QWidget *parent) :
     ui(new Ui::Content),
     data(nullptr),
     table(new Table),
+    eSearch(nullptr),
     tableId(-1)
 {
     ui->setupUi(this);
@@ -30,7 +31,7 @@ Content::Content(QWidget *parent) :
     QObject::connect(table, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
     QObject::connect(table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEdited(int)));
 
-    eSearch = new SearchEngine(ui->searchLine, table);
+    eSearch = new SearchEngine(ui->searchLine->getSearchLine(), table);
     QObject::connect(eSearch, &SearchEngine::searchResultsChanged, [&]() {
         this->updateTableSize();
     });
