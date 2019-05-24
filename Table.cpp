@@ -8,7 +8,7 @@ Table::Table(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Table),
     checkedRowBrush(QColor("#d5d4d4")),
-    checkedRow(-1),
+    checkedRealRow(-1),
     rowHeight(27),
     rowCount(1),
     visibleRowCount(1),
@@ -82,6 +82,8 @@ void Table::setRealRowVisible(int row, bool v)
             // Скрываем первую колонку и считаем, что строка стала скрыта.
             firstColumn->setFixedHeight(0);
             visibleRowCount -= 1;
+
+            if (checkedRealRow == row) uncheckRows();
         }
     }
 
@@ -134,7 +136,7 @@ void Table::deleteRow(int row)
 {
     if (hasRealRow(row))
     {
-        if (row == checkedRow) uncheckRows();
+        if (row == checkedRealRow) uncheckRows();
 
         for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++)
         {
@@ -157,9 +159,9 @@ int Table::getLastAddedRow() const
     return lastAddedRow;
 }
 
-void Table::checkRow(int row)
+void Table::checkRealRow(int row)
 {
-    if (checkRowWithoutEmit(row)) emit rowChecked(row);
+    if (checkRealRowWithoutEmit(row)) emit rowChecked(row);
 }
 void Table::uncheckRows()
 {
@@ -167,7 +169,7 @@ void Table::uncheckRows()
 }
 int Table::getCheckedRow() const
 {
-    return checkedRow;
+    return checkedRealRow;
 }
 
 int Table::getEditingRow() const
@@ -207,7 +209,7 @@ void Table::startRowEditing(int row)
 {
     if (row != -1) {
         endRowsEditing();
-        checkRow(row);
+        checkRealRow(row);
 
         editingRow = row;
         int columns = ui->gridLayout->columnCount();
@@ -257,18 +259,18 @@ void Table::mouseReleaseEvent(QMouseEvent *e)
 {
     try {
         int row = findRow(e->pos());
-        checkRow(row);
+        checkRealRow(row);
     } catch (...) {
         uncheckRows();
     }
 }
 void Table::paintEvent(QPaintEvent *)
 {
-    if (checkedRow != -1) {
+    if (checkedRealRow != -1) {
         QPainter painter(this);
         painter.setPen(Qt::NoPen);
         painter.setBrush(checkedRowBrush);
-        painter.drawRect(getRowRect(checkedRow));
+        painter.drawRect(getRowRect(checkedRealRow));
     }
 }
 void Table::keyPressEvent(QKeyEvent *e)
@@ -276,38 +278,38 @@ void Table::keyPressEvent(QKeyEvent *e)
     switch (e->key())
     {
     case Qt::Key_F2:
-        if (checkedRow != -1) startRowEditing(checkedRow);
+        if (checkedRealRow != -1) startRowEditing(checkedRealRow);
         break;
     case Qt::Key_Delete:
-        if (checkedRow != -1) {
-            int row = checkedRow;
-            deleteRow(checkedRow);
+        if (checkedRealRow != -1) {
+            int row = checkedRealRow;
+            deleteRow(checkedRealRow);
             emit rowDeleted(row);
         }
         break;
     case Qt::Key_Down:
-        if (checkedRow == -1) {
+        if (checkedRealRow == -1) {
             int firstRow = findRowAfter(0);
-            if (firstRow != -1) checkRow(firstRow);
+            if (firstRow != -1) checkRealRow(firstRow);
         } else {
-            int rowAfter = findRowAfter(checkedRow);
+            int rowAfter = findRowAfter(checkedRealRow);
             if (rowAfter != -1) {
                 uncheckRowsWithoutEmit();
-                checkRowWithoutEmit(rowAfter);
+                checkRealRowWithoutEmit(rowAfter);
                 emit rowRechecked(rowAfter);
             }
         }
         break;
     case Qt::Key_Up:
-        if (checkedRow == -1) {
+        if (checkedRealRow == -1) {
             int lastRow = findRowBefore(ui->gridLayout->rowCount());
-            if (lastRow != -1) checkRow(lastRow);
+            if (lastRow != -1) checkRealRow(lastRow);
         }
         else {
-            int rowBefore = findRowBefore(checkedRow);
+            int rowBefore = findRowBefore(checkedRealRow);
             if (rowBefore != -1) {
                 uncheckRowsWithoutEmit();
-                checkRowWithoutEmit(rowBefore);
+                checkRealRowWithoutEmit(rowBefore);
                 emit rowRechecked(rowBefore);
             }
         }
@@ -328,11 +330,11 @@ void Table::replaceRow(int from, int to)
     }
 }
 
-bool Table::checkRowWithoutEmit(int row)
+bool Table::checkRealRowWithoutEmit(int row)
 {
-    if (row != checkedRow) {
+    if (row != checkedRealRow) {
         endRowsEditing();
-        checkedRow = row;
+        checkedRealRow = row;
         repaint();
         return true;
     }
@@ -341,9 +343,9 @@ bool Table::checkRowWithoutEmit(int row)
 
 bool Table::uncheckRowsWithoutEmit()
 {
-    if (checkedRow != -1) {
+    if (checkedRealRow != -1) {
         endRowsEditing();
-        checkedRow = -1;
+        checkedRealRow = -1;
         repaint();
         return true;
     }

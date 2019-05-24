@@ -46,7 +46,7 @@ public:
     int getLastAddedRow() const;
 
     // checking
-    void checkRow(int row);
+    void checkRealRow(int row);
     void uncheckRows();
     int getCheckedRow() const;
 
@@ -71,7 +71,7 @@ protected:
 
 private:
     void replaceRow(int from, int to);
-    bool checkRowWithoutEmit(int row);
+    bool checkRealRowWithoutEmit(int row);
     bool uncheckRowsWithoutEmit();
 
     // finding
@@ -82,7 +82,7 @@ private:
 
     Ui::Table *ui;
     QBrush checkedRowBrush;
-    int checkedRow;
+    int checkedRealRow;
     int rowHeight;
     int rowCount;
     int visibleRowCount;
