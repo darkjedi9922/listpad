@@ -40,11 +40,7 @@ QList<QString> Table::getRealRow(int row) const
 }
 bool Table::hasRealRow(int row) const
 {
-    int columns = ui->gridLayout->columnCount();
-    for (int i = 0; i < columns; i++) {
-        if (ui->gridLayout->itemAtPosition(row, i)) return true;
-    }
-    return false;
+    return ui->gridLayout->itemAtPosition(row, 0);
 }
 bool Table::isStringsEmpty(int row) const
 {
