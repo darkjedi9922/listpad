@@ -16,6 +16,7 @@ signals:
     void searchResultsChanged();
 
 private:
+    void setupLineStyles();
     void initTextChangedHanler();
     void doShowEachTableRow(std::function<bool (const QStringList &columns)> check);
 

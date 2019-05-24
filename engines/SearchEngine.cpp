@@ -5,12 +5,28 @@ SearchEngine::SearchEngine(QLineEdit *searchLine, Table *table)
 {
     this->searchLine = searchLine;
     this->table = table;
+    setupLineStyles();
     initTextChangedHanler();
 }
 
 void SearchEngine::reset()
 {
     searchLine->setText("");
+}
+
+void SearchEngine::setupLineStyles()
+{
+    searchLine->setStyleSheet(
+        QString("QLineEdit {"
+                "   background: #003366;"
+                "   border: none;"
+                "   font-size: 16px;"
+                "   font-family: Arial;"
+                "   color: white;"
+                "   padding: 4px 6px;"
+                "   width: 200px"
+                "}")
+    );
 }
 
 void SearchEngine::initTextChangedHanler()
