@@ -29,9 +29,15 @@ Content::Content(QWidget *parent) :
     QObject::connect(table, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
     QObject::connect(table, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
     QObject::connect(table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEdited(int)));
+
+    eSearch = new SearchEngine(ui->searchLine, table);
+    QObject::connect(eSearch, &SearchEngine::searchResultsChanged, [&]() {
+        this->updateTableSize();
+    });
 }
 Content::~Content()
 {
+    delete eSearch;
     delete table;
     delete ui;
 

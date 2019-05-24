@@ -4,6 +4,7 @@
 #include "Block.h"
 #include "Table.h"
 #include "core/Data.h"
+#include "engines/SearchEngine.h"
 
 namespace Ui
 {
@@ -56,6 +57,7 @@ private:
     Ui::Content *ui;
     Core::Data *data;
     Table *table;
+    SearchEngine *eSearch;
     int tableId;
 };
 

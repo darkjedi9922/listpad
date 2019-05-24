@@ -11,6 +11,7 @@ Table::Table(QWidget *parent) :
     checkedRow(-1),
     rowHeight(27),
     rowCount(1),
+    visibleRowCount(1),
     editingRow(-1),
     lastAddedRow(-1)
 {
@@ -24,7 +25,7 @@ Table::~Table()
 }
 QSize Table::sizeHint() const
 {
-    return QSize(ui->gridLayout->minimumSize().width() * 1.1, rowHeight * rowCount);
+    return QSize(ui->gridLayout->minimumSize().width() * 1.1, rowHeight * visibleRowCount);
 }
 
 QList<QString> Table::getRealRow(int row) const
@@ -54,6 +55,40 @@ bool Table::isStringsEmpty(int row) const
         if (item && !item->text().isEmpty()) return false;
     }
     return true;
+}
+void Table::setRealRowVisible(int row, bool v)
+{
+    // Для скрытия была попытка использовать метод setVisible() виджета, но
+    // оказалось, что setVisible(true) на скрытом виджете выполняется довольно
+    // долго. В случаях, когда в таблице очень много записей, все они скрыты, и
+    // их всех нужно сразу показать - это затягивается надолго.
+    //
+    // Быстро-выполняющимся решением оказалось изменение высоты.
+
+    int columns = getColumnCount();
+
+    if (columns >= 0) {
+        auto firstColumn = ui->gridLayout->itemAtPosition(row, 0)->widget();
+        if (v) {
+            // Если нужно показать, а первая колонка уже показана, можно смело
+            // выходить - вся строка уже показана.
+            if (firstColumn->height() != 0) return;
+            // Показываем первую колонку и считаем, что строка стала видима.
+            firstColumn->setFixedHeight(rowHeight);
+            visibleRowCount += 1;
+        } else {
+            // Если нужно скрыть, а первая колонка уже скрыта - строка уже скрыта.
+            if (!v && firstColumn->height() == 0) return;
+            // Скрываем первую колонку и считаем, что строка стала скрыта.
+            firstColumn->setFixedHeight(0);
+            visibleRowCount -= 1;
+        }
+    }
+
+    for (int i = 1; i < columns; ++i) {
+        auto column = ui->gridLayout->itemAtPosition(row, i)->widget();
+        column->setFixedHeight(v ? rowHeight : 0);
+    }
 }
 
 void Table::insertRowAfter(const QList<QString> &list, int row)
@@ -87,6 +122,7 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
     }
 
     rowCount += 1;
+    visibleRowCount += 1;
     lastAddedRow = rowToInsert;
     emit rowAdded(rowToInsert);
 }
@@ -107,6 +143,7 @@ void Table::deleteRow(int row)
         }
 
         rowCount -= 1;
+        visibleRowCount -= 1;
         emit rowDeleted(row);
     }
 }
