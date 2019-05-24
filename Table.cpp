@@ -80,6 +80,7 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
         newLineEdit->setEnabled(false);
         newLineEdit->setMinimumWidth(QFontMetrics(newLineEdit->font()).width(newLineEdit->text()) + 10);
         newLineEdit->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored);
+        newLineEdit->setWhatsThis("line-edit");
         ui->gridLayout->addWidget(newLineEdit, rowToInsert, column);
         QObject::connect(newLineEdit, SIGNAL(returnPressed()), this, SLOT(endRowsEditing()));
         column += 1;
@@ -336,6 +337,7 @@ int Table::findRow(const QPoint &point) const
 QLineEdit* Table::getItemAt(int row, int column) const
 {
     QLayoutItem *item = ui->gridLayout->itemAtPosition(row, column);
-    if (item) return static_cast<QLineEdit*>(item->widget());
+    if (item && item->widget() && item->widget()->whatsThis() == "line-edit")
+        return static_cast<QLineEdit*>(item->widget());
     else return nullptr;
 }
