@@ -9,6 +9,11 @@ ScrollArea::ScrollArea(QWidget *parent) :
 
     QObject::connect(vScrollBar->getSlider(), SIGNAL(valueChanged(int)), this, SLOT(vSliderValueChanged(int)));
 }
+ScrollArea::~ScrollArea()
+{
+    delete vScrollBar;
+    vScrollBar = nullptr;
+}
 QSize ScrollArea::sizeHint() const
 {
     if (widget) return widget->sizeHint();
