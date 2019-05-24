@@ -222,6 +222,10 @@ void Content::updateTableSize()
         ui->scrollArea->setMaximumHeight(table->sizeHint().height());
         ui->scrollArea->setMinimumWidth(table->sizeHint().width());
         ui->scrollArea->update();
+
+        // Без этого костыля иногда почему-то остается видимым маленький слайдер
+        // скролл-бара, когда вообще он должен быть скрыт.
+        repaint();
     }
 }
 void Content::updateTableScrollingByRow(int row)
