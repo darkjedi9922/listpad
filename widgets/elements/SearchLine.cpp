@@ -7,6 +7,7 @@ SearchLine::SearchLine(QWidget *parent) :
     ui(new Ui::SearchLine)
 {
     ui->setupUi(this);
+    ui->gridLayout->setContentsMargins(9, 0, 6, 0);
 
     setFixedWidth(200);
     setFixedHeight(30);
@@ -20,6 +21,9 @@ SearchLine::SearchLine(QWidget *parent) :
                 "   color: white;"
                 "}")
     );
+
+    QPixmap icon(":/images/search.png");
+    ui->icon->setImage(icon, QSize(15, 15));
 }
 
 SearchLine::~SearchLine()

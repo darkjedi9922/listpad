@@ -11,5 +11,6 @@
         <file>images/plus-circle.png</file>
         <file>fonts/arial.ttf</file>
         <file>fonts/arialbd.ttf</file>
+        <file>images/search.png</file>
     </qresource>
 </RCC>
