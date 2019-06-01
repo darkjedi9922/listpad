@@ -30,7 +30,7 @@ void SearchEngine::doShowEachTableRow(std::function<bool (const QStringList &col
 {
     int rowCount = table->getRowRealCount();
     for (int i = 1; i < rowCount; ++i) {
-        if (!table->hasRealRow(i)) continue;
+        if (!table->hasRow(i)) continue;
         auto columns = QStringList(table->getRealRow(i));
         bool doShow = check(columns);
         table->setRealRowVisible(i, doShow);

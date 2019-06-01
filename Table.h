@@ -10,10 +10,6 @@ namespace Ui {
 class Table;
 }
 /*
- * Этот класс создан на основе GridLayout. Но так как в нем
- * после удаления строк сами строки еще остаются и учитываются
- * при подсчете rowCount, в этом классе это нужно учитывать.
- *
  * Real Rows включают заголовок таблицы.
  */
 class Table : public QWidget
@@ -34,9 +30,10 @@ public:
     virtual QSize sizeHint() const;
 
     QList<QString> getRealRow(int row) const;
-    bool hasRealRow(int row) const;
+    bool hasRow(int row) const;
     bool isStringsEmpty(int row) const;
     void setRealRowVisible(int row, bool);
+    bool isRealRowVisible(int row) const;
 
     // adding
     void insertRowAfter(const QList<QString> &list, int row);
@@ -74,9 +71,10 @@ private:
     bool checkRealRowWithoutEmit(int row);
     bool uncheckRowsWithoutEmit();
 
+    int toActualRow(int visibleRow) const;
+    int toVisibleRow(int actualRow) const;
+
     // finding
-    int findRowBefore(int row) const;
-    int findRowAfter(int row) const;
     int findRow(const QPoint &point) const;
     QLineEdit* getItemAt(int row, int column) const;
 

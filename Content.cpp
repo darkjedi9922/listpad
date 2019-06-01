@@ -100,7 +100,7 @@ void Content::saveTable()
 
         for (int i = 1; i < table->getRowRealCount(); i++)
         {
-            if (table->hasRealRow(i))
+            if (table->hasRow(i))
             {
                 QList<QString> row = table->getRealRow(i);
                 writer.writeStartElement("row");

@@ -25,7 +25,7 @@ Table::~Table()
 }
 QSize Table::sizeHint() const
 {
-    return QSize(ui->gridLayout->minimumSize().width() * 1.1, rowHeight * visibleRealRowCount);
+    return QSize(int(ui->gridLayout->minimumSize().width() * 1.1), rowHeight * visibleRealRowCount);
 }
 
 QList<QString> Table::getRealRow(int row) const
@@ -38,9 +38,10 @@ QList<QString> Table::getRealRow(int row) const
     }
     return list;
 }
-bool Table::hasRealRow(int row) const
+
+bool Table::hasRow(int row) const
 {
-    return ui->gridLayout->itemAtPosition(row, 0);
+    return row >= 0 && row < rowCount;
 }
 bool Table::isStringsEmpty(int row) const
 {
@@ -63,6 +64,7 @@ void Table::setRealRowVisible(int row, bool v)
 
     int columns = getColumnCount();
 
+    // Работаем только с первой колонкой
     if (columns >= 0) {
         auto firstColumn = ui->gridLayout->itemAtPosition(row, 0)->widget();
         if (v) {
@@ -83,10 +85,22 @@ void Table::setRealRowVisible(int row, bool v)
         }
     }
 
+    // Работаем с остальными колонками
     for (int i = 1; i < columns; ++i) {
         auto column = ui->gridLayout->itemAtPosition(row, i)->widget();
         column->setFixedHeight(v ? rowHeight : 0);
     }
+}
+
+bool Table::isRealRowVisible(int row) const
+{
+    if (row == 0) return true;
+
+    int columns = getColumnCount();
+    if (columns == 0) return false;
+
+    auto firstColumn = ui->gridLayout->itemAtPosition(row, 0)->widget();
+    return firstColumn->height() != 0;
 }
 
 void Table::insertRowAfter(const QList<QString> &list, int row)
@@ -126,18 +140,24 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
 }
 void Table::appendRow(const QList<QString> &list)
 {
-    insertRowAfter(list, ui->gridLayout->rowCount() - 1);
+    insertRowAfter(list, rowCount - 1);
 }
 void Table::deleteRow(int row)
 {
-    if (hasRealRow(row))
+    if (hasRow(row))
     {
         if (row == checkedRealRow) uncheckRows();
 
         for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++)
         {
             QLayoutItem *item = ui->gridLayout->itemAtPosition(row, i);
-            if (item) delete ui->gridLayout->itemAtPosition(row, i)->widget();
+            if (item) {
+                item->widget()->hide();
+                // Виджет создавался с родителем - текущим объектом. А при указании
+                // parent, родитель сам удаляет (delete) своих детей. Значит нам
+                // самим удалять не надо (оно и крашится на любые варианты delete).
+                ui->gridLayout->removeItem(item);
+            }
         }
 
         rowCount -= 1;
@@ -191,12 +211,14 @@ int Table::getRowHeight() const
 }
 const QRect Table::getRowRect(int row) const
 {
-    if (hasRealRow(row)) {
+    row = toVisibleRow(row);
+
+    if (hasRow(row)) {
         int top = 0;
-        for (int i = 0; i < row; i++) if (hasRealRow(i)) top += rowHeight;
+        for (int i = 0; i < row; i++) if (hasRow(i)) top += rowHeight;
         return QRect(0, top, width(), rowHeight);
     }
-    //if (hasRealRow(row)) return QRect(0, ui->gridLayout->cellRect(row, 0).top(), width(), rowHeight);
+    //if (hasRow(row)) return QRect(0, ui->gridLayout->cellRect(row, 0).top(), width(), rowHeight);
     else return QRect(0, 0, 0, 0);
 }
 
@@ -284,29 +306,26 @@ void Table::keyPressEvent(QKeyEvent *e)
         }
         break;
     case Qt::Key_Down:
-        if (checkedRealRow == -1) {
-            int firstRow = findRowAfter(0);
-            if (firstRow != -1) checkRealRow(firstRow);
-        } else {
-            int rowAfter = findRowAfter(checkedRealRow);
-            if (rowAfter != -1) {
+        if (visibleRealRowCount == 1) return;
+        if (checkedRealRow == -1) checkRealRow(1);
+        else {
+            int nextRow = toActualRow(toVisibleRow(checkedRealRow) + 1);
+            if (nextRow != -1 && nextRow < visibleRealRowCount) {
                 uncheckRowsWithoutEmit();
-                checkRealRowWithoutEmit(rowAfter);
-                emit rowRechecked(rowAfter);
+                checkRealRowWithoutEmit(nextRow);
+                emit rowRechecked(nextRow);
             }
         }
         break;
     case Qt::Key_Up:
-        if (checkedRealRow == -1) {
-            int lastRow = findRowBefore(ui->gridLayout->rowCount());
-            if (lastRow != -1) checkRealRow(lastRow);
-        }
+        if (visibleRealRowCount == 1) return;
+        if (checkedRealRow == -1) checkRealRow(rowCount - 1);
         else {
-            int rowBefore = findRowBefore(checkedRealRow);
-            if (rowBefore != -1) {
+            int prevRow = toActualRow(toVisibleRow(checkedRealRow) - 1);
+            if (prevRow > 0) {
                 uncheckRowsWithoutEmit();
-                checkRealRowWithoutEmit(rowBefore);
-                emit rowRechecked(rowBefore);
+                checkRealRowWithoutEmit(prevRow);
+                emit rowRechecked(prevRow);
             }
         }
         break;
@@ -348,27 +367,42 @@ bool Table::uncheckRowsWithoutEmit()
     return false;
 }
 
-int Table::findRowBefore(int row) const
+int Table::toActualRow(int visibleRow) const
 {
-    if (row <= 1) return -1;
-    else if (hasRealRow(row - 1)) return (row - 1);
-    else return findRowBefore(row - 1);
+    // Заголовок таблицы всегда 0.
+    if (visibleRow == 0) return 0;
+
+    int visibleCount = 1;
+    for (int i = 1; i < rowCount; ++i) {
+        if (isRealRowVisible(i)) ++visibleCount;
+        if (visibleRow == visibleCount - 1) return i;
+    }
+
+    return -1;
 }
-int Table::findRowAfter(int row) const
+
+int Table::toVisibleRow(int actualRow) const
 {
-    if (row >= ui->gridLayout->rowCount()) return -1;
-    else if (hasRealRow(row + 1)) return (row + 1);
-    else return findRowAfter(row + 1);
+    // Заголовок таблицы всегда 0.
+    if (actualRow == 0) return 0;
+
+    int visibleCount = 1;
+    for (int i = 1; i <= actualRow; ++i) {
+        if (isRealRowVisible(i)) ++visibleCount;
+    }
+
+    return visibleCount - 1;
 }
+
 int Table::findRow(const QPoint &point) const
 {
-    for (int i = 1, c = ui->gridLayout->rowCount(); i < c; i++) {
-        QRect cellRect = ui->gridLayout->cellRect(i, 0);
-        QRect rowRect = QRect(0, cellRect.top(), width(), cellRect.height());
-        if (rowRect.contains(point)) return i;
-    }
+    int visibleRow = point.y() / rowHeight;
+    int actualRow = toActualRow(visibleRow);
+    qDebug() << actualRow;
+    if (actualRow != -1 && actualRow != 0) return actualRow;
     throw "Row rect was not found.";
 }
+
 QLineEdit* Table::getItemAt(int row, int column) const
 {
     QLayoutItem *item = ui->gridLayout->itemAtPosition(row, column);
