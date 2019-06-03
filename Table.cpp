@@ -147,6 +147,7 @@ void Table::deleteRow(int row)
     if (hasRow(row))
     {
         if (row == checkedRealRow) uncheckRows();
+        if (isRealRowVisible(row)) visibleRealRowCount -= 1;
 
         for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++)
         {
@@ -160,15 +161,16 @@ void Table::deleteRow(int row)
             }
         }
 
+        // Перемещаем все следующие ряды на 1 вверх (на 1 освобожденное место)
+        for (int i = row + 1; i < rowCount; ++i) replaceRow(i, i - 1);
+
         rowCount -= 1;
-        visibleRealRowCount -= 1;
         emit rowDeleted(row);
     }
 }
 void Table::empty()
 {
-    int rows = ui->gridLayout->rowCount();
-    for (int i = 1; i < rows; i++) deleteRow(i);
+    while (rowCount > 1) deleteRow(rowCount - 1);
 }
 int Table::getLastAddedRow() const
 {
