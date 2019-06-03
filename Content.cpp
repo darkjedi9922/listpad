@@ -39,10 +39,12 @@ Content::Content(QWidget *parent) :
 Content::~Content()
 {
     delete eSearch;
-    delete table;
-    delete ui;
+    eSearch = nullptr;
 
+    delete table;
     table = nullptr;
+
+    delete ui;
     ui = nullptr;
 }
 QSize Content::sizeHint() const
