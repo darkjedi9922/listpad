@@ -21,7 +21,6 @@ class Table : public QWidget
 
 signals:
     void rowChecked(int row);
-    void rowRechecked(int row);
     void rowsUnchecked();
     void rowAdded(int row);
     void rowDeleted(int row);
@@ -32,11 +31,11 @@ public:
     ~Table();
     virtual QSize sizeHint() const;
 
-    QList<QString> getRealRow(int row) const;
+    QList<QString> getRow(int row) const;
     bool hasRow(int row) const;
     bool isStringsEmpty(int row) const;
-    void setRealRowVisible(int row, bool);
-    bool isRealRowVisible(int row) const;
+    void setRowVisible(int row, bool);
+    bool isRowVisible(int row) const;
 
     // adding
     void insertRowAfter(const QList<QString> &list, int row);
@@ -46,7 +45,7 @@ public:
     int getLastAddedRow() const;
 
     // checking
-    void checkRealRow(int row);
+    void checkRow(int row);
     void uncheckRows();
 
     /**
@@ -60,7 +59,6 @@ public:
     int getColumnCount() const;
     int getRowCount() const;
     int getVisibleRowCount() const;
-    int getRowRealCount() const;
     int getRowHeight() const;
     const QRect getRowRect(int row) const;
 
@@ -76,8 +74,6 @@ protected:
 
 private:
     void replaceRow(int from, int to);
-    bool checkRealRowWithoutEmit(int row);
-    bool uncheckRowsWithoutEmit();
 
     int toActualRow(int visibleRow) const;
     int toVisibleRow(int actualRow) const;
@@ -92,11 +88,11 @@ private:
     /**
      * Если никакой ряд не выделен, равен -1.
      */
-    int checkedRealRow;
+    int checkedRow;
 
     int rowHeight;
     int rowCount;
-    int visibleRealRowCount;
+    int visibleRowCount;
     int editingRow;
     int lastAddedRow;
 

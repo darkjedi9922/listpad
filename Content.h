@@ -32,7 +32,6 @@ public:
 
 public slots:
     void tableRowChecked(int row);
-    void tableRowRechecked(int row);
     void tableRowsUnchecked();
     void tableRowDeleted();
     void tableRowEdited(int row);

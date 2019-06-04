@@ -8,10 +8,10 @@ Table::Table(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Table),
     checkedRowBrush(QColor("#d5d4d4")),
-    checkedRealRow(-1),
+    checkedRow(-1),
     rowHeight(27),
     rowCount(1),
-    visibleRealRowCount(1),
+    visibleRowCount(1),
     editingRow(-1),
     lastAddedRow(-1),
     downArrowClickHandler(this),
@@ -29,10 +29,10 @@ Table::~Table()
 }
 QSize Table::sizeHint() const
 {
-    return QSize(int(ui->gridLayout->minimumSize().width() * 1.1), rowHeight * visibleRealRowCount);
+    return QSize(int(ui->gridLayout->minimumSize().width() * 1.1), rowHeight * visibleRowCount);
 }
 
-QList<QString> Table::getRealRow(int row) const
+QList<QString> Table::getRow(int row) const
 {
     QList<QString> list;
     for (int i = 0; i < getColumnCount(); i++) {
@@ -57,7 +57,7 @@ bool Table::isStringsEmpty(int row) const
     }
     return true;
 }
-void Table::setRealRowVisible(int row, bool v)
+void Table::setRowVisible(int row, bool v)
 {
     // Для скрытия была попытка использовать метод setVisible() виджета, но
     // оказалось, что setVisible(true) на скрытом виджете выполняется довольно
@@ -77,15 +77,15 @@ void Table::setRealRowVisible(int row, bool v)
             if (firstColumn->height() != 0) return;
             // Показываем первую колонку и считаем, что строка стала видима.
             firstColumn->setFixedHeight(rowHeight);
-            visibleRealRowCount += 1;
+            visibleRowCount += 1;
         } else {
             // Если нужно скрыть, а первая колонка уже скрыта - строка уже скрыта.
             if (!v && firstColumn->height() == 0) return;
             // Скрываем первую колонку и считаем, что строка стала скрыта.
             firstColumn->setFixedHeight(0);
-            visibleRealRowCount -= 1;
+            visibleRowCount -= 1;
 
-            if (checkedRealRow == row) uncheckRows();
+            if (checkedRow == row) uncheckRows();
         }
     }
 
@@ -96,7 +96,7 @@ void Table::setRealRowVisible(int row, bool v)
     }
 }
 
-bool Table::isRealRowVisible(int row) const
+bool Table::isRowVisible(int row) const
 {
     if (row == 0) return true;
 
@@ -138,7 +138,7 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
     }
 
     rowCount += 1;
-    visibleRealRowCount += 1;
+    visibleRowCount += 1;
     lastAddedRow = rowToInsert;
     emit rowAdded(rowToInsert);
 }
@@ -150,8 +150,8 @@ void Table::deleteRow(int row)
 {
     if (hasRow(row))
     {
-        if (row == checkedRealRow) uncheckRows();
-        if (isRealRowVisible(row)) visibleRealRowCount -= 1;
+        if (row == checkedRow) uncheckRows();
+        if (isRowVisible(row)) visibleRowCount -= 1;
 
         for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++)
         {
@@ -181,17 +181,25 @@ int Table::getLastAddedRow() const
     return lastAddedRow;
 }
 
-void Table::checkRealRow(int row)
+void Table::checkRow(int row)
 {
-    if (checkRealRowWithoutEmit(row)) emit rowChecked(row);
+    if (row == checkedRow) return;
+    endRowsEditing();
+    checkedRow = row;
+    repaint();
+    emit rowChecked(row);
 }
 void Table::uncheckRows()
 {
-    if (uncheckRowsWithoutEmit()) emit rowsUnchecked();
+    if (checkedRow == -1) return;
+    endRowsEditing();
+    checkedRow = -1;
+    repaint();
+    rowsUnchecked();
 }
 int Table::getCheckedRow() const
 {
-    return checkedRealRow;
+    return checkedRow;
 }
 
 int Table::getEditingRow() const
@@ -210,11 +218,7 @@ int Table::getRowCount() const
 
 int Table::getVisibleRowCount() const
 {
-    return visibleRealRowCount;
-}
-int Table::getRowRealCount() const
-{
-    return ui->gridLayout->rowCount();
+    return visibleRowCount;
 }
 int Table::getRowHeight() const
 {
@@ -238,7 +242,7 @@ void Table::startRowEditing(int row)
 {
     if (row != -1) {
         endRowsEditing();
-        checkRealRow(row);
+        checkRow(row);
 
         editingRow = row;
         int columns = ui->gridLayout->columnCount();
@@ -288,18 +292,18 @@ void Table::mouseReleaseEvent(QMouseEvent *e)
 {
     try {
         int row = findRow(e->pos());
-        checkRealRow(row);
+        checkRow(row);
     } catch (...) {
         uncheckRows();
     }
 }
 void Table::paintEvent(QPaintEvent *)
 {
-    if (checkedRealRow != -1) {
+    if (checkedRow != -1) {
         QPainter painter(this);
         painter.setPen(Qt::NoPen);
         painter.setBrush(checkedRowBrush);
-        painter.drawRect(getRowRect(checkedRealRow));
+        painter.drawRect(getRowRect(checkedRow));
     }
 }
 void Table::keyPressEvent(QKeyEvent *e)
@@ -307,12 +311,12 @@ void Table::keyPressEvent(QKeyEvent *e)
     switch (e->key())
     {
     case Qt::Key_F2:
-        if (checkedRealRow != -1) startRowEditing(checkedRealRow);
+        if (checkedRow != -1) startRowEditing(checkedRow);
         break;
     case Qt::Key_Delete:
-        if (checkedRealRow != -1) {
-            int row = checkedRealRow;
-            deleteRow(checkedRealRow);
+        if (checkedRow != -1) {
+            int row = checkedRow;
+            deleteRow(checkedRow);
             emit rowDeleted(row);
         }
         break;
@@ -334,28 +338,6 @@ void Table::replaceRow(int from, int to)
     }
 }
 
-bool Table::checkRealRowWithoutEmit(int row)
-{
-    if (row != checkedRealRow) {
-        endRowsEditing();
-        checkedRealRow = row;
-        repaint();
-        return true;
-    }
-    return false;
-}
-
-bool Table::uncheckRowsWithoutEmit()
-{
-    if (checkedRealRow != -1) {
-        endRowsEditing();
-        checkedRealRow = -1;
-        repaint();
-        return true;
-    }
-    return false;
-}
-
 int Table::toActualRow(int visibleRow) const
 {
     // Заголовок таблицы всегда 0.
@@ -363,7 +345,7 @@ int Table::toActualRow(int visibleRow) const
 
     int visibleCount = 1;
     for (int i = 1; i < rowCount; ++i) {
-        if (isRealRowVisible(i)) ++visibleCount;
+        if (isRowVisible(i)) ++visibleCount;
         if (visibleRow == visibleCount - 1) return i;
     }
 
@@ -377,7 +359,7 @@ int Table::toVisibleRow(int actualRow) const
 
     int visibleCount = 1;
     for (int i = 1; i <= actualRow; ++i) {
-        if (isRealRowVisible(i)) ++visibleCount;
+        if (isRowVisible(i)) ++visibleCount;
     }
 
     return visibleCount - 1;
@@ -387,7 +369,6 @@ int Table::findRow(const QPoint &point) const
 {
     int visibleRow = point.y() / rowHeight;
     int actualRow = toActualRow(visibleRow);
-    qDebug() << actualRow;
     if (actualRow != -1 && actualRow != 0) return actualRow;
     throw "Row rect was not found.";
 }

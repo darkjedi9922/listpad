@@ -28,12 +28,12 @@ void SearchEngine::initTextChangedHanler()
 
 void SearchEngine::doShowEachTableRow(std::function<bool (const QStringList &columns)> check)
 {
-    int rowCount = table->getRowRealCount();
+    int rowCount = table->getRowCount();
     for (int i = 1; i < rowCount; ++i) {
         if (!table->hasRow(i)) continue;
-        auto columns = QStringList(table->getRealRow(i));
+        auto columns = QStringList(table->getRow(i));
         bool doShow = check(columns);
-        table->setRealRowVisible(i, doShow);
+        table->setRowVisible(i, doShow);
     }
     emit searchResultsChanged();
 }

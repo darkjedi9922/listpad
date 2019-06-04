@@ -26,7 +26,6 @@ Content::Content(QWidget *parent) :
     QObject::connect(ui->editButton, SIGNAL(clicked(bool)), this, SLOT(editButtonClicked()));
 
     QObject::connect(table, SIGNAL(rowChecked(int)), this, SLOT(tableRowChecked(int)));
-    QObject::connect(table, SIGNAL(rowRechecked(int)), this, SLOT(tableRowRechecked(int)));
     QObject::connect(table, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
     QObject::connect(table, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
     QObject::connect(table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEdited(int)));
@@ -104,11 +103,11 @@ void Content::saveTable()
         writer.writeStartDocument();
         writer.writeStartElement("table");
 
-        for (int i = 1; i < table->getRowRealCount(); i++)
+        for (int i = 1; i < table->getRowCount(); i++)
         {
             if (table->hasRow(i))
             {
-                QList<QString> row = table->getRealRow(i);
+                QList<QString> row = table->getRow(i);
                 writer.writeStartElement("row");
                 writer.writeAttribute("title", row.at(0));
                 writer.writeAttribute("status", row.at(1));
@@ -144,10 +143,6 @@ void Content::tableRowChecked(int row)
 
     ui->editButton->setEnabled(true);
     ui->deleteButton->setEnabled(true);
-}
-void Content::tableRowRechecked(int row)
-{
-    updateTableScrollingByRow(row);
 }
 void Content::tableRowsUnchecked()
 {

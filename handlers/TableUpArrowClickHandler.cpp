@@ -16,7 +16,7 @@ void TableUpArrowClickHandler::checkLastRow()
     // 0 ряд - заголовок таблицы
     if (table->getVisibleRowCount() > 1) {
         int lastVisibleRow = findPrevVisibleRow(table->getRowCount() - 1);
-        table->checkRealRow(lastVisibleRow);
+        table->checkRow(lastVisibleRow);
     }
 }
 
@@ -25,12 +25,12 @@ void TableUpArrowClickHandler::checkPrevRow()
     int checkedRow = table->getCheckedRow();
     int prevRow = findPrevVisibleRow(checkedRow - 1);
     if (prevRow == -1) return;
-    table->checkRealRow(prevRow);
+    table->checkRow(prevRow);
 }
 
 int TableUpArrowClickHandler::findPrevVisibleRow(int fromRow) const
 {
     if (fromRow < 1) return -1;
-    if (table->isRealRowVisible(fromRow)) return fromRow;
+    if (table->isRowVisible(fromRow)) return fromRow;
     return findPrevVisibleRow(fromRow - 1);
 }
