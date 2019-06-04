@@ -13,7 +13,9 @@ Table::Table(QWidget *parent) :
     rowCount(1),
     visibleRealRowCount(1),
     editingRow(-1),
-    lastAddedRow(-1)
+    lastAddedRow(-1),
+    downArrowClickHandler(this),
+    upArrowClickHandler(this)
 {
     ui->setupUi(this);
     setFocusPolicy(Qt::ClickFocus);
@@ -205,6 +207,11 @@ int Table::getRowCount() const
 {
     return rowCount;
 }
+
+int Table::getVisibleRowCount() const
+{
+    return visibleRealRowCount;
+}
 int Table::getRowRealCount() const
 {
     return ui->gridLayout->rowCount();
@@ -309,30 +316,8 @@ void Table::keyPressEvent(QKeyEvent *e)
             emit rowDeleted(row);
         }
         break;
-    case Qt::Key_Down:
-        if (visibleRealRowCount == 1) return;
-        if (checkedRealRow == -1) checkRealRow(1);
-        else {
-            int nextRow = toActualRow(toVisibleRow(checkedRealRow) + 1);
-            if (nextRow != -1 && nextRow < visibleRealRowCount) {
-                uncheckRowsWithoutEmit();
-                checkRealRowWithoutEmit(nextRow);
-                emit rowRechecked(nextRow);
-            }
-        }
-        break;
-    case Qt::Key_Up:
-        if (visibleRealRowCount == 1) return;
-        if (checkedRealRow == -1) checkRealRow(rowCount - 1);
-        else {
-            int prevRow = toActualRow(toVisibleRow(checkedRealRow) - 1);
-            if (prevRow > 0) {
-                uncheckRowsWithoutEmit();
-                checkRealRowWithoutEmit(prevRow);
-                emit rowRechecked(prevRow);
-            }
-        }
-        break;
+    case Qt::Key_Down: downArrowClickHandler.handle(); break;
+    case Qt::Key_Up: upArrowClickHandler.handle(); break;
     }
 }
 

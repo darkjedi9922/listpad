@@ -13,6 +13,7 @@ file (GLOB HEADERS
     "*.h"
     "core/*.h"
     "engines/*.h"
+    "handlers/*.h"
     "tools/*.h"
     "widgets/elements/*.h")
 
@@ -21,6 +22,7 @@ file (GLOB SRCS
     "*.cpp"
     "core/*.cpp"
     "engines/*.cpp"
+    "handlers/*.cpp"
     "tools/*.cpp"
     "widgets/elements/*.cpp")
 

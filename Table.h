@@ -6,6 +6,9 @@
 #include <QLineEdit>
 #include <QList>
 
+#include "handlers/TableDownArrowClickHandler.h"
+#include "handlers/TableUpArrowClickHandler.h"
+
 namespace Ui {
 class Table;
 }
@@ -45,6 +48,10 @@ public:
     // checking
     void checkRealRow(int row);
     void uncheckRows();
+
+    /**
+     * Если никакой ряд не выделен, возвращает -1
+     */
     int getCheckedRow() const;
 
     int getEditingRow() const;
@@ -52,6 +59,7 @@ public:
     // geometry
     int getColumnCount() const;
     int getRowCount() const;
+    int getVisibleRowCount() const;
     int getRowRealCount() const;
     int getRowHeight() const;
     const QRect getRowRect(int row) const;
@@ -80,12 +88,20 @@ private:
 
     Ui::Table *ui;
     QBrush checkedRowBrush;
+
+    /**
+     * Если никакой ряд не выделен, равен -1.
+     */
     int checkedRealRow;
+
     int rowHeight;
     int rowCount;
     int visibleRealRowCount;
     int editingRow;
     int lastAddedRow;
+
+    TableDownArrowClickHandler downArrowClickHandler;
+    TableUpArrowClickHandler upArrowClickHandler;
 };
 
 #endif // TABLE_H
