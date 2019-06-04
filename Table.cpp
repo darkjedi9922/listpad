@@ -21,7 +21,9 @@ Table::Table(QWidget *parent) :
 Table::~Table()
 {
     endRowsEditing();
+
     delete ui;
+    ui = nullptr;
 }
 QSize Table::sizeHint() const
 {

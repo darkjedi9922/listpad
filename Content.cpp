@@ -41,8 +41,12 @@ Content::~Content()
     delete eSearch;
     eSearch = nullptr;
 
-    delete table;
-    table = nullptr;
+    // Таблица удалится сама, так как она является дочерним виджетом scrollArea,
+    // а в Qt объекты сами удаляют своих детей, которые установили своих родителей
+    // в конструкторе или как setParent(), что и происходит в реализации scrollArea.
+    // Если пытаться ее удалять тут, возникает ошибка записи памяти в куче.
+    // delete table;
+    // table = nullptr;
 
     delete ui;
     ui = nullptr;
