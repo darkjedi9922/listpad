@@ -52,11 +52,7 @@ Content::~Content()
 }
 QSize Content::sizeHint() const
 {
-    int tableHeight = 0;
-    if (!ui->scrollArea->isHidden()) tableHeight = 18 + table->sizeHint().height();
-    int fix = 4; // костыль. без этого размеры почему то возвращаются правильные, а на экране нет
-    int height = 9 + ui->addButton->sizeHint().height() + tableHeight + 9 + fix;
-    return QSize(100, height);
+    return QSize(100, ui->verticalLayout->sizeHint().height());
 }
 
 void Content::setData(Core::Data *data)

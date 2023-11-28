@@ -1,0 +1,9 @@
+{
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "files.associations": {
+    "*.vue": "vue",
+    "*.w32": "javascript",
+    "qpainter": "cpp"
+  },
+  "cmake.configureOnOpen": true
+}
