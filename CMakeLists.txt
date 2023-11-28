@@ -15,6 +15,7 @@ file (GLOB HEADERS
     "engines/*.h"
     "handlers/*.h"
     "tools/*.h"
+    "widgets/*h"
     "widgets/elements/*.h")
 
 # sources
@@ -24,6 +25,7 @@ file (GLOB SRCS
     "engines/*.cpp"
     "handlers/*.cpp"
     "tools/*.cpp"
+    "widgets/*.cpp"
     "widgets/elements/*.cpp")
 
 # libs
