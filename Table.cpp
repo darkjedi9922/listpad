@@ -15,7 +15,8 @@ Table::Table(QWidget *parent) :
     editingRow(-1),
     lastAddedRow(-1),
     downArrowClickHandler(this),
-    upArrowClickHandler(this)
+    upArrowClickHandler(this),
+    loggingCategory("Table")
 {
     ui->setupUi(this);
     setFocusPolicy(Qt::ClickFocus);

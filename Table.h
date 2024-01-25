@@ -5,6 +5,7 @@
 #include "ui_Table.h"
 #include <QLineEdit>
 #include <QList>
+#include <QLoggingCategory>
 
 #include "handlers/TableDownArrowClickHandler.h"
 #include "handlers/TableUpArrowClickHandler.h"
@@ -84,6 +85,7 @@ private:
 
     Ui::Table *ui;
     QBrush checkedRowBrush;
+    QLoggingCategory loggingCategory;
 
     /**
      * Если никакой ряд не выделен, равен -1.
