@@ -9,7 +9,6 @@ Table::Table(QWidget *parent) :
     ui(new Ui::Table),
     checkedRowBrush(QColor("#d5d4d4")),
     checkedRow(-1),
-    rowHeight(27),
     rowCount(1),
     visibleRowCount(1),
     editingRow(-1),
@@ -59,7 +58,7 @@ bool Table::isStringsEmpty(int row) const
     }
     return true;
 }
-void Table::setRowVisible(int row, bool v)
+void Table::setRowVisible(int row, bool visible)
 {
     // Для скрытия была попытка использовать метод setVisible() виджета, но
     // оказалось, что setVisible(true) на скрытом виджете выполняется довольно
@@ -73,18 +72,18 @@ void Table::setRowVisible(int row, bool v)
     // Работаем только с первой колонкой
     if (columns >= 0) {
         auto firstColumn = ui->gridLayout->itemAtPosition(row, 0)->widget();
-        if (v) {
+        if (visible) {
             // Если нужно показать, а первая колонка уже показана, можно смело
             // выходить - вся строка уже показана.
             if (firstColumn->height() != 0) return;
             // Показываем первую колонку и считаем, что строка стала видима.
-            firstColumn->setFixedHeight(rowHeight);
+            firstColumn->setMaximumHeight(QWIDGETSIZE_MAX);
             visibleRowCount += 1;
         } else {
             // Если нужно скрыть, а первая колонка уже скрыта - строка уже скрыта.
-            if (!v && firstColumn->height() == 0) return;
+            if (!visible && firstColumn->height() == 0) return;
             // Скрываем первую колонку и считаем, что строка стала скрыта.
-            firstColumn->setFixedHeight(0);
+            firstColumn->setMaximumHeight(0);
             visibleRowCount -= 1;
 
             if (checkedRow == row) uncheckRows();
@@ -94,7 +93,7 @@ void Table::setRowVisible(int row, bool v)
     // Работаем с остальными колонками
     for (int i = 1; i < columns; ++i) {
         auto column = ui->gridLayout->itemAtPosition(row, i)->widget();
-        column->setFixedHeight(v ? rowHeight : 0);
+        column->setMaximumHeight(visible ? QWIDGETSIZE_MAX : 0);
     }
 }
 
@@ -221,10 +220,6 @@ int Table::getRowCount() const
 int Table::getVisibleRowCount() const
 {
     return visibleRowCount;
-}
-int Table::getRowHeight() const
-{
-    return rowHeight;
 }
 const QRect Table::getRowRect(int actualRow) const
 {
@@ -365,8 +360,15 @@ int Table::toVisibleRow(int actualRow) const
 
 int Table::findRow(const QPoint &point) const
 {
-    int visibleRow = point.y() / rowHeight;
-    int actualRow = toActualRow(visibleRow);
+    int actualRow = -1;
+    // TODO: for optimization, this can be implemented via binary search
+    for (int row = 0; row < ui->gridLayout->rowCount(); ++row) {
+        auto firstCellRect = ui->gridLayout->cellRect(row, 0);
+        if (firstCellRect.top() <= point.y() && point.y() < firstCellRect.bottom()) {
+            actualRow = row;
+            break;
+        }
+    }
     if (actualRow != -1 && actualRow != 0) return actualRow;
     throw "Row rect was not found.";
 }

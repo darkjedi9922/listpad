@@ -60,7 +60,6 @@ public:
     int getColumnCount() const;
     int getRowCount() const;
     int getVisibleRowCount() const;
-    int getRowHeight() const;
     const QRect getRowRect(int row) const;
 
 public slots:
@@ -92,7 +91,6 @@ private:
      */
     int checkedRow;
 
-    int rowHeight;
     int rowCount;
     int visibleRowCount;
     int editingRow;
