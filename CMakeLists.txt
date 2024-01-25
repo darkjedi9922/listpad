@@ -47,7 +47,9 @@ qt5_wrap_ui(QTUI_HEADERS ${QTUI})
 
 # HEADERS is added to be showed in IDE
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS} ${QTUI_HEADERS} ${QT_QRC} windows.rc)
-set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE TRUE)
+# The documentation states WIN32_EXECUTABLE creates an application with WinMain() as entry point instead of main()
+# and therefore has no console output. As well as the app exits immediately in cmd. So disable this value
+set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE FALSE)
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 qt5_use_modules(${PROJECT_NAME} Widgets)
