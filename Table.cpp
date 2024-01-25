@@ -225,17 +225,13 @@ int Table::getRowHeight() const
 {
     return rowHeight;
 }
-const QRect Table::getRowRect(int row) const
+const QRect Table::getRowRect(int actualRow) const
 {
-    row = toVisibleRow(row);
-
-    if (hasRow(row)) {
-        int top = 0;
-        for (int i = 0; i < row; i++) if (hasRow(i)) top += rowHeight;
-        return QRect(0, top, width(), rowHeight);
+    if (hasRow(actualRow)) {
+        auto cellRect = ui->gridLayout->cellRect(actualRow, 0);
+        return QRect(0, cellRect.top(), width(), cellRect.height());
     }
-    //if (hasRow(row)) return QRect(0, ui->gridLayout->cellRect(row, 0).top(), width(), rowHeight);
-    else return QRect(0, 0, 0, 0);
+    return QRect(0, 0, 0, 0);
 }
 
 // ==== PUBLIC SLOTS ====
