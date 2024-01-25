@@ -15,7 +15,7 @@ file (GLOB HEADERS
     "engines/*.h"
     "handlers/*.h"
     "tools/*.h"
-    "widgets/*h"
+    "widgets/*.h"
     "widgets/elements/*.h")
 
 # sources
@@ -34,6 +34,7 @@ set (LIBS)
 # qt .ui
 file (GLOB QTUI
     "*.ui"
+    "widgets/*.ui"
     "widgets/elements/*.ui")
 
 # qt .qrc
