@@ -30,7 +30,8 @@ Table::~Table()
 }
 QSize Table::sizeHint() const
 {
-    return QSize(int(ui->gridLayout->minimumSize().width() * 1.1), rowHeight * visibleRowCount);
+    auto sizeHint = ui->gridLayout->sizeHint();
+    return QSize(int(sizeHint.width() * 1.1), sizeHint.height());
 }
 
 QList<QString> Table::getRow(int row) const
@@ -131,7 +132,7 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
         newLineEdit->setPalette(pal);
         newLineEdit->setEnabled(false);
         newLineEdit->setMinimumWidth(QFontMetrics(newLineEdit->font()).width(newLineEdit->text()) + 10);
-        newLineEdit->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored);
+        newLineEdit->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
         newLineEdit->setWhatsThis("line-edit");
         ui->gridLayout->addWidget(newLineEdit, rowToInsert, column);
         QObject::connect(newLineEdit, SIGNAL(returnPressed()), this, SLOT(endRowsEditing()));
