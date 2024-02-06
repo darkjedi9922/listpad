@@ -6,3 +6,4 @@
 ### Improvements
   - optimize retrieving table row rect when rendering checked rows
   - fix inelegant workarounds forcing updates/recalculations/repaints
+  - add `EventCallback` internal tool for future
