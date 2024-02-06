@@ -5,3 +5,4 @@
 
 ### Improvements
   - optimize retrieving table row rect when rendering checked rows
+  - fix inelegant workarounds forcing updates/recalculations/repaints

@@ -5,6 +5,7 @@
 #include "Table.h"
 #include "core/Data.h"
 #include "engines/SearchEngine.h"
+#include <QLoggingCategory>
 
 namespace Ui
 {
@@ -18,7 +19,6 @@ class Content : public Block
 public:
     explicit Content(QWidget *parent = nullptr);
     ~Content();
-    virtual QSize sizeHint() const;
 
     void setData(Core::Data *data);
 
@@ -41,22 +41,17 @@ public slots:
     void deleteButtonClicked();
     void editButtonClicked();
 
-protected:
-    virtual void resizeEvent(QResizeEvent *);
-
 private:
     void addTableRow(const QList<QString> &list);
     void addTableEmptyRow();
     void createDataDirectoryIfItDoesNotExist();
-    void updateTableSize();
     void updateTableScrollingByRow(int row);
-    void updateScrollAreaMaxHeight();
-    void updateScrollAreaMinWidth();
 
     Ui::Content *ui;
     Core::Data *data;
     Table *table;
     SearchEngine *eSearch;
+    QLoggingCategory loggingCategory;
     int tableId;
 };
 

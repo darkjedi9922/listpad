@@ -1,4 +1,19 @@
 {
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-  "cmake.configureOnOpen": false
+  "cmake.configureOnOpen": false,
+  "files.associations": {
+    "*.vue": "vue",
+    "*.w32": "javascript",
+    "deque": "cpp",
+    "filesystem": "cpp",
+    "list": "cpp",
+    "locale": "cpp",
+    "regex": "cpp",
+    "system_error": "cpp",
+    "vector": "cpp",
+    "xlocmon": "cpp",
+    "xlocnum": "cpp",
+    "xstring": "cpp",
+    "queue": "cpp"
+  }
 }

@@ -11,6 +11,7 @@ Slider::Slider(Qt::Orientation orientation, QWidget *parent) :
     minimum(0),
     maximum(10),
     value(0),
+    loggingCategory("Slider"),
     sliderFixedLength(-1),
     lastPixelValue(0),
     moving(false)
@@ -69,11 +70,14 @@ int Slider::getMaximum() const
 void Slider::setValue(int value)
 {
     if (value != this->value) {
+        qCDebug(loggingCategory) << "Setting value to" << value;
         if (value < minimum) {
+            qCDebug(loggingCategory) << "Adjusting the value to the minimum" << minimum;
             this->value = minimum;
             setSliderPosition(0);
             emit valueChanged(this->value);
         } else if (value > maximum) {
+            qCDebug(loggingCategory) << "Adjusting the value to the maximum" << maximum;
             this->value = maximum;
             setSliderPosition(getLength() - getSliderLength());
             emit valueChanged(this->value);
@@ -81,6 +85,7 @@ void Slider::setValue(int value)
             if (value % singleStep != 0) {
                 if (value > this->value) value += singleStep - value % singleStep;
                 else if (value < this->value) value -= singleStep - value % singleStep;
+                qCDebug(loggingCategory) << "value adjusted to the" << value;
             }
             this->value = value;
             setSliderPosition(calcPixelValueFromReal(value));

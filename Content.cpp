@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDir>
 #include <QXmlStreamReader>
+#include <QTimer>
 #include "core/TableRows.h"
 
 // ==== PUBLIC ====
@@ -12,7 +13,8 @@ Content::Content(QWidget *parent) :
     data(nullptr),
     table(new Table),
     eSearch(nullptr),
-    tableId(-1)
+    tableId(-1),
+    loggingCategory("Content")
 {
     ui->setupUi(this);
     ui->scrollArea->setWidget(table);
@@ -31,9 +33,6 @@ Content::Content(QWidget *parent) :
     QObject::connect(table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEdited(int)));
 
     eSearch = new SearchEngine(ui->searchLine->getSearchLine(), table);
-    QObject::connect(eSearch, &SearchEngine::searchResultsChanged, [&]() {
-        this->updateTableSize();
-    });
 }
 Content::~Content()
 {
@@ -49,10 +48,6 @@ Content::~Content()
 
     delete ui;
     ui = nullptr;
-}
-QSize Content::sizeHint() const
-{
-    return QSize(100, ui->verticalLayout->sizeHint().height());
 }
 
 void Content::setData(Core::Data *data)
@@ -135,6 +130,7 @@ int Content::getCurrentTableId() const
 // ==== PUBLIC SLOTS ====
 void Content::tableRowChecked(int row)
 {
+    qCDebug(loggingCategory) << "Checking table row" << row;
     updateTableScrollingByRow(row);
 
     ui->editButton->setEnabled(true);
@@ -147,14 +143,12 @@ void Content::tableRowsUnchecked()
 }
 void Content::tableRowDeleted()
 {
-    updateTableSize();
     if (table->getRowCount() == 1) ui->scrollArea->hide();
     else table->setFocus();
 }
 void Content::tableRowEdited(int row)
 {
     if (table->isStringsEmpty(row)) table->deleteRow(row);
-    updateTableSize();
 }
 void Content::resetTableState()
 {
@@ -165,8 +159,12 @@ void Content::resetTableState()
 void Content::addButtonClicked()
 {
     addTableEmptyRow();
-    updateTableScrollingByRow(table->getEditingRow());
     table->startRowEditing(table->getLastAddedRow());
+    qCDebug(loggingCategory) << "Started row editing";
+    
+    QTimer::singleShot(100, [&]() {
+        updateTableScrollingByRow(table->getEditingRow());
+    });
 }
 void Content::deleteButtonClicked()
 {
@@ -177,21 +175,14 @@ void Content::editButtonClicked()
     table->startRowEditing(table->getCheckedRow());
 }
 
-// ==== EVENTS ====
-void Content::resizeEvent(QResizeEvent *)
-{
-    updateTableSize();
-}
-
 // ==== PRIVATE ====
 void Content::addTableRow(const QList<QString> &list)
 {
+    qCDebug(loggingCategory) << "Adding table row of" << list.size() << "elements";
     if (ui->scrollArea->isHidden()) ui->scrollArea->show();
 
     if (table->getCheckedRow() == -1) table->appendRow(list);
     else table->insertRowAfter(list, table->getCheckedRow());
-
-    updateTableSize();
 }
 void Content::addTableEmptyRow()
 {
@@ -208,35 +199,21 @@ void Content::createDataDirectoryIfItDoesNotExist()
     }
 }
 
-void Content::updateTableSize()
-{
-    if (!ui->scrollArea->isHidden())
-    {
-        int vScrollBarWidth = ui->scrollArea->getVerticalScrollBar()->width();
-        if (ui->scrollArea->getVerticalScrollBar()->isHidden()) vScrollBarWidth = 0;
-        int width = ui->scrollArea->width() - vScrollBarWidth;
-        int height = table->sizeHint().height();
-        table->resize(width, height);
-
-        ui->scrollArea->setMaximumHeight(table->sizeHint().height());
-        ui->scrollArea->setMinimumWidth(table->sizeHint().width());
-        ui->scrollArea->update();
-
-        // Без этого костыля иногда почему-то остается видимым маленький слайдер
-        // скролл-бара, когда вообще он должен быть скрыт.
-        repaint();
-    }
-}
 void Content::updateTableScrollingByRow(int row)
 {
     QRect rowRect = table->getRowRect(row);
     int scrollValue = ui->scrollArea->getVerticalScrollBar()->getValue();
+    qCDebug(loggingCategory) << "updateTableScrollingByRow" << row << "rowRect =" << rowRect;
     int rowGlobalTop = rowRect.top() - scrollValue;
-    if (rowGlobalTop < 0) ui->scrollArea->getVerticalScrollBar()->setValue(scrollValue + rowGlobalTop);
-    else {
+    if (rowGlobalTop < 0) {
+        qCDebug(loggingCategory) << "updateTableScrollingByRow.scroll (1)" << scrollValue + rowGlobalTop; 
+        ui->scrollArea->getVerticalScrollBar()->setValue(scrollValue + rowGlobalTop);
+    } else {
         int rowGlobalBottom = rowRect.bottom() - scrollValue;
         int scrollAreaHeight = ui->scrollArea->height();
         if (rowGlobalBottom > scrollAreaHeight) {
+            qCDebug(loggingCategory) << "updateTableScrollingByRow.scroll (2)"
+                << scrollValue + rowGlobalBottom - scrollAreaHeight + 1;
             ui->scrollArea->getVerticalScrollBar()->setValue(scrollValue + rowGlobalBottom - scrollAreaHeight + 1);
         }
     }

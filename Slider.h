@@ -2,6 +2,7 @@
 #define SLIDER_H
 
 #include <QWidget>
+#include <QLoggingCategory>
 #include "SliderItem.h"
 
 class Slider : public QWidget
@@ -56,6 +57,7 @@ private:
 
     SliderItem *slider;
     Qt::Orientation orientation;
+    QLoggingCategory loggingCategory;
     int singleStep;
     int minimum;
     int maximum;

@@ -1,8 +1,10 @@
 #include "ScrollArea.h"
+#include <QEvent>
 
 ScrollArea::ScrollArea(QWidget *parent) :
     QWidget(parent),
     vScrollBar(new ScrollBar(Qt::Vertical, this)),
+    loggingCategory("ScrollArea"),
     widget(nullptr)
 {
     vScrollBar->resize(15, height());
@@ -16,8 +18,12 @@ ScrollArea::~ScrollArea()
 }
 QSize ScrollArea::sizeHint() const
 {
-    if (widget) return widget->sizeHint();
-    else return QSize(0, 0);
+    if (widget) {
+        qCDebug(loggingCategory) << "sizeHint" << widget->sizeHint();
+        return widget->sizeHint();
+    } else {
+        return QSize(0, 0);
+    }
 }
 
 void ScrollArea::update()
@@ -53,7 +59,30 @@ ScrollBar* ScrollArea::getVerticalScrollBar() const
 
 void ScrollArea::resizeEvent(QResizeEvent *)
 {
+    qCDebug(loggingCategory) << "Resize event received";
     update();
+}
+bool ScrollArea::event(QEvent *event) {
+    if (event->type() == QEvent::LayoutRequest) {
+        qCDebug(loggingCategory) << "Layout request event received";
+        if (widget) {
+            qCDebug(loggingCategory) << "layoutRequest.widget.sizeHint" << widget->sizeHint();
+            qCDebug(loggingCategory) << "layoutRequest.currentSize" << size();
+
+            int vScrollBarWidth = vScrollBar->width();
+            if (vScrollBar->isHidden()) {
+                vScrollBarWidth = 0;
+            }
+            int width = this->width() - vScrollBarWidth;
+            int height = widget->sizeHint().height();
+            widget->resize(width, height);
+            update();
+
+            updateGeometry();
+            return true;
+        }
+    }
+    return QWidget::event(event);
 }
 
 void ScrollArea::vSliderValueChanged(int value)

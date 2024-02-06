@@ -2,6 +2,7 @@
 #define SCROLLAREA_H
 
 #include <QWidget>
+#include <QLoggingCategory>
 #include "ScrollBar.h"
 
 class ScrollArea : public QWidget
@@ -19,8 +20,10 @@ public:
 
 protected:
     virtual void resizeEvent(QResizeEvent *);
+    bool event(QEvent *event) override;
 
 private:
+    QLoggingCategory loggingCategory;
     ScrollBar *vScrollBar;
     QWidget *widget;
 

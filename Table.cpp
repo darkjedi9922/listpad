@@ -233,6 +233,7 @@ const QRect Table::getRowRect(int actualRow) const
 // ==== PUBLIC SLOTS ====
 void Table::startRowEditing(int row)
 {
+    qCInfo(loggingCategory) << "Starting editing row" << row;
     if (row != -1) {
         endRowsEditing();
         checkRow(row);
