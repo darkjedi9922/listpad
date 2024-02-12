@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "widgets/SimpleScrollBar.h"
 
 // ==== PUBLIC ====
 MainWindow::MainWindow(QWidget *parent) :
@@ -8,15 +9,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->content->hide();
-    ui->menuScroll->setWidget(ui->menu);
-
-    ui->menu->setFixedWidth(240);
+    
     ui->menuScroll->setFixedWidth(240);
+    ui->menuScroll->setVerticalScrollBar(new SimpleScrollBar(Qt::Vertical));
+    ui->menuScroll->horizontalScrollBar()->setEnabled(false);
 
-    auto menuScrollBar = ui->menuScroll->getVerticalScrollBar();
-    auto menuSliderItem = menuScrollBar->getSlider()->getSliderItem();
-    menuScrollBar->setFixedWidth(6);
-    menuSliderItem->setBrush(QColor("#979797"));
+    auto menuScrollBar = ui->menuScroll->verticalScrollBar();
 
     QObject::connect(ui->menu, SIGNAL(buttonChecked(MenuButton*)),
                      this, SLOT(menuButtonChecked(MenuButton*)));
@@ -27,8 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
         // При добавлении новой категории, нужно прокрутить вниз на случай, если
         // новая категория окажется ниже видимой области.
-        auto vScrollBar = ui->menuScroll->getVerticalScrollBar();
-        vScrollBar->setValue(vScrollBar->getMaximum());
+        auto vScrollBar = ui->menuScroll->verticalScrollBar();
+        vScrollBar->setValue(vScrollBar->maximum());
     });
     QObject::connect(ui->menu, &Menu::categoryAdded, [=] (int id) {
         this->addCategoryToDatabase(id, ui->menu->getCategoryName(id));
