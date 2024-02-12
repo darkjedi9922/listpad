@@ -2,7 +2,6 @@
 #define CONTENT_H
 
 #include "Block.h"
-#include "Table.h"
 #include "core/Data.h"
 #include "engines/SearchEngine.h"
 #include <QLoggingCategory>
@@ -49,7 +48,6 @@ private:
 
     Ui::Content *ui;
     Core::Data *data;
-    Table *table;
     SearchEngine *eSearch;
     QLoggingCategory loggingCategory;
     int tableId;

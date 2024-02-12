@@ -13,6 +13,49 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QScrollBar {
+	border: none;
+	background: transparent;
+}
+QScrollBar:vertical {
+	width: 12px;
+}
+QScrollBar:horizontal {
+	height: 12px;
+}
+QScrollBar::handle {
+	background: #249dcd;
+	border-radius: 5px;
+}
+QScrollBar::add-page, QScrollBar::sub-page {
+	background: transparent;
+}
+QScrollBar::add-line, QScrollBar::sub-line {
+	height: 0;
+    width: 0;
+}
+QScrollArea {
+	background: transparent;
+}
+QLineEdit {
+	background: transparent;
+	color: black;
+ 	font-size: 18px;
+	font-family: &quot;Arial&quot;;
+  	padding: 2px 0px;
+	selection-color: white;
+	selection-background-color: #249dcd;
+	border: none;
+}
+QLineEdit:enabled {
+	background: #003366;
+	color: white;
+}
+#table {
+ 	background: transparent;
+}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>18</number>
@@ -78,7 +121,36 @@
     </layout>
    </item>
    <item>
-    <widget class="ScrollArea" name="scrollArea" native="true"/>
+    <widget class="WidgetScrollArea" name="scrollArea">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="lineWidth">
+      <number>0</number>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="Table" name="table">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>640</width>
+        <height>177</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -89,15 +161,21 @@
    <header>DesktopButton.h</header>
   </customwidget>
   <customwidget>
-   <class>ScrollArea</class>
-   <extends>QWidget</extends>
-   <header>ScrollArea.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>SearchLine</class>
    <extends>QWidget</extends>
    <header>widgets/elements/SearchLine.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetScrollArea</class>
+   <extends>QScrollArea</extends>
+   <header>widgets/WidgetScrollArea.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Table</class>
+   <extends>QWidget</extends>
+   <header>Table.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

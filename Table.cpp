@@ -111,11 +111,6 @@ bool Table::isRowVisible(int row) const
 void Table::insertRowAfter(const QList<QString> &list, int row)
 {
     QLineEdit *newLineEdit;
-    QPalette pal(palette());
-    pal.setBrush(QPalette::Base, Qt::transparent);
-    pal.setColor(QPalette::Text, Qt::black);
-    pal.setColor(QPalette::HighlightedText, Qt::white);
-    pal.setColor(QPalette::Highlight, "#249dcd");
 
     int column = 0;
     int rowToInsert = row + 1;
@@ -127,8 +122,6 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
 
     for (QList<QString>::const_iterator it = list.begin(); it != list.end(); it++) {
         newLineEdit = new QLineEdit(*it, this);
-        newLineEdit->setFrame(false);
-        newLineEdit->setPalette(pal);
         newLineEdit->setEnabled(false);
         newLineEdit->setMinimumWidth(QFontMetrics(newLineEdit->font()).width(newLineEdit->text()) + 10);
         newLineEdit->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
@@ -244,10 +237,6 @@ void Table::startRowEditing(int row)
         for (int i = columns - 1; i >= 0; i--) {
             QLineEdit *item = getItemAt(row, i);
             if (item) {
-                QPalette pal(item->palette());
-                pal.setBrush(QPalette::Base, QColor("#003366"));
-                pal.setColor(QPalette::Text, Qt::white);
-                item->setPalette(pal);
                 item->setEnabled(true);
                 item->setFocus();
                 item->setCursorPosition(item->text().length());
@@ -262,10 +251,6 @@ void Table::endRowsEditing()
         for (int i = columns - 1; i >= 0; i--) {
             QLineEdit *item = getItemAt(editingRow, i);
             if (item) {
-                QPalette pal(item->palette());
-                pal.setBrush(QPalette::Base, Qt::transparent);
-                pal.setColor(QPalette::Text, Qt::black);
-                item->setPalette(pal);
                 item->setEnabled(false);
                 item->setMinimumWidth(QFontMetrics(item->font()).width(item->text()) + 10);
             }
