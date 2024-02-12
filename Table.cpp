@@ -350,7 +350,7 @@ int Table::findRow(const QPoint &point) const
     // TODO: for optimization, this can be implemented via binary search
     for (int row = 0; row < ui->gridLayout->rowCount(); ++row) {
         auto firstCellRect = ui->gridLayout->cellRect(row, 0);
-        if (firstCellRect.top() <= point.y() && point.y() < firstCellRect.bottom()) {
+        if (firstCellRect.top() <= point.y() && point.y() <= firstCellRect.bottom()) {
             actualRow = row;
             break;
         }
