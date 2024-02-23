@@ -4,7 +4,8 @@
 
 QSize WidgetScrollArea::sizeHint() const {
   return QSize(
-    this->viewportSizeHint().width(),
+    this->viewportSizeHint().width() +
+      (this->verticalScrollBar()->isVisible() ? this->verticalScrollBar()->width() : 0),
     this->viewportSizeHint().height() +
       (this->horizontalScrollBar()->isVisible() ? this->horizontalScrollBar()->height() : 0)
   );
