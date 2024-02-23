@@ -1,6 +1,8 @@
 #include "Menu.h"
 #include "tools/LayoutIterator.h"
 #include "tools/EventCallback.h"
+#include <QStyleOption>
+#include <QPainter>
 #include <QMouseEvent>
 #include <QMenu>
 
@@ -76,6 +78,14 @@ void Menu::uncheckButton()
 MenuItem* Menu::getCheckedButton() const
 {
     return checkedButton;
+}
+
+void Menu::paintEvent(QPaintEvent *)
+{
+  QStyleOption opt;
+  opt.init(this);
+  QPainter p(this);
+  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 // ==== PRIVATE ====

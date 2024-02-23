@@ -107,6 +107,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
     bool menuContains = ui->menu->rect().contains(menuPos);
     bool onlyMenuScrollClick = menuScrollContains && !menuContains;
 
+    qCDebug(loggingCategory) << "Mouse release event" << menuScrollContains << menuContains;
     if (onlyMenuScrollClick) ui->menu->uncheckButton();
 }
 

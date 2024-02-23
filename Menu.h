@@ -51,6 +51,9 @@ public:
 
     MenuItem* getCheckedButton() const;
 
+protected:
+    virtual void paintEvent(QPaintEvent *);
+
 private:
     void setupUiButtons();
     void removeUiButtons();
