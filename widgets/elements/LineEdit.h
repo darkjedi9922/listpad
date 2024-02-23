@@ -17,6 +17,7 @@ public:
   virtual QSize sizeHint() const;
   virtual QSize minimumSizeHint() const;
 
+  using QLineEdit::cursorRect;
   void setUpdateGeometryMode(UpdateGeometryMode mode);
 
 protected:

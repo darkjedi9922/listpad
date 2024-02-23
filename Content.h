@@ -45,6 +45,7 @@ private:
     void addTableEmptyRow();
     void createDataDirectoryIfItDoesNotExist();
     void updateTableScrollingByRow(int row);
+    void adjustHorizontalScrollForCellCursor(LineEdit *cell);
 
     Ui::Content *ui;
     Core::Data *data;

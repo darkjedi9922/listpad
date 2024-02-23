@@ -6,6 +6,7 @@
 #include <QTimer>
 #include "core/TableRows.h"
 #include "widgets/SimpleScrollBar.h"
+#include "widgets/elements/LineEdit.h"
 
 // ==== PUBLIC ====
 Content::Content(QWidget *parent) :
@@ -31,10 +32,14 @@ Content::Content(QWidget *parent) :
     QObject::connect(ui->table, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
     QObject::connect(ui->table, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
     QObject::connect(ui->table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEdited(int)));
+    QObject::connect(ui->table, &Table::cellCursorPositionChanged, [&](LineEdit *cell) {
+        QTimer::singleShot(25, [cell, this]() {
+            adjustHorizontalScrollForCellCursor(cell);
+        });
+    });
 
     eSearch = new SearchEngine(ui->searchLine->getSearchLine(), ui->table);
 }
-
 Content::~Content()
 {
     delete eSearch;
@@ -215,5 +220,19 @@ void Content::updateTableScrollingByRow(int row)
         if (rowGlobalBottom > viewportHeight) {
             ui->scrollArea->verticalScrollBar()->setValue(scrollValue + rowGlobalBottom - viewportHeight + 1);
         }
+    }
+}
+void Content::adjustHorizontalScrollForCellCursor(LineEdit *cell)
+{
+    auto viewport = ui->scrollArea->viewport();
+    auto margins = ui->table->layout()->contentsMargins();
+    auto viewportRight = viewport->mapToGlobal(viewport->rect().topRight()).x() - margins.right();
+    auto viewportLeft = viewport->mapToGlobal(viewport->rect().topLeft()).x() + margins.left();
+    auto cursorPos = cell->mapToGlobal(cell->cursorRect().topRight()).x();
+    auto horizontalScrollBar = ui->scrollArea->horizontalScrollBar();
+    if (cursorPos > viewportRight) {
+        horizontalScrollBar->setValue(horizontalScrollBar->value() + cursorPos - viewportRight);
+    } else if (cursorPos < viewportLeft) {
+        horizontalScrollBar->setValue(horizontalScrollBar->value() - (viewportLeft - cursorPos));
     }
 }

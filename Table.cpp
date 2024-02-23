@@ -2,6 +2,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QPainter>
+#include "widgets/elements/LineEdit.h"
 
 // ==== PUBLIC ====
 Table::Table(QWidget *parent) :
@@ -110,7 +111,7 @@ bool Table::isRowVisible(int row) const
 
 void Table::insertRowAfter(const QList<QString> &list, int row)
 {
-    QLineEdit *newLineEdit;
+    LineEdit *newLineEdit;
 
     int column = 0;
     int rowToInsert = row + 1;
@@ -121,13 +122,18 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
     }
 
     for (QList<QString>::const_iterator it = list.begin(); it != list.end(); it++) {
-        newLineEdit = new QLineEdit(*it, this);
+        newLineEdit = new LineEdit(*it, this);
         newLineEdit->setEnabled(false);
-        newLineEdit->setMinimumWidth(QFontMetrics(newLineEdit->font()).width(newLineEdit->text()) + 10);
-        newLineEdit->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+        newLineEdit->setUpdateGeometryMode(LineEdit::UpdateGeometryMode::TEXT_CHANGED);
+        newLineEdit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         newLineEdit->setWhatsThis("line-edit");
         ui->gridLayout->addWidget(newLineEdit, rowToInsert, column);
         QObject::connect(newLineEdit, SIGNAL(returnPressed()), this, SLOT(endRowsEditing()));
+        QObject::connect(newLineEdit, &QLineEdit::cursorPositionChanged, [newLineEdit, this]() {
+            if (newLineEdit->isEnabled() && newLineEdit->hasFocus()) {
+                emit cellCursorPositionChanged(newLineEdit);
+            }
+        });
         column += 1;
     }
 
@@ -233,13 +239,14 @@ void Table::startRowEditing(int row)
 
         editingRow = row;
         int columns = ui->gridLayout->columnCount();
-        // Идем с конца, чтобы первый элемент оказался с курсором
-        for (int i = columns - 1; i >= 0; i--) {
+        for (int i = 0; i < columns; ++i) {
             QLineEdit *item = getItemAt(row, i);
             if (item) {
                 item->setEnabled(true);
-                item->setFocus();
-                item->setCursorPosition(item->text().length());
+                if (i == 0) {
+                    item->setFocus();
+                    item->setCursorPosition(item->text().length());
+                }
             }
         }
     }
@@ -252,7 +259,6 @@ void Table::endRowsEditing()
             QLineEdit *item = getItemAt(editingRow, i);
             if (item) {
                 item->setEnabled(false);
-                item->setMinimumWidth(QFontMetrics(item->font()).width(item->text()) + 10);
             }
         }
         int row = editingRow;

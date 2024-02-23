@@ -124,4 +124,3 @@ void MainWindow::saveSettings()
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", geometry());
 }
-

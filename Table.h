@@ -6,7 +6,7 @@
 #include <QLineEdit>
 #include <QList>
 #include <QLoggingCategory>
-
+#include "widgets/elements/LineEdit.h"
 #include "handlers/TableDownArrowClickHandler.h"
 #include "handlers/TableUpArrowClickHandler.h"
 
@@ -26,6 +26,7 @@ signals:
     void rowAdded(int row);
     void rowDeleted(int row);
     void editingFinished(int row);
+    void cellCursorPositionChanged(LineEdit *cell);
 
 public:
     explicit Table(QWidget *parent = nullptr);
