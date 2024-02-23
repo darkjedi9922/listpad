@@ -5,24 +5,19 @@
 // ==== PUBLIC ====
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    loggingCategory("MainWindow")
 {
     ui->setupUi(this);
     ui->content->hide();
     
-    ui->menuScroll->setFixedWidth(240);
     ui->menuScroll->setVerticalScrollBar(new SimpleScrollBar(Qt::Vertical));
-    ui->menuScroll->horizontalScrollBar()->setEnabled(false);
 
     auto menuScrollBar = ui->menuScroll->verticalScrollBar();
 
-    QObject::connect(ui->menu, SIGNAL(buttonChecked(MenuButton*)),
-                     this, SLOT(menuButtonChecked(MenuButton*)));
-    QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuButton*)),
-                     this, SLOT(menuButtonUnchecked(MenuButton*)));
+    QObject::connect(ui->menu, SIGNAL(buttonChecked(MenuItem*)), this, SLOT(menuButtonChecked(MenuItem*)));
+    QObject::connect(ui->menu, SIGNAL(buttonUnchecked(MenuItem*)), this, SLOT(menuButtonUnchecked(MenuItem*)));
     QObject::connect(ui->menu, &Menu::categoryReallyAdded, [&] () {
-        this->menuResized();
-
         // При добавлении новой категории, нужно прокрутить вниз на случай, если
         // новая категория окажется ниже видимой области.
         auto vScrollBar = ui->menuScroll->verticalScrollBar();
@@ -36,8 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
         this->data->saveTables();
     });
     QObject::connect(ui->menu, &Menu::categoryDeleted, [=] (int id) {
-        this->menuResized();
-
         if (ui->content->getCurrentTableId() == id) {
             ui->content->hide();
             ui->content->loadTable(-1);
@@ -84,7 +77,7 @@ QSettings* MainWindow::getSettings() const
 }
 
 // ==== PUBLIC SLOTS ====
-void MainWindow::menuButtonChecked(MenuButton *menu)
+void MainWindow::menuButtonChecked(MenuItem *menu)
 {
     if (ui->content->getCurrentTableId() != menu->getMenuId()) {
         ui->content->saveTable();
@@ -93,7 +86,7 @@ void MainWindow::menuButtonChecked(MenuButton *menu)
     }
     ui->content->show();
 }
-void MainWindow::menuButtonUnchecked(MenuButton *)
+void MainWindow::menuButtonUnchecked(MenuItem *)
 {
     ui->content->resetTableState();
     ui->content->saveTable();
@@ -116,11 +109,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 
     if (onlyMenuScrollClick) ui->menu->uncheckButton();
 }
-void MainWindow::showEvent(QShowEvent *)
-{
-    // Костыльное исправление размера виджета внутри скроллбара.
-    ui->menu->resize(ui->menu->sizeHint());
-}
 
 // ==== PRIVATE ====
 void MainWindow::addCategoryToDatabase(int id, const QString &name)
@@ -137,11 +125,3 @@ void MainWindow::saveSettings()
     settings->setValue("geometry", geometry());
 }
 
-void MainWindow::menuResized()
-{
-    // Костыльное исправление размера виджета внутри скроллбара.
-    ui->menu->resize(ui->menu->sizeHint());
-
-    // Настройки скроллбара не подстраиваются под новый размер меню автоматически.
-    ui->menuScroll->update();
-}

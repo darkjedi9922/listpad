@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MenuItem</class>
+ <widget class="QWidget" name="MenuItem">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>329</width>
+    <height>36</height>
+   </rect>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#icon {
+	min-width: 18px;
+	max-width: 18px;
+	min-height: 18px;
+	max-height: 18px;
+	background: url(:/images/search.png);
+}
+#label {
+	background: transparent;
+	border: none;
+	color: #c5c5c5;
+	font-family: &quot;Arial&quot;;
+	font-size: 12pt;
+	font-weight: bold;
+	margin: 0;
+	padding: 0px;
+}
+QWidget {
+	background: transparent;
+}
+QWidget:hover {
+	background: #383838;
+}
+QWidget[checked=&quot;true&quot;] {
+	background: #0b0b0b;
+}
+QWidget[checked=&quot;true&quot;] #icon {
+	background: url(:/images/checkedFolder.png);
+}
+QWidget[checked=&quot;true&quot;] #label {
+	color: #979797;
+}</string>
+  </property>
+  <property name="checked" stdset="0">
+   <bool>false</bool>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>9</number>
+   </property>
+   <property name="leftMargin">
+    <number>18</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>18</number>
+   </property>
+   <property name="bottomMargin">
+    <number>5</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="icon">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="LineEdit" name="label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::NoContextMenu</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>Menu item</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/elements/LineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

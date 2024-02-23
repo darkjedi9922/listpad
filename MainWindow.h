@@ -2,9 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
-#include "MenuButton.h"
+#include "widgets/elements/MenuItem.h"
 #include "Content.h"
 #include <QSettings>
+#include <QLoggingCategory>
 #include "core/Data.h"
 
 namespace Ui
@@ -28,19 +29,18 @@ public:
     QSettings* getSettings() const;
 
 public slots:
-    void menuButtonChecked(MenuButton*);
-    void menuButtonUnchecked(MenuButton *);
+    void menuButtonChecked(MenuItem *);
+    void menuButtonUnchecked(MenuItem *);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *);
     virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void showEvent(QShowEvent *);
 
 private:
     void addCategoryToDatabase(int id, const QString &name);
     void saveSettings();
-    void menuResized();
 
+    QLoggingCategory loggingCategory;
     Ui::MainWindow *ui;
     Core::Data *data;
     QSettings *settings;

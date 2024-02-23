@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Menu</class>
  <widget class="QWidget" name="Menu">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -104,9 +107,12 @@
     </layout>
    </item>
    <item>
-    <widget class="MenuButton" name="addCategory">
-     <property name="text">
+    <widget class="MenuItem" name="addCategory" native="true">
+     <property name="text" stdset="0">
       <string>Добавить категорию</string>
+     </property>
+     <property name="icon" stdset="0">
+      <string>:/images/plus-circle.png</string>
      </property>
     </widget>
    </item>
@@ -127,11 +133,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MenuButton</class>
-   <extends>QPushButton</extends>
-   <header>MenuButton.h</header>
+   <class>MenuItem</class>
+   <extends>QWidget</extends>
+   <header>widgets/elements/MenuItem.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

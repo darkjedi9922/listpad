@@ -93,9 +93,9 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QScrollArea" name="menuScroll">
+    <widget class="WidgetScrollArea" name="menuScroll">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+      <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -106,16 +106,7 @@
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="Menu" name="menu">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>273</width>
-        <height>539</height>
-       </rect>
-      </property>
-     </widget>
+     <widget class="Menu" name="menu"/>
     </widget>
    </item>
    <item>
@@ -327,6 +318,12 @@
    <class>Content</class>
    <extends>QWidget</extends>
    <header>Content.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetScrollArea</class>
+   <extends>QScrollArea</extends>
+   <header>widgets/WidgetScrollArea.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

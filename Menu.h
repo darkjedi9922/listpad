@@ -2,6 +2,8 @@
 #define MENU_H
 
 #include <QWidget>
+#include <QLoggingCategory>
+#include <QMenu>
 #include "ui_Menu.h"
 
 namespace Ui {
@@ -13,8 +15,8 @@ class Menu : public QWidget
     Q_OBJECT
 
 signals:
-    void buttonChecked(MenuButton*);
-    void buttonUnchecked(MenuButton*);
+    void buttonChecked(MenuItem*);
+    void buttonUnchecked(MenuItem*);
 
     /**
      * Выбрасывается, при чисто визуальном добавлении.
@@ -38,34 +40,33 @@ public:
     explicit Menu(QWidget *parent = nullptr);
     ~Menu();
 
-    virtual QSize sizeHint() const;
-
     int countButtons();
 
     void setCategories(const QMap<int, QString> &);
-    void deleteCategory(MenuButton *category);
+    void deleteCategory(MenuItem *category);
     QString getCategoryName(int id) const;
 
-    void checkButton(MenuButton *button);
+    void checkButton(MenuItem *button);
     void uncheckButton();
 
-    MenuButton* getCheckedButton() const;
+    MenuItem* getCheckedButton() const;
 
 private:
     void setupUiButtons();
     void removeUiButtons();
-    void setupCategoryButton(MenuButton *, int newId);
-    void addCategory(MenuButton *);
-    void startButtonEditing(MenuButton *);
+    void setupCategoryButton(MenuItem *, int newId);
+    void addCategory(MenuItem *);
+    void startButtonEditing(MenuItem *);
     int findMaxCategoryId() const;
     void setupContextMenu();
-    MenuButton* allocCategoryButton();
+    MenuItem* allocCategoryButton();
 
     Ui::Menu *ui;
     QMenu *contextMenu;
     QMap<int, QString> categories;
-    MenuButton *checkedButton;
-    MenuButton *contextMenuButton;
+    MenuItem *checkedButton;
+    MenuItem *contextMenuButton;
+    QLoggingCategory loggingCategory;
 
 private slots:
     void buttonClickedSlot();
