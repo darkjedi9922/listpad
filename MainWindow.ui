@@ -55,7 +55,11 @@
    <bool>true</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">#menuScroll {
+   <string notr="true">#content {
+	background: #e4e4e4;
+	border-radius: 10px;
+}
+#menuScroll {
 	background: #131313;
 	border: none;
 }
@@ -129,9 +133,6 @@
    </item>
    <item>
     <widget class="LogoWidget" name="logo" native="true">
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1000,1">
       <property name="spacing">
        <number>0</number>
@@ -153,6 +154,15 @@
              </color>
             </brush>
            </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
+             </color>
+            </brush>
+           </colorrole>
            <colorrole role="Text">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
@@ -165,18 +175,18 @@
            <colorrole role="Base">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>51</red>
-              <green>51</green>
-              <blue>51</blue>
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
              </color>
             </brush>
            </colorrole>
            <colorrole role="Window">
             <brush brushstyle="SolidPattern">
-             <color alpha="0">
-              <red>15</red>
-              <green>24</green>
-              <blue>40</blue>
+             <color alpha="255">
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
              </color>
             </brush>
            </colorrole>
@@ -200,6 +210,15 @@
              </color>
             </brush>
            </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
+             </color>
+            </brush>
+           </colorrole>
            <colorrole role="Text">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
@@ -212,18 +231,18 @@
            <colorrole role="Base">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>51</red>
-              <green>51</green>
-              <blue>51</blue>
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
              </color>
             </brush>
            </colorrole>
            <colorrole role="Window">
             <brush brushstyle="SolidPattern">
-             <color alpha="0">
-              <red>15</red>
-              <green>24</green>
-              <blue>40</blue>
+             <color alpha="255">
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
              </color>
             </brush>
            </colorrole>
@@ -247,6 +266,15 @@
              </color>
             </brush>
            </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
+             </color>
+            </brush>
+           </colorrole>
            <colorrole role="Text">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
@@ -258,19 +286,19 @@
            </colorrole>
            <colorrole role="Base">
             <brush brushstyle="SolidPattern">
-             <color alpha="0">
-              <red>15</red>
-              <green>24</green>
-              <blue>40</blue>
+             <color alpha="255">
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
              </color>
             </brush>
            </colorrole>
            <colorrole role="Window">
             <brush brushstyle="SolidPattern">
-             <color alpha="0">
-              <red>15</red>
-              <green>24</green>
-              <blue>40</blue>
+             <color alpha="255">
+              <red>228</red>
+              <green>228</green>
+              <blue>228</blue>
              </color>
             </brush>
            </colorrole>
@@ -287,7 +315,7 @@
          </palette>
         </property>
         <property name="autoFillBackground">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
        </widget>
       </item>

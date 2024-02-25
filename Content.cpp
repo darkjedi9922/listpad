@@ -4,13 +4,15 @@
 #include <QDir>
 #include <QXmlStreamReader>
 #include <QTimer>
+#include <QStyleOption>
+#include <QPainter>
 #include "core/TableRows.h"
 #include "widgets/SimpleScrollBar.h"
 #include "widgets/elements/LineEdit.h"
 
 // ==== PUBLIC ====
 Content::Content(QWidget *parent) :
-    Block(parent),
+    QWidget(parent),
     ui(new Ui::Content),
     data(nullptr),
     eSearch(nullptr),
@@ -63,7 +65,7 @@ void Content::setData(Core::Data *data)
 
 void Content::show()
 {
-    Block::show();
+    QWidget::show();
     ui->scrollArea->verticalScrollBar()->setValue(0);
     ui->scrollArea->update();
     ui->table->setFocus();
@@ -71,7 +73,7 @@ void Content::show()
 void Content::hide()
 {
     ui->table->uncheckRows();
-    Block::hide();
+    QWidget::hide();
     eSearch->reset();
 }
 void Content::loadTable(int id)
@@ -179,6 +181,14 @@ void Content::deleteButtonClicked()
 void Content::editButtonClicked()
 {
     ui->table->startRowEditing(ui->table->getCheckedRow());
+}
+
+void Content::paintEvent(QPaintEvent *)
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 // ==== PRIVATE ====

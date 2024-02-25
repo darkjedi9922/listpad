@@ -1,7 +1,7 @@
 #ifndef CONTENT_H
 #define CONTENT_H
 
-#include "Block.h"
+#include <QWidget>
 #include "core/Data.h"
 #include "engines/SearchEngine.h"
 #include <QLoggingCategory>
@@ -11,7 +11,7 @@ namespace Ui
     class Content;
 }
 
-class Content : public Block
+class Content : public QWidget
 {
     Q_OBJECT
 
@@ -39,6 +39,9 @@ public slots:
     void addButtonClicked();
     void deleteButtonClicked();
     void editButtonClicked();
+
+protected:
+    virtual void paintEvent(QPaintEvent *);
 
 private:
     void addTableRow(const QList<QString> &list);
