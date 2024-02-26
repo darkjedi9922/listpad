@@ -3,6 +3,7 @@
 ### Fixes
   - fix content block vertical size causing unnecessary scroll bar
   - make menu more adaptive by replacing menu items implementation
+  - disable add/edit buttons when they should not be enabled to fix unexpected behaviour
 
 ### Improvements
   - optimize retrieving table row rect when rendering checked rows

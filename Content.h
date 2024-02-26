@@ -33,7 +33,9 @@ public slots:
     void tableRowChecked(int row);
     void tableRowsUnchecked();
     void tableRowDeleted();
-    void tableRowEdited(int row);
+    void tableRowEditingStarted(int row);
+    void tableRowEditingFinished(int row);
+    void tableRowTextEdited(int row);
     void resetTableState();
 
     void addButtonClicked();

@@ -15,6 +15,7 @@
     "xlocnum": "cpp",
     "xstring": "cpp",
     "queue": "cpp",
-    "xiosbase": "cpp"
+    "xiosbase": "cpp",
+    "map": "cpp"
   }
 }

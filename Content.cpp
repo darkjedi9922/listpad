@@ -33,7 +33,9 @@ Content::Content(QWidget *parent) :
     QObject::connect(ui->table, SIGNAL(rowChecked(int)), this, SLOT(tableRowChecked(int)));
     QObject::connect(ui->table, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
     QObject::connect(ui->table, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
-    QObject::connect(ui->table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEdited(int)));
+    QObject::connect(ui->table, SIGNAL(editingStarted(int)), this, SLOT(tableRowEditingStarted(int)));
+    QObject::connect(ui->table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEditingFinished(int)));
+    QObject::connect(ui->table, SIGNAL(rowTextEdited(int)), this, SLOT(tableRowTextEdited(int)));
     QObject::connect(ui->table, &Table::cellCursorPositionChanged, [&](LineEdit *cell) {
         QTimer::singleShot(25, [cell, this]() {
             adjustHorizontalScrollForCellCursor(cell);
@@ -154,9 +156,22 @@ void Content::tableRowDeleted()
     if (ui->table->getRowCount() == 1) ui->scrollArea->hide();
     else ui->table->setFocus();
 }
-void Content::tableRowEdited(int row)
+void Content::tableRowEditingStarted(int row)
 {
-    if (ui->table->isStringsEmpty(row)) ui->table->deleteRow(row);
+    ui->editButton->setEnabled(false);
+}
+void Content::tableRowEditingFinished(int row)
+{
+    ui->addButton->setEnabled(true);
+    ui->editButton->setEnabled(true);
+    if (ui->table->isStringsEmpty(row)) {
+        qCInfo(loggingCategory) << "Deleting row" << row;
+        ui->table->deleteRow(row);
+    }
+}
+void Content::tableRowTextEdited(int row)
+{
+    ui->addButton->setEnabled(!ui->table->isStringsEmpty(row));
 }
 void Content::resetTableState()
 {
@@ -167,6 +182,7 @@ void Content::resetTableState()
 void Content::addButtonClicked()
 {
     addTableEmptyRow();
+    ui->addButton->setEnabled(false);
     ui->table->startRowEditing(ui->table->getLastAddedRow());
     qCDebug(loggingCategory) << "Started row editing";
     
@@ -176,6 +192,7 @@ void Content::addButtonClicked()
 }
 void Content::deleteButtonClicked()
 {
+    qCInfo(loggingCategory) << "Deleting row" << ui->table->getCheckedRow();
     ui->table->deleteRow(ui->table->getCheckedRow());
 }
 void Content::editButtonClicked()

@@ -4,6 +4,8 @@
 #include <QPainter>
 #include "widgets/elements/LineEdit.h"
 
+using namespace std;
+
 // ==== PUBLIC ====
 Table::Table(QWidget *parent) :
     QWidget(parent),
@@ -14,6 +16,8 @@ Table::Table(QWidget *parent) :
     visibleRowCount(1),
     editingRow(-1),
     lastAddedRow(-1),
+    deletingRow(-1),
+    lastNewRowId(0),
     downArrowClickHandler(this),
     upArrowClickHandler(this),
     loggingCategory("Table")
@@ -109,7 +113,7 @@ bool Table::isRowVisible(int row) const
     return firstColumn->height() != 0;
 }
 
-void Table::insertRowAfter(const QList<QString> &list, int row)
+Table::row_id Table::insertRowAfter(const QList<QString> &list, int row)
 {
     LineEdit *newLineEdit;
 
@@ -121,6 +125,10 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
         replaceRow(i, i + 1);
     }
 
+    auto id = ++lastNewRowId;
+    rowsById.insert_or_assign(id, rowToInsert);
+    idsByRow.insert_or_assign(rowToInsert, id);
+    qCDebug(loggingCategory) << "Inserted row id" << id << "at row" << rowToInsert;
     for (QList<QString>::const_iterator it = list.begin(); it != list.end(); it++) {
         newLineEdit = new LineEdit(*it, this);
         newLineEdit->setEnabled(false);
@@ -134,6 +142,12 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
                 emit cellCursorPositionChanged(newLineEdit);
             }
         });
+        QObject::connect(newLineEdit, &QLineEdit::textChanged, [id, this]() {
+            auto row = rowsById.at(id);
+            if (editingRow == row) {
+                emit rowTextEdited(row);
+            }
+        });
         column += 1;
     }
 
@@ -141,18 +155,22 @@ void Table::insertRowAfter(const QList<QString> &list, int row)
     visibleRowCount += 1;
     lastAddedRow = rowToInsert;
     emit rowAdded(rowToInsert);
+    return id;
 }
-void Table::appendRow(const QList<QString> &list)
+Table::row_id Table::appendRow(const QList<QString> &list)
 {
-    insertRowAfter(list, rowCount - 1);
+    return insertRowAfter(list, rowCount - 1);
 }
 void Table::deleteRow(int row)
 {
-    if (hasRow(row))
+    if (hasRow(row) && deletingRow != row)
     {
+        qCInfo(loggingCategory) << "Deleting row" << row;
+        deletingRow = row;
         if (row == checkedRow) uncheckRows();
         if (isRowVisible(row)) visibleRowCount -= 1;
 
+        qCDebug(loggingCategory) << "Deleting row (2)";
         for (int i = 0, c = ui->gridLayout->columnCount(); i < c; i++)
         {
             QLayoutItem *item = ui->gridLayout->itemAtPosition(row, i);
@@ -164,12 +182,19 @@ void Table::deleteRow(int row)
                 ui->gridLayout->removeItem(item);
             }
         }
+        qCDebug(loggingCategory) << "Row id count" << idsByRow.count(row);
+        qCDebug(loggingCategory) << "Deleting row" << row << "with id" << idsByRow.at(row);
+        rowsById.erase(idsByRow.at(row));
+        idsByRow.erase(row);
 
         // Перемещаем все следующие ряды на 1 вверх (на 1 освобожденное место)
+        qCDebug(loggingCategory) << "Deleting row (3)";
         for (int i = row + 1; i < rowCount; ++i) replaceRow(i, i - 1);
 
         rowCount -= 1;
+        deletingRow = -1;
         emit rowDeleted(row);
+        qCDebug(loggingCategory) << "Deleting row (4)";
     }
 }
 void Table::empty()
@@ -192,6 +217,7 @@ void Table::checkRow(int row)
 void Table::uncheckRows()
 {
     if (checkedRow == -1) return;
+    qCInfo(loggingCategory) << "Unchecking row" << checkedRow;
     endRowsEditing();
     checkedRow = -1;
     repaint();
@@ -236,6 +262,7 @@ void Table::startRowEditing(int row)
     if (row != -1) {
         endRowsEditing();
         checkRow(row);
+        emit editingStarted(row);
 
         editingRow = row;
         int columns = ui->gridLayout->columnCount();
@@ -263,6 +290,7 @@ void Table::endRowsEditing()
         }
         int row = editingRow;
         editingRow = -1;
+        qCInfo(loggingCategory) << "Emitting row editing finished for row" << row;
         emit editingFinished(row);
         setFocus();
     }
@@ -313,6 +341,10 @@ void Table::keyPressEvent(QKeyEvent *e)
 // ==== PRIVATE ====
 void Table::replaceRow(int from, int to)
 {
+    if (idsByRow.count(from) == 0) {
+        return;
+    }
+    auto rowId = idsByRow.at(from);
     int columns = ui->gridLayout->columnCount();
     for (int i = 0; i < columns; i++) {
         QLayoutItem *item = ui->gridLayout->itemAtPosition(from, i);
@@ -321,6 +353,10 @@ void Table::replaceRow(int from, int to)
             ui->gridLayout->addItem(item, to, i);
         }
     }
+    qCDebug(loggingCategory) << "Erase id of row" << from;
+    idsByRow.erase(from);
+    idsByRow.insert_or_assign(to, rowId);
+    rowsById.insert_or_assign(rowId, to);
 }
 
 int Table::toActualRow(int visibleRow) const

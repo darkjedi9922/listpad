@@ -1,6 +1,7 @@
 #ifndef TABLE_H
 #define TABLE_H
 
+#include <map>
 #include <QWidget>
 #include "ui_Table.h"
 #include <QLineEdit>
@@ -25,10 +26,17 @@ signals:
     void rowsUnchecked();
     void rowAdded(int row);
     void rowDeleted(int row);
+    void editingStarted(int row);
     void editingFinished(int row);
+    void rowTextEdited(int row);
     void cellCursorPositionChanged(LineEdit *cell);
 
 public:
+    /**
+     * Unique ID of a row that is bound to the row initially and never changes
+     */
+    typedef unsigned long long row_id;
+
     explicit Table(QWidget *parent = nullptr);
     ~Table();
     virtual QSize sizeHint() const;
@@ -40,8 +48,8 @@ public:
     bool isRowVisible(int row) const;
 
     // adding
-    void insertRowAfter(const QList<QString> &list, int row);
-    void appendRow(const QList<QString> &list);
+    row_id insertRowAfter(const QList<QString> &list, int row);
+    row_id appendRow(const QList<QString> &list);
     void deleteRow(int row);
     void empty();
     int getLastAddedRow() const;
@@ -91,11 +99,14 @@ private:
      * Если никакой ряд не выделен, равен -1.
      */
     int checkedRow;
-
+    int deletingRow;
     int rowCount;
     int visibleRowCount;
     int editingRow;
     int lastAddedRow;
+    row_id lastNewRowId;
+    std::map<row_id, int> rowsById;
+    std::map<int, row_id> idsByRow;
 
     TableDownArrowClickHandler downArrowClickHandler;
     TableUpArrowClickHandler upArrowClickHandler;
