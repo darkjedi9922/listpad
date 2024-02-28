@@ -21,6 +21,12 @@ class Table : public QWidget
 {
     Q_OBJECT
 
+public:
+    /**
+     * Unique ID of a row that is bound to the row initially and never changes
+     */
+    typedef unsigned long long row_id;
+
 signals:
     void rowChecked(int row);
     void rowsUnchecked();
@@ -28,28 +34,27 @@ signals:
     void rowDeleted(int row);
     void editingStarted(int row);
     void editingFinished(int row);
+    void editingFinishedById(Table::row_id rowId);
     void rowTextEdited(int row);
     void cellCursorPositionChanged(LineEdit *cell);
 
 public:
-    /**
-     * Unique ID of a row that is bound to the row initially and never changes
-     */
-    typedef unsigned long long row_id;
-
     explicit Table(QWidget *parent = nullptr);
     ~Table();
     virtual QSize sizeHint() const;
 
     QList<QString> getRow(int row) const;
+    QList<QString> getRow(row_id row) const;
     bool hasRow(int row) const;
     bool isStringsEmpty(int row) const;
+    bool isStringsEmpty(row_id rowId) const;
     void setRowVisible(int row, bool);
     bool isRowVisible(int row) const;
 
     // adding
-    row_id insertRowAfter(const QList<QString> &list, int row);
-    row_id appendRow(const QList<QString> &list);
+    void insertRowAfter(row_id id, const QList<QString> &list, int row);
+    void appendRow(row_id, const QList<QString> &list);
+    void deleteRow(row_id rowId);
     void deleteRow(int row);
     void empty();
     int getLastAddedRow() const;
@@ -62,6 +67,7 @@ public:
      * Если никакой ряд не выделен, возвращает -1
      */
     int getCheckedRow() const;
+    row_id getCheckedRowId() const;
 
     int getEditingRow() const;
 
@@ -86,6 +92,7 @@ private:
 
     int toActualRow(int visibleRow) const;
     int toVisibleRow(int actualRow) const;
+    int getRowById(row_id rowId) const;
 
     // finding
     int findRow(const QPoint &point) const;
@@ -104,7 +111,6 @@ private:
     int visibleRowCount;
     int editingRow;
     int lastAddedRow;
-    row_id lastNewRowId;
     std::map<row_id, int> rowsById;
     std::map<int, row_id> idsByRow;
 

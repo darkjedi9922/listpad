@@ -16,6 +16,7 @@
     "xstring": "cpp",
     "queue": "cpp",
     "xiosbase": "cpp",
-    "map": "cpp"
+    "map": "cpp",
+    "stdexcept": "cpp"
   }
 }

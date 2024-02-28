@@ -27,36 +27,34 @@ MainWindow::MainWindow(QWidget *parent) :
         this->addCategoryToDatabase(id, ui->menu->getCategoryName(id));
     });
     QObject::connect(ui->menu, &Menu::categoryRenamed, [=] (int id) {
-        this->data->renameTable(id, ui->menu->getCategoryName(id));
-        this->data->saveTables();
+        this->db->renameTable(id, ui->menu->getCategoryName(id));
     });
     QObject::connect(ui->menu, &Menu::categoryDeleted, [=] (int id) {
         if (ui->content->getCurrentTableId() == id) {
             ui->content->hide();
             ui->content->loadTable(-1);
         }
-        data->removeTable(id);
-        data->saveTables();
+        db->removeTable(id);
     });
 }
 MainWindow::~MainWindow()
 {
     ui->content->resetTableState();
-    ui->content->saveTable();
     saveSettings();
 
     delete ui;
 }
 
-void MainWindow::setData(Core::Data *data)
+void MainWindow::setDatabase(Core::SqlData *db)
 {
-    this->data = data;
-    if (!data) return;
-    ui->content->setData(data);
+    this->db = db;
+    if (!db) return;
+    ui->content->setDatabase(db);
 
     QMap<int, QString> categories;
-    foreach (Core::Table *table, data->getTables()) {
-        categories.insert(table->getId(), table->getName());
+    QSqlQuery query = db->getCategories();
+    while (query.next()) {
+        categories.insert(query.value("id").toInt(), query.value("name").toString());
     }
     ui->menu->setCategories(categories);
 }
@@ -65,12 +63,6 @@ void MainWindow::setSettings(QSettings *settings)
 {
     this->settings = settings;
 }
-
-Core::Data* MainWindow::getData() const
-{
-    return data;
-}
-
 QSettings* MainWindow::getSettings() const
 {
     return settings;
@@ -80,7 +72,6 @@ QSettings* MainWindow::getSettings() const
 void MainWindow::menuButtonChecked(MenuItem *menu)
 {
     if (ui->content->getCurrentTableId() != menu->getMenuId()) {
-        ui->content->saveTable();
         ui->content->emptyTable();
         ui->content->loadTable(menu->getMenuId());
     }
@@ -89,7 +80,6 @@ void MainWindow::menuButtonChecked(MenuItem *menu)
 void MainWindow::menuButtonUnchecked(MenuItem *)
 {
     ui->content->resetTableState();
-    ui->content->saveTable();
     ui->content->hide();
 }
 
@@ -114,9 +104,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 // ==== PRIVATE ====
 void MainWindow::addCategoryToDatabase(int id, const QString &name)
 {
-    Core::Table category(id, name, QString("./data/table%1.xml").arg(id));
-    data->addTable(category);
-    data->saveTables();
+    db->addTable(id, name);
 }
 
 void MainWindow::saveSettings()

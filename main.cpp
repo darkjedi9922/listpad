@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "core/SqlData.h"
 #include <QApplication>
 #include <QSettings>
 #include <QFontDatabase>
@@ -34,9 +35,10 @@ int main(int argc, char *argv[])
   QApplication a(argc, argv);
   QSettings settings("settings.ini", QSettings::IniFormat);
   Core::Data data("./data/main.xml");
+  Core::SqlData db("./data/db.sqlite", data);
   MainWindow window;
   window.setSettings(&settings);
-  window.setData(&data);
+  window.setDatabase(&db);
 
   // В Linux по-умолчанию нет шрифта Arial. А, если есть, он почему-то может быть
   // не тем. Загрузим и будем использовать свой. Имя шрифта узнал через qDedbug().

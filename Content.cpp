@@ -2,7 +2,6 @@
 #include "ui_Content.h"
 #include <QFile>
 #include <QDir>
-#include <QXmlStreamReader>
 #include <QTimer>
 #include <QStyleOption>
 #include <QPainter>
@@ -14,7 +13,7 @@
 Content::Content(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Content),
-    data(nullptr),
+    db(nullptr),
     eSearch(nullptr),
     tableId(-1),
     loggingCategory("Content")
@@ -34,7 +33,7 @@ Content::Content(QWidget *parent) :
     QObject::connect(ui->table, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
     QObject::connect(ui->table, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
     QObject::connect(ui->table, SIGNAL(editingStarted(int)), this, SLOT(tableRowEditingStarted(int)));
-    QObject::connect(ui->table, SIGNAL(editingFinished(int)), this, SLOT(tableRowEditingFinished(int)));
+    QObject::connect(ui->table, &Table::editingFinishedById, this, &Content::tableRowEditingFinished);
     QObject::connect(ui->table, SIGNAL(rowTextEdited(int)), this, SLOT(tableRowTextEdited(int)));
     QObject::connect(ui->table, &Table::cellCursorPositionChanged, [&](LineEdit *cell) {
         QTimer::singleShot(25, [cell, this]() {
@@ -60,9 +59,9 @@ Content::~Content()
     ui = nullptr;
 }
 
-void Content::setData(Core::Data *data)
+void Content::setDatabase(Core::SqlData *db)
 {
-    this->data = data;
+    this->db = db;
 }
 
 void Content::show()
@@ -82,45 +81,14 @@ void Content::loadTable(int id)
 {
     emptyTable();
     tableId = id;
-    Core::Table *table = data->getTables().value(id, nullptr);
-    if (!table) return;
-    Core::TableRows rows(table->getFilename());
-    for (const QList<QString> &row : rows.getRows()) {
-        addTableRow(row);
-    }
-}
-void Content::saveTable()
-{
-    if (tableId != -1)
-    {
-        createDataDirectoryIfItDoesNotExist();
-
-        QString filename = QString("data/table%1.xml").arg(tableId);
-        QFile file(filename);
-        file.open(QIODevice::WriteOnly);
-
-        QXmlStreamWriter writer(&file);
-        writer.setAutoFormatting(true);
-        writer.writeStartDocument();
-        writer.writeStartElement("table");
-
-        for (int i = 1; i < ui->table->getRowCount(); i++)
-        {
-            if (ui->table->hasRow(i))
-            {
-                QList<QString> row = ui->table->getRow(i);
-                writer.writeStartElement("row");
-                writer.writeAttribute("title", row.at(0));
-                writer.writeAttribute("status", row.at(1));
-                writer.writeAttribute("rating", row.at(2));
-                writer.writeAttribute("comment", row.at(3));
-                writer.writeEndElement();
-            }
-        }
-
-        writer.writeEndElement();
-        writer.writeEndDocument();
-        file.close();
+    QSqlQuery query = db->getTableRows(id);
+    while (query.next()) {
+        addTableRow(query.value("id").toULongLong(), QList<QString> {
+            query.value("title").toString(),
+            query.value("status").toString(),
+            query.value("rating").toString(),
+            query.value("comment").toString()
+        });
     }
 }
 void Content::emptyTable()
@@ -160,13 +128,23 @@ void Content::tableRowEditingStarted(int row)
 {
     ui->editButton->setEnabled(false);
 }
-void Content::tableRowEditingFinished(int row)
+void Content::tableRowEditingFinished(Table::row_id rowId)
 {
     ui->addButton->setEnabled(true);
     ui->editButton->setEnabled(true);
-    if (ui->table->isStringsEmpty(row)) {
-        qCInfo(loggingCategory) << "Deleting row" << row;
-        ui->table->deleteRow(row);
+    if (ui->table->isStringsEmpty(rowId)) {
+        qCInfo(loggingCategory) << "Deleting row id" << rowId;
+        db->removeTableRow(rowId);
+        ui->table->deleteRow(rowId);
+    } else {
+        qCInfo(loggingCategory) << "Updating row id" << rowId;
+        auto values = ui->table->getRow(rowId);
+        Core::TableRow rowData;
+        rowData.title = values.at(0);
+        rowData.status = values.at(1);
+        rowData.rating = values.at(2);
+        rowData.comment = values.at(3);
+        db->updateTableRow(rowId, rowData);
     }
 }
 void Content::tableRowTextEdited(int row)
@@ -181,7 +159,8 @@ void Content::resetTableState()
 
 void Content::addButtonClicked()
 {
-    addTableEmptyRow();
+    auto rowId = db->addTableRow(tableId, {"", "", "", ""});
+    addTableEmptyRow(rowId);
     ui->addButton->setEnabled(false);
     ui->table->startRowEditing(ui->table->getLastAddedRow());
     qCDebug(loggingCategory) << "Started row editing";
@@ -192,8 +171,9 @@ void Content::addButtonClicked()
 }
 void Content::deleteButtonClicked()
 {
-    qCInfo(loggingCategory) << "Deleting row" << ui->table->getCheckedRow();
-    ui->table->deleteRow(ui->table->getCheckedRow());
+    qCInfo(loggingCategory) << "Deleting row id" << ui->table->getCheckedRowId();
+    db->removeTableRow(ui->table->getCheckedRowId());
+    ui->table->deleteRow(ui->table->getCheckedRowId());
 }
 void Content::editButtonClicked()
 {
@@ -209,19 +189,19 @@ void Content::paintEvent(QPaintEvent *)
 }
 
 // ==== PRIVATE ====
-void Content::addTableRow(const QList<QString> &list)
+void Content::addTableRow(Table::row_id id, const QList<QString> &list)
 {
     qCDebug(loggingCategory) << "Adding table row of" << list.size() << "elements";
     if (ui->scrollArea->isHidden()) ui->scrollArea->show();
 
-    if (ui->table->getCheckedRow() == -1) ui->table->appendRow(list);
-    else ui->table->insertRowAfter(list, ui->table->getCheckedRow());
+    if (ui->table->getCheckedRow() == -1) ui->table->appendRow(id, list);
+    else ui->table->insertRowAfter(id, list, ui->table->getCheckedRow());
 }
-void Content::addTableEmptyRow()
+void Content::addTableEmptyRow(Table::row_id id)
 {
     QList<QString> list;
     list << "" << "" << "" << "";
-    addTableRow(list);
+    addTableRow(id, list);
 }
 
 void Content::createDataDirectoryIfItDoesNotExist()

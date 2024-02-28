@@ -29,7 +29,7 @@ file (GLOB SRCS
     "widgets/elements/*.cpp")
 
 # libs
-set (LIBS)
+set (LIBS Qt5::Sql)
 
 # qt .ui
 file (GLOB QTUI
@@ -42,6 +42,7 @@ file (GLOB QRC
     "*.qrc")
 
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Sql REQUIRED)
 qt5_add_resources(QT_QRC ${QRC})
 qt5_wrap_ui(QTUI_HEADERS ${QTUI})
 

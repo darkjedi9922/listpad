@@ -6,7 +6,7 @@
 #include "Content.h"
 #include <QSettings>
 #include <QLoggingCategory>
-#include "core/Data.h"
+#include "core/SqlData.h"
 
 namespace Ui
 {
@@ -22,10 +22,9 @@ public:
     ~MainWindow();
 
     // Загрузка всех категорий происходит здесь.
-    void setData(Core::Data *);
+    void setDatabase(Core::SqlData *);
 
     void setSettings(QSettings *);
-    Core::Data* getData() const;
     QSettings* getSettings() const;
 
 public slots:
@@ -42,7 +41,7 @@ private:
 
     QLoggingCategory loggingCategory;
     Ui::MainWindow *ui;
-    Core::Data *data;
+    Core::SqlData *db;
     QSettings *settings;
 };
 

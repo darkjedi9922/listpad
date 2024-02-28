@@ -3,6 +3,7 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include "widgets/elements/LineEdit.h"
+#include <stdexcept>
 
 using namespace std;
 
@@ -17,7 +18,6 @@ Table::Table(QWidget *parent) :
     editingRow(-1),
     lastAddedRow(-1),
     deletingRow(-1),
-    lastNewRowId(0),
     downArrowClickHandler(this),
     upArrowClickHandler(this),
     loggingCategory("Table")
@@ -48,6 +48,10 @@ QList<QString> Table::getRow(int row) const
     }
     return list;
 }
+QList<QString> Table::getRow(row_id rowId) const
+{
+    return getRow(getRowById(rowId));
+}
 
 bool Table::hasRow(int row) const
 {
@@ -62,6 +66,10 @@ bool Table::isStringsEmpty(int row) const
         if (item && !item->text().isEmpty()) return false;
     }
     return true;
+}
+bool Table::isStringsEmpty(row_id rowId) const
+{
+    return isStringsEmpty(getRowById(rowId));
 }
 void Table::setRowVisible(int row, bool visible)
 {
@@ -113,7 +121,7 @@ bool Table::isRowVisible(int row) const
     return firstColumn->height() != 0;
 }
 
-Table::row_id Table::insertRowAfter(const QList<QString> &list, int row)
+void Table::insertRowAfter(row_id id, const QList<QString> &list, int row)
 {
     LineEdit *newLineEdit;
 
@@ -125,7 +133,6 @@ Table::row_id Table::insertRowAfter(const QList<QString> &list, int row)
         replaceRow(i, i + 1);
     }
 
-    auto id = ++lastNewRowId;
     rowsById.insert_or_assign(id, rowToInsert);
     idsByRow.insert_or_assign(rowToInsert, id);
     qCDebug(loggingCategory) << "Inserted row id" << id << "at row" << rowToInsert;
@@ -155,11 +162,17 @@ Table::row_id Table::insertRowAfter(const QList<QString> &list, int row)
     visibleRowCount += 1;
     lastAddedRow = rowToInsert;
     emit rowAdded(rowToInsert);
-    return id;
 }
-Table::row_id Table::appendRow(const QList<QString> &list)
+void Table::appendRow(row_id id, const QList<QString> &list)
 {
-    return insertRowAfter(list, rowCount - 1);
+    return insertRowAfter(id, list, rowCount - 1);
+}
+void Table::deleteRow(row_id rowId)
+{
+    if (!rowsById.count(rowId)) {
+        return;
+    }
+    deleteRow(rowsById.at(rowId));
 }
 void Table::deleteRow(int row)
 {
@@ -227,6 +240,13 @@ int Table::getCheckedRow() const
 {
     return checkedRow;
 }
+Table::row_id Table::getCheckedRowId() const
+{
+    if (checkedRow == -1) {
+        return -1;
+    }
+    return idsByRow.at(checkedRow);
+}
 
 int Table::getEditingRow() const
 {
@@ -291,6 +311,7 @@ void Table::endRowsEditing()
         int row = editingRow;
         editingRow = -1;
         qCInfo(loggingCategory) << "Emitting row editing finished for row" << row;
+        emit editingFinishedById(idsByRow.at(row));
         emit editingFinished(row);
         setFocus();
     }
@@ -384,6 +405,15 @@ int Table::toVisibleRow(int actualRow) const
     }
 
     return visibleCount - 1;
+}
+int Table::getRowById(row_id rowId) const
+{
+    if (!rowsById.count(rowId)) {
+        auto error = QString("Row id %1 does not exist").arg(rowId);
+        qCCritical(loggingCategory) << error;
+        throw std::out_of_range(error.toStdString());
+    }
+    return rowsById.at(rowId);
 }
 
 int Table::findRow(const QPoint &point) const
