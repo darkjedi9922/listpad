@@ -29,31 +29,25 @@ public:
 
 signals:
     void rowChecked(int row);
+    void rowIdChecked(row_id rowId);
     void rowsUnchecked();
     void rowAdded(int row);
     void rowDeleted(int row);
-    void editingStarted(int row);
-    void editingFinished(int row);
-    void editingFinishedById(Table::row_id rowId);
-    void rowTextEdited(int row);
-    void cellCursorPositionChanged(LineEdit *cell);
 
 public:
     explicit Table(QWidget *parent = nullptr);
     ~Table();
     virtual QSize sizeHint() const;
 
-    QList<QString> getRow(int row) const;
-    QList<QString> getRow(row_id row) const;
+    QList<QWidget*> getRow(int row) const;
+    QList<QWidget*> getRow(row_id row) const;
     bool hasRow(int row) const;
-    bool isStringsEmpty(int row) const;
-    bool isStringsEmpty(row_id rowId) const;
     void setRowVisible(int row, bool);
     bool isRowVisible(int row) const;
 
     // adding
-    void insertRowAfter(row_id id, const QList<QString> &list, int row);
-    void appendRow(row_id, const QList<QString> &list);
+    void insertRowAfter(row_id id, const QList<QWidget*> &list, int row);
+    void appendRow(row_id, const QList<QWidget*> &list);
     void deleteRow(row_id rowId);
     void deleteRow(int row);
     void empty();
@@ -61,6 +55,7 @@ public:
 
     // checking
     void checkRow(int row);
+    void checkRow(row_id rowId);
     void uncheckRows();
 
     /**
@@ -69,17 +64,12 @@ public:
     int getCheckedRow() const;
     row_id getCheckedRowId() const;
 
-    int getEditingRow() const;
-
     // geometry
     int getColumnCount() const;
     int getRowCount() const;
     int getVisibleRowCount() const;
     const QRect getRowRect(int row) const;
-
-public slots:
-    void startRowEditing(int row);
-    void endRowsEditing();
+    const QRect getRowRect(Table::row_id rowId) const;
 
 protected:
     virtual void mousePressEvent(QMouseEvent *);
@@ -96,7 +86,7 @@ private:
 
     // finding
     int findRow(const QPoint &point) const;
-    QLineEdit* getItemAt(int row, int column) const;
+    QWidget* getItemAt(int row, int column) const;
 
     Ui::Table *ui;
     QBrush checkedRowBrush;
@@ -109,7 +99,6 @@ private:
     int deletingRow;
     int rowCount;
     int visibleRowCount;
-    int editingRow;
     int lastAddedRow;
     std::map<row_id, int> rowsById;
     std::map<int, row_id> idsByRow;

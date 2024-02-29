@@ -29,12 +29,12 @@ public:
     int getCurrentTableId() const;
 
 public slots:
-    void tableRowChecked(int row);
+    void tableRowChecked(Table::row_id rowId);
     void tableRowsUnchecked();
     void tableRowDeleted();
     void tableRowEditingStarted(int row);
     void tableRowEditingFinished(Table::row_id rowId);
-    void tableRowTextEdited(int row);
+    void tableRowTextEdited(Table::row_id rowId);
     void resetTableState();
 
     void addButtonClicked();
@@ -48,7 +48,7 @@ private:
     void addTableRow(Table::row_id id, const QList<QString> &list);
     void addTableEmptyRow(Table::row_id id);
     void createDataDirectoryIfItDoesNotExist();
-    void updateTableScrollingByRow(int row);
+    void updateTableScrollingByRow(Table::row_id row);
     void adjustHorizontalScrollForCellCursor(LineEdit *cell);
 
     Ui::Content *ui;

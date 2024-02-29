@@ -2,13 +2,13 @@
 #define engines_SEARCHENGINE_H
 
 #include <QLineEdit>
-#include "Table.h"
+#include "../widgets/CollectionTable.h"
 
 class SearchEngine : public QObject
 {
     Q_OBJECT
 public:
-    explicit SearchEngine(QLineEdit *searchLine, Table *table);
+    explicit SearchEngine(QLineEdit *searchLine, CollectionTable *table);
 
     void reset();
 
@@ -20,7 +20,7 @@ private:
     void doShowEachTableRow(std::function<bool (const QStringList &columns)> check);
 
     QLineEdit *searchLine;
-    Table *table;
+    CollectionTable *table;
 };
 
 #endif // engines_SEARCHENGINE_H

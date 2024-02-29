@@ -29,13 +29,13 @@ Content::Content(QWidget *parent) :
     QObject::connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteButtonClicked()));
     QObject::connect(ui->editButton, SIGNAL(clicked(bool)), this, SLOT(editButtonClicked()));
 
-    QObject::connect(ui->table, SIGNAL(rowChecked(int)), this, SLOT(tableRowChecked(int)));
+    QObject::connect(ui->table, &Table::rowIdChecked, this, &Content::tableRowChecked);
     QObject::connect(ui->table, SIGNAL(rowsUnchecked()), this, SLOT(tableRowsUnchecked()));
     QObject::connect(ui->table, SIGNAL(rowDeleted(int)), this, SLOT(tableRowDeleted()));
     QObject::connect(ui->table, SIGNAL(editingStarted(int)), this, SLOT(tableRowEditingStarted(int)));
-    QObject::connect(ui->table, &Table::editingFinishedById, this, &Content::tableRowEditingFinished);
-    QObject::connect(ui->table, SIGNAL(rowTextEdited(int)), this, SLOT(tableRowTextEdited(int)));
-    QObject::connect(ui->table, &Table::cellCursorPositionChanged, [&](LineEdit *cell) {
+    QObject::connect(ui->table, &CollectionTable::editingFinishedById, this, &Content::tableRowEditingFinished);
+    QObject::connect(ui->table, &CollectionTable::rowTextEdited, this, &Content::tableRowTextEdited);
+    QObject::connect(ui->table, &CollectionTable::cellCursorPositionChanged, [&](LineEdit *cell) {
         QTimer::singleShot(25, [cell, this]() {
             adjustHorizontalScrollForCellCursor(cell);
         });
@@ -106,10 +106,10 @@ int Content::getCurrentTableId() const
 }
 
 // ==== PUBLIC SLOTS ====
-void Content::tableRowChecked(int row)
+void Content::tableRowChecked(Table::row_id rowId)
 {
-    qCDebug(loggingCategory) << "Checking table row" << row;
-    updateTableScrollingByRow(row);
+    qCDebug(loggingCategory) << "Checking table row id" << rowId;
+    updateTableScrollingByRow(rowId);
 
     ui->editButton->setEnabled(true);
     ui->deleteButton->setEnabled(true);
@@ -147,9 +147,9 @@ void Content::tableRowEditingFinished(Table::row_id rowId)
         db->updateTableRow(rowId, rowData);
     }
 }
-void Content::tableRowTextEdited(int row)
+void Content::tableRowTextEdited(Table::row_id rowId)
 {
-    ui->addButton->setEnabled(!ui->table->isStringsEmpty(row));
+    ui->addButton->setEnabled(!ui->table->isStringsEmpty(rowId));
 }
 void Content::resetTableState()
 {
@@ -162,11 +162,11 @@ void Content::addButtonClicked()
     auto rowId = db->addTableRow(tableId, {"", "", "", ""});
     addTableEmptyRow(rowId);
     ui->addButton->setEnabled(false);
-    ui->table->startRowEditing(ui->table->getLastAddedRow());
+    ui->table->startRowEditing(rowId);
     qCDebug(loggingCategory) << "Started row editing";
     
-    QTimer::singleShot(100, [&]() {
-        updateTableScrollingByRow(ui->table->getEditingRow());
+    QTimer::singleShot(100, [rowId, this]() {
+        updateTableScrollingByRow(rowId);
     });
 }
 void Content::deleteButtonClicked()
@@ -177,7 +177,7 @@ void Content::deleteButtonClicked()
 }
 void Content::editButtonClicked()
 {
-    ui->table->startRowEditing(ui->table->getCheckedRow());
+    ui->table->startRowEditing(ui->table->getCheckedRowId());
 }
 
 void Content::paintEvent(QPaintEvent *)
@@ -195,7 +195,10 @@ void Content::addTableRow(Table::row_id id, const QList<QString> &list)
     if (ui->scrollArea->isHidden()) ui->scrollArea->show();
 
     if (ui->table->getCheckedRow() == -1) ui->table->appendRow(id, list);
-    else ui->table->insertRowAfter(id, list, ui->table->getCheckedRow());
+    else {
+        qCDebug(loggingCategory) << "Inserting a row after checked row" << ui->table->getCheckedRow();
+        ui->table->insertRowAfter(id, list, ui->table->getCheckedRow());
+    }
 }
 void Content::addTableEmptyRow(Table::row_id id)
 {
@@ -212,11 +215,11 @@ void Content::createDataDirectoryIfItDoesNotExist()
     }
 }
 
-void Content::updateTableScrollingByRow(int row)
+void Content::updateTableScrollingByRow(Table::row_id rowId)
 {
-    QRect rowRect = ui->table->getRowRect(row);
+    QRect rowRect = ui->table->getRowRect(rowId);
     int scrollValue = ui->scrollArea->verticalScrollBar()->value();
-    qCDebug(loggingCategory) << "updateTableScrollingByRow" << row << "rowRect =" << rowRect;
+    qCDebug(loggingCategory) << "updateTableScrollingByRow id" << rowId << "rowRect =" << rowRect;
     int rowGlobalTop = rowRect.top() - scrollValue;
     if (rowGlobalTop < 0) {
         qCDebug(loggingCategory) << "updateTableScrollingByRow.scroll (1)" << scrollValue + rowGlobalTop; 

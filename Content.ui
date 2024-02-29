@@ -140,7 +140,7 @@ QLineEdit:enabled {
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="Table" name="table">
+     <widget class="CollectionTable" name="table">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -173,9 +173,9 @@ QLineEdit:enabled {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Table</class>
+   <class>CollectionTable</class>
    <extends>QWidget</extends>
-   <header>Table.h</header>
+   <header>widgets/CollectionTable.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -15,7 +15,6 @@ Table::Table(QWidget *parent) :
     checkedRow(-1),
     rowCount(1),
     visibleRowCount(1),
-    editingRow(-1),
     lastAddedRow(-1),
     deletingRow(-1),
     downArrowClickHandler(this),
@@ -27,8 +26,6 @@ Table::Table(QWidget *parent) :
 }
 Table::~Table()
 {
-    endRowsEditing();
-
     delete ui;
     ui = nullptr;
 }
@@ -38,17 +35,17 @@ QSize Table::sizeHint() const
     return QSize(int(sizeHint.width() * 1.1), sizeHint.height());
 }
 
-QList<QString> Table::getRow(int row) const
+QList<QWidget*> Table::getRow(int row) const
 {
-    QList<QString> list;
+    QList<QWidget*> list;
     for (int i = 0; i < getColumnCount(); i++) {
-        QLineEdit *item = getItemAt(row, i);
-        if (item) list << item->text();
-        else list << "";
+        QWidget *item = getItemAt(row, i);
+        if (item) list << item;
+        else list << nullptr;
     }
     return list;
 }
-QList<QString> Table::getRow(row_id rowId) const
+QList<QWidget*> Table::getRow(row_id rowId) const
 {
     return getRow(getRowById(rowId));
 }
@@ -56,20 +53,6 @@ QList<QString> Table::getRow(row_id rowId) const
 bool Table::hasRow(int row) const
 {
     return row >= 0 && row < rowCount;
-}
-bool Table::isStringsEmpty(int row) const
-{
-    int columns = getColumnCount();
-    for (int i = 0; i < columns; i++)
-    {
-        QLineEdit *item = getItemAt(row, i);
-        if (item && !item->text().isEmpty()) return false;
-    }
-    return true;
-}
-bool Table::isStringsEmpty(row_id rowId) const
-{
-    return isStringsEmpty(getRowById(rowId));
 }
 void Table::setRowVisible(int row, bool visible)
 {
@@ -121,10 +104,8 @@ bool Table::isRowVisible(int row) const
     return firstColumn->height() != 0;
 }
 
-void Table::insertRowAfter(row_id id, const QList<QString> &list, int row)
+void Table::insertRowAfter(row_id id, const QList<QWidget*> &list, int row)
 {
-    LineEdit *newLineEdit;
-
     int column = 0;
     int rowToInsert = row + 1;
 
@@ -136,25 +117,9 @@ void Table::insertRowAfter(row_id id, const QList<QString> &list, int row)
     rowsById.insert_or_assign(id, rowToInsert);
     idsByRow.insert_or_assign(rowToInsert, id);
     qCDebug(loggingCategory) << "Inserted row id" << id << "at row" << rowToInsert;
-    for (QList<QString>::const_iterator it = list.begin(); it != list.end(); it++) {
-        newLineEdit = new LineEdit(*it, this);
-        newLineEdit->setEnabled(false);
-        newLineEdit->setUpdateGeometryMode(LineEdit::UpdateGeometryMode::TEXT_CHANGED);
-        newLineEdit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        newLineEdit->setWhatsThis("line-edit");
-        ui->gridLayout->addWidget(newLineEdit, rowToInsert, column);
-        QObject::connect(newLineEdit, SIGNAL(returnPressed()), this, SLOT(endRowsEditing()));
-        QObject::connect(newLineEdit, &QLineEdit::cursorPositionChanged, [newLineEdit, this]() {
-            if (newLineEdit->isEnabled() && newLineEdit->hasFocus()) {
-                emit cellCursorPositionChanged(newLineEdit);
-            }
-        });
-        QObject::connect(newLineEdit, &QLineEdit::textChanged, [id, this]() {
-            auto row = rowsById.at(id);
-            if (editingRow == row) {
-                emit rowTextEdited(row);
-            }
-        });
+    for (auto it = list.begin(); it != list.end(); it++) {
+        qCDebug(loggingCategory) << "Inserting widget at" << rowToInsert << "row and" << column << "column";
+        ui->gridLayout->addWidget(*it, rowToInsert, column);
         column += 1;
     }
 
@@ -163,7 +128,7 @@ void Table::insertRowAfter(row_id id, const QList<QString> &list, int row)
     lastAddedRow = rowToInsert;
     emit rowAdded(rowToInsert);
 }
-void Table::appendRow(row_id id, const QList<QString> &list)
+void Table::appendRow(row_id id, const QList<QWidget*> &list)
 {
     return insertRowAfter(id, list, rowCount - 1);
 }
@@ -222,19 +187,22 @@ int Table::getLastAddedRow() const
 void Table::checkRow(int row)
 {
     if (row == checkedRow) return;
-    endRowsEditing();
     checkedRow = row;
     repaint();
     emit rowChecked(row);
+    emit rowIdChecked(idsByRow.at(row));
+}
+void Table::checkRow(row_id rowId)
+{
+    checkRow(getRowById(rowId));
 }
 void Table::uncheckRows()
 {
     if (checkedRow == -1) return;
     qCInfo(loggingCategory) << "Unchecking row" << checkedRow;
-    endRowsEditing();
     checkedRow = -1;
     repaint();
-    rowsUnchecked();
+    emit rowsUnchecked();
 }
 int Table::getCheckedRow() const
 {
@@ -246,11 +214,6 @@ Table::row_id Table::getCheckedRowId() const
         return -1;
     }
     return idsByRow.at(checkedRow);
-}
-
-int Table::getEditingRow() const
-{
-    return editingRow;
 }
 
 int Table::getColumnCount() const
@@ -274,47 +237,9 @@ const QRect Table::getRowRect(int actualRow) const
     }
     return QRect(0, 0, 0, 0);
 }
-
-// ==== PUBLIC SLOTS ====
-void Table::startRowEditing(int row)
+const QRect Table::getRowRect(Table::row_id rowId) const
 {
-    qCInfo(loggingCategory) << "Starting editing row" << row;
-    if (row != -1) {
-        endRowsEditing();
-        checkRow(row);
-        emit editingStarted(row);
-
-        editingRow = row;
-        int columns = ui->gridLayout->columnCount();
-        for (int i = 0; i < columns; ++i) {
-            QLineEdit *item = getItemAt(row, i);
-            if (item) {
-                item->setEnabled(true);
-                if (i == 0) {
-                    item->setFocus();
-                    item->setCursorPosition(item->text().length());
-                }
-            }
-        }
-    }
-}
-void Table::endRowsEditing()
-{
-    if (editingRow != -1) {
-        int columns = ui->gridLayout->columnCount();
-        for (int i = columns - 1; i >= 0; i--) {
-            QLineEdit *item = getItemAt(editingRow, i);
-            if (item) {
-                item->setEnabled(false);
-            }
-        }
-        int row = editingRow;
-        editingRow = -1;
-        qCInfo(loggingCategory) << "Emitting row editing finished for row" << row;
-        emit editingFinishedById(idsByRow.at(row));
-        emit editingFinished(row);
-        setFocus();
-    }
+    return getRowRect(getRowById(rowId));
 }
 
 // ==== EVENTS ====
@@ -344,9 +269,6 @@ void Table::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key())
     {
-    case Qt::Key_F2:
-        if (checkedRow != -1) startRowEditing(checkedRow);
-        break;
     case Qt::Key_Delete:
         if (checkedRow != -1) {
             int row = checkedRow;
@@ -431,10 +353,11 @@ int Table::findRow(const QPoint &point) const
     throw "Row rect was not found.";
 }
 
-QLineEdit* Table::getItemAt(int row, int column) const
+QWidget* Table::getItemAt(int row, int column) const
 {
     QLayoutItem *item = ui->gridLayout->itemAtPosition(row, column);
-    if (item && item->widget() && item->widget()->whatsThis() == "line-edit")
-        return static_cast<QLineEdit*>(item->widget());
-    else return nullptr;
+    if (item && item->widget()) {
+        return item->widget();
+    }
+    return nullptr;
 }
