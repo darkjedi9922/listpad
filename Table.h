@@ -33,6 +33,8 @@ signals:
     void rowsUnchecked();
     void rowAdded(int row);
     void rowDeleted(int row);
+    void rowHovered(row_id rowId);
+    void rowUnhovered(row_id rowId);
 
 public:
     explicit Table(QWidget *parent = nullptr);
@@ -40,7 +42,8 @@ public:
     virtual QSize sizeHint() const;
 
     QList<QWidget*> getRow(int row) const;
-    QList<QWidget*> getRow(row_id row) const;
+    QList<QWidget*> getRow(row_id rowId) const;
+    QWidget* getCell(row_id rowId, int column) const;
     bool hasRow(int row) const;
     void setRowVisible(int row, bool);
     bool isRowVisible(int row) const;
@@ -76,9 +79,13 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *);
     virtual void paintEvent(QPaintEvent *);
     virtual void keyPressEvent(QKeyEvent *);
+    virtual bool event(QEvent *event);
 
 private:
     void replaceRow(int from, int to);
+    
+    void onHoverMove(QHoverEvent *event);
+    void onHoverLeave();
 
     int toActualRow(int visibleRow) const;
     int toVisibleRow(int actualRow) const;
@@ -100,6 +107,7 @@ private:
     int rowCount;
     int visibleRowCount;
     int lastAddedRow;
+    int hoveredRow;
     std::map<row_id, int> rowsById;
     std::map<int, row_id> idsByRow;
 

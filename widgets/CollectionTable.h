@@ -27,8 +27,10 @@ public:
   QList<QString> getRow(int row) const;
 
 public slots:
-  void startRowEditing(Table::row_id row);
+  void startRowEditing(Table::row_id rowId);
   void endRowsEditing();
+  void onRowHovered(Table::row_id rowId);
+  void onRowUnhovered(Table::row_id rowId);
 
 protected:
   virtual void keyPressEvent(QKeyEvent *event);

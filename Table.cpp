@@ -17,12 +17,14 @@ Table::Table(QWidget *parent) :
     visibleRowCount(1),
     lastAddedRow(-1),
     deletingRow(-1),
+    hoveredRow(-1),
     downArrowClickHandler(this),
     upArrowClickHandler(this),
     loggingCategory("Table")
 {
     ui->setupUi(this);
     setFocusPolicy(Qt::ClickFocus);
+    setAttribute(Qt::WA_Hover, true);
 }
 Table::~Table()
 {
@@ -48,6 +50,10 @@ QList<QWidget*> Table::getRow(int row) const
 QList<QWidget*> Table::getRow(row_id rowId) const
 {
     return getRow(getRowById(rowId));
+}
+QWidget* Table::getCell(row_id rowId, int column) const
+{
+    return getItemAt(getRowById(rowId), column);
 }
 
 bool Table::hasRow(int row) const
@@ -119,7 +125,7 @@ void Table::insertRowAfter(row_id id, const QList<QWidget*> &list, int row)
     qCDebug(loggingCategory) << "Inserted row id" << id << "at row" << rowToInsert;
     for (auto it = list.begin(); it != list.end(); it++) {
         qCDebug(loggingCategory) << "Inserting widget at" << rowToInsert << "row and" << column << "column";
-        ui->gridLayout->addWidget(*it, rowToInsert, column);
+        ui->gridLayout->addWidget(*it, rowToInsert, column, Qt::AlignLeft);
         column += 1;
     }
 
@@ -251,7 +257,7 @@ void Table::mouseReleaseEvent(QMouseEvent *e)
 {
     try {
         int row = findRow(e->pos());
-        checkRow(row);
+        row > 0 ? checkRow(row) : uncheckRows();
     } catch (...) {
         uncheckRows();
     }
@@ -280,6 +286,14 @@ void Table::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Up: upArrowClickHandler.handle(); break;
     }
 }
+bool Table::event(QEvent *event)
+{
+    switch (event->type()) {
+        case QEvent::HoverMove: onHoverMove(static_cast<QHoverEvent*>(event)); break;
+        case QEvent::HoverLeave: onHoverLeave();
+    }
+    return QWidget::event(event);
+}
 
 // ==== PRIVATE ====
 void Table::replaceRow(int from, int to)
@@ -300,6 +314,31 @@ void Table::replaceRow(int from, int to)
     idsByRow.erase(from);
     idsByRow.insert_or_assign(to, rowId);
     rowsById.insert_or_assign(rowId, to);
+}
+
+void Table::onHoverMove(QHoverEvent *event)
+{
+    int row = findRow(event->pos());
+    if (row == 0) {
+        return onHoverLeave();
+    }
+    if (row != hoveredRow) {
+        if (hoveredRow != -1) {
+            qCDebug(loggingCategory) << "Unhovered row" << hoveredRow;
+            emit rowUnhovered(idsByRow.at(hoveredRow));
+        }
+        hoveredRow = row;
+        qCDebug(loggingCategory) << "Hovered" << row << "row";
+        emit rowHovered(idsByRow.at(row));
+    }
+}
+void Table::onHoverLeave()
+{
+    if (hoveredRow != -1) {
+        qCDebug(loggingCategory) << "Unhovered row" << hoveredRow;
+        emit rowUnhovered(idsByRow.at(hoveredRow));
+        hoveredRow = -1;
+    }
 }
 
 int Table::toActualRow(int visibleRow) const
@@ -349,8 +388,7 @@ int Table::findRow(const QPoint &point) const
             break;
         }
     }
-    if (actualRow != -1 && actualRow != 0) return actualRow;
-    throw "Row rect was not found.";
+    return actualRow;
 }
 
 QWidget* Table::getItemAt(int row, int column) const

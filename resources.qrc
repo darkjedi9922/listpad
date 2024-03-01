@@ -1,16 +1,17 @@
 <RCC>
-    <qresource prefix="/">
-        <file>images/checkedFolder.png</file>
-        <file>images/folder.png</file>
-        <file>images/icon.ico</file>
-        <file>images/logo.png</file>
-        <file>images/shadow.png</file>
-        <file>images/button_blue/btn-hb.png</file>
-        <file>images/button_blue/btn-hlb.png</file>
-        <file>images/button_blue/btn-hrb.png</file>
-        <file>images/plus-circle.png</file>
-        <file>fonts/arial.ttf</file>
-        <file>fonts/arialbd.ttf</file>
-        <file>images/search.png</file>
-    </qresource>
+  <qresource prefix="/">
+    <file>fonts/fontello.ttf</file>
+    <file>images/checkedFolder.png</file>
+    <file>images/folder.png</file>
+    <file>images/icon.ico</file>
+    <file>images/logo.png</file>
+    <file>images/shadow.png</file>
+    <file>images/button_blue/btn-hb.png</file>
+    <file>images/button_blue/btn-hlb.png</file>
+    <file>images/button_blue/btn-hrb.png</file>
+    <file>images/plus-circle.png</file>
+    <file>fonts/arial.ttf</file>
+    <file>fonts/arialbd.ttf</file>
+    <file>images/search.png</file>
+  </qresource>
 </RCC>

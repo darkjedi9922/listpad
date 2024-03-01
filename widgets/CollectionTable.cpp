@@ -1,5 +1,6 @@
 #include "CollectionTable.h"
 #include <QHBoxLayout>
+#include "elements/StarButton.h"
 
 CollectionTable::CollectionTable(QWidget *parent) :
   Table(parent),
@@ -8,6 +9,8 @@ CollectionTable::CollectionTable(QWidget *parent) :
 {
   QObject::connect(this, &Table::rowChecked, this, &CollectionTable::endRowsEditing);
   QObject::connect(this, &Table::rowsUnchecked, this, &CollectionTable::endRowsEditing);
+  QObject::connect(this, &Table::rowHovered, this, &CollectionTable::onRowHovered);
+  QObject::connect(this, &Table::rowUnhovered, this, &CollectionTable::onRowUnhovered);
 }
 CollectionTable::~CollectionTable()
 {
@@ -17,6 +20,8 @@ CollectionTable::~CollectionTable()
 void CollectionTable::insertRowAfter(Table::row_id id, const QList<QString> &list, int row)
 {
   QList<QWidget*> items;
+
+  items.append(new StarButton(this));
 
   for (QList<QString>::const_iterator it = list.begin(); it != list.end(); it++) {
     auto newLineEdit = new LineEdit(*it, this);
@@ -45,7 +50,7 @@ void CollectionTable::appendRow(Table::row_id id, const QList<QString> &list)
 }
 bool CollectionTable::isStringsEmpty(Table::row_id rowId) const
 {
-  for (auto item : Table::getRow(rowId)) {
+  for (auto item : Table::getRow(rowId).mid(1)) {
     if (!static_cast<QLineEdit*>(item)->text().isEmpty()) {
       return false;
     }
@@ -55,7 +60,7 @@ bool CollectionTable::isStringsEmpty(Table::row_id rowId) const
 QList<QString> CollectionTable::getRow(Table::row_id rowId) const
 {
   QList<QString> result;
-  for (auto item : Table::getRow(rowId)) {
+  for (auto item : Table::getRow(rowId).mid(1)) {
     result.append(static_cast<QLineEdit*>(item)->text());
   }
   return result;
@@ -63,7 +68,7 @@ QList<QString> CollectionTable::getRow(Table::row_id rowId) const
 QList<QString> CollectionTable::getRow(int row) const
 {
   QList<QString> result;
-  for (auto item : Table::getRow(row)) {
+  for (auto item : Table::getRow(row).mid(1)) {
     result.append(static_cast<QLineEdit*>(item)->text());
   }
   return result;
@@ -79,7 +84,7 @@ void CollectionTable::startRowEditing(Table::row_id rowId)
 
     editingRow = rowId;
     int columns = 4;
-    auto items = Table::getRow(rowId);
+    auto items = Table::getRow(rowId).mid(1);
     for (auto item : items) {
       auto lineEdit = static_cast<QLineEdit*>(item);
       item->setEnabled(true);
@@ -92,7 +97,7 @@ void CollectionTable::startRowEditing(Table::row_id rowId)
 void CollectionTable::endRowsEditing()
 {
   if (editingRow != -1) {
-    for (auto item : Table::getRow(editingRow)) {
+    for (auto item : Table::getRow(editingRow).mid(1)) {
       item->setEnabled(false);
     }
     auto row = editingRow;
@@ -101,6 +106,14 @@ void CollectionTable::endRowsEditing()
     emit editingFinishedById(row);
     setFocus();
   }
+}
+void CollectionTable::onRowHovered(Table::row_id rowId)
+{
+  static_cast<StarButton*>(this->getCell(rowId, 0))->showIcon();
+}
+void CollectionTable::onRowUnhovered(Table::row_id rowId)
+{
+  static_cast<StarButton *>(this->getCell(rowId, 0))->hideIconIfUnchecked();
 }
 
 void CollectionTable::keyPressEvent(QKeyEvent *e)

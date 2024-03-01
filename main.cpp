@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
   // не тем. Загрузим и будем использовать свой. Имя шрифта узнал через qDedbug().
   /* int id = */ QFontDatabase::addApplicationFont(":/fonts/arial.ttf"); // Arial.
   /* int id = */ QFontDatabase::addApplicationFont(":/fonts/arialbd.ttf");
+  QFontDatabase::addApplicationFont(":/fonts/fontello.ttf");
   //qDebug() << QFontDatabase::applicationFontFamilies(id).at(0); // Имя.
 
   bool maximized = settings.value("maximized", false).toBool();
