@@ -1,7 +1,8 @@
 #include "engines/SearchEngine.h"
 #include <QStringList>
 
-SearchEngine::SearchEngine(QLineEdit *searchLine, CollectionTable *table)
+SearchEngine::SearchEngine(QLineEdit *searchLine, CollectionTable *table) :
+    loggingCategory("SearchEngine")
 {
     this->searchLine = searchLine;
     this->table = table;

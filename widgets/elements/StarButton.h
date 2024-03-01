@@ -14,6 +14,8 @@ class StarButton : public QPushButton
 public:
   explicit StarButton(QWidget *parent = nullptr);
   ~StarButton();
+  
+  virtual QSize sizeHint() const;
 
   void showIcon();
   void hideIconIfUnchecked();

@@ -16,6 +16,11 @@ StarButton::~StarButton()
   delete ui;
 }
 
+QSize StarButton::sizeHint() const
+{
+  return QSize(30, 30);
+}
+
 void StarButton::showIcon()
 {
   setText(isChecked() ? "▾" : ""); // fontello icons

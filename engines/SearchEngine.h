@@ -2,6 +2,7 @@
 #define engines_SEARCHENGINE_H
 
 #include <QLineEdit>
+#include <QLoggingCategory>
 #include "../widgets/CollectionTable.h"
 
 class SearchEngine : public QObject
@@ -21,6 +22,7 @@ private:
 
     QLineEdit *searchLine;
     CollectionTable *table;
+    QLoggingCategory loggingCategory;
 };
 
 #endif // engines_SEARCHENGINE_H
