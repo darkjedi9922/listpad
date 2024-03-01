@@ -18,7 +18,7 @@ signals:
 
 private:
     void initTextChangedHanler();
-    void doShowEachTableRow(std::function<bool (const QStringList &columns)> check);
+    void doShowEachTableRow(std::function<bool (const QString &title)> check);
 
     QLineEdit *searchLine;
     CollectionTable *table;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Table.h"
+#include "../core/SqlData.h"
 #include <QLoggingCategory>
 
 /**
@@ -20,11 +21,11 @@ public:
   CollectionTable(QWidget *parent = nullptr);
   ~CollectionTable();
 
-  void insertRowAfter(Table::row_id id, const QList<QString> &list, int row);
-  void appendRow(Table::row_id, const QList<QString> &list);
+  void insertRowAfter(Table::row_id id, const Core::TableRow &data, int row);
+  void appendRow(Table::row_id, const Core::TableRow &data);
   bool isStringsEmpty(Table::row_id rowId) const;
-  QList<QString> getRow(Table::row_id rowId) const;
-  QList<QString> getRow(int row) const;
+  Core::TableRow getRow(Table::row_id rowId) const;
+  Core::TableRow getRow(int row) const;
 
 public slots:
   void startRowEditing(Table::row_id rowId);

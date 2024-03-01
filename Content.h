@@ -45,7 +45,7 @@ protected:
     virtual void paintEvent(QPaintEvent *);
 
 private:
-    void addTableRow(Table::row_id id, const QList<QString> &list);
+    void addTableRow(Table::row_id id, const Core::TableRow &data);
     void addTableEmptyRow(Table::row_id id);
     void createDataDirectoryIfItDoesNotExist();
     void updateTableScrollingByRow(Table::row_id row);

@@ -16,23 +16,19 @@ void SearchEngine::reset()
 
 void SearchEngine::initTextChangedHanler()
 {
-    auto handler = [&] (const QString &searchPattern) {
-        doShowEachTableRow([&] (const QStringList &columns) {
+    QObject::connect(searchLine, &QLineEdit::textChanged, [&] (const QString &searchPattern) {
+        doShowEachTableRow([&] (const QString &title) {
             if (searchPattern == "") return true;
-            auto name = columns[0];
-            return name.contains(searchPattern, Qt::CaseInsensitive);
+            return title.contains(searchPattern, Qt::CaseInsensitive);
         });
-    };
-
-    QObject::connect(searchLine, &QLineEdit::textChanged, handler);
+    });
 }
 
-void SearchEngine::doShowEachTableRow(std::function<bool (const QStringList &columns)> check)
+void SearchEngine::doShowEachTableRow(std::function<bool (const QString &title)> check)
 {
     int rowCount = table->getRowCount();
     for (int i = 1; i < rowCount; ++i) {
-        auto columns = QStringList(table->getRow(i));
-        bool doShow = check(columns);
+        bool doShow = check(table->getRow(i).title);
         table->setRowVisible(i, doShow);
     }
     emit searchResultsChanged();

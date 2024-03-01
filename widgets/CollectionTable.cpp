@@ -17,13 +17,14 @@ CollectionTable::~CollectionTable()
   endRowsEditing();
 }
 
-void CollectionTable::insertRowAfter(Table::row_id id, const QList<QString> &list, int row)
+void CollectionTable::insertRowAfter(Table::row_id id, const Core::TableRow &data, int row)
 {
   QList<QWidget*> items;
 
   items.append(new StarButton(this));
 
-  for (QList<QString>::const_iterator it = list.begin(); it != list.end(); it++) {
+  QList<QString> stringColumns = {data.title, data.status, data.rating, data.comment};
+  for (QList<QString>::const_iterator it = stringColumns.begin(); it != stringColumns.end(); it++) {
     auto newLineEdit = new LineEdit(*it, this);
     newLineEdit->setEnabled(false);
     newLineEdit->setUpdateGeometryMode(LineEdit::UpdateGeometryMode::TEXT_CHANGED);
@@ -44,9 +45,9 @@ void CollectionTable::insertRowAfter(Table::row_id id, const QList<QString> &lis
   }
   Table::insertRowAfter(id, items, row);
 }
-void CollectionTable::appendRow(Table::row_id id, const QList<QString> &list)
+void CollectionTable::appendRow(Table::row_id id, const Core::TableRow &data)
 {
-  insertRowAfter(id, list, getRowCount() - 1);
+  insertRowAfter(id, data, getRowCount() - 1);
 }
 bool CollectionTable::isStringsEmpty(Table::row_id rowId) const
 {
@@ -57,21 +58,25 @@ bool CollectionTable::isStringsEmpty(Table::row_id rowId) const
   }
   return true;
 }
-QList<QString> CollectionTable::getRow(Table::row_id rowId) const
+Core::TableRow CollectionTable::getRow(Table::row_id rowId) const
 {
-  QList<QString> result;
-  for (auto item : Table::getRow(rowId).mid(1)) {
-    result.append(static_cast<QLineEdit*>(item)->text());
-  }
-  return result;
+  auto values = Table::getRow(rowId);
+  return {
+    static_cast<QLineEdit*>(values.at(1))->text(),
+    static_cast<QLineEdit*>(values.at(2))->text(),
+    static_cast<QLineEdit*>(values.at(3))->text(),
+    static_cast<QLineEdit*>(values.at(4))->text()
+  };
 }
-QList<QString> CollectionTable::getRow(int row) const
+Core::TableRow CollectionTable::getRow(int row) const
 {
-  QList<QString> result;
-  for (auto item : Table::getRow(row).mid(1)) {
-    result.append(static_cast<QLineEdit*>(item)->text());
-  }
-  return result;
+  auto values = Table::getRow(row);
+  return {
+    static_cast<QLineEdit*>(values.at(1))->text(),
+    static_cast<QLineEdit*>(values.at(2))->text(),
+    static_cast<QLineEdit*>(values.at(3))->text(),
+    static_cast<QLineEdit*>(values.at(4))->text()
+  };
 }
 
 void CollectionTable::startRowEditing(Table::row_id rowId)

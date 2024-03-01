@@ -83,7 +83,7 @@ void Content::loadTable(int id)
     tableId = id;
     QSqlQuery query = db->getTableRows(id);
     while (query.next()) {
-        addTableRow(query.value("id").toULongLong(), QList<QString> {
+        addTableRow(query.value("id").toULongLong(), {
             query.value("title").toString(),
             query.value("status").toString(),
             query.value("rating").toString(),
@@ -138,13 +138,7 @@ void Content::tableRowEditingFinished(Table::row_id rowId)
         ui->table->deleteRow(rowId);
     } else {
         qCInfo(loggingCategory) << "Updating row id" << rowId;
-        auto values = ui->table->getRow(rowId);
-        Core::TableRow rowData;
-        rowData.title = values.at(0);
-        rowData.status = values.at(1);
-        rowData.rating = values.at(2);
-        rowData.comment = values.at(3);
-        db->updateTableRow(rowId, rowData);
+        db->updateTableRow(rowId, ui->table->getRow(rowId));
     }
 }
 void Content::tableRowTextEdited(Table::row_id rowId)
@@ -189,22 +183,21 @@ void Content::paintEvent(QPaintEvent *)
 }
 
 // ==== PRIVATE ====
-void Content::addTableRow(Table::row_id id, const QList<QString> &list)
+void Content::addTableRow(Table::row_id id, const Core::TableRow &data)
 {
-    qCDebug(loggingCategory) << "Adding table row of" << list.size() << "elements";
+    qCDebug(loggingCategory) << "Adding table row";
     if (ui->scrollArea->isHidden()) ui->scrollArea->show();
 
-    if (ui->table->getCheckedRow() == -1) ui->table->appendRow(id, list);
-    else {
+    if (ui->table->getCheckedRow() == -1) {
+        ui->table->appendRow(id, data);
+    } else {
         qCDebug(loggingCategory) << "Inserting a row after checked row" << ui->table->getCheckedRow();
-        ui->table->insertRowAfter(id, list, ui->table->getCheckedRow());
+        ui->table->insertRowAfter(id, data, ui->table->getCheckedRow());
     }
 }
 void Content::addTableEmptyRow(Table::row_id id)
 {
-    QList<QString> list;
-    list << "" << "" << "" << "";
-    addTableRow(id, list);
+    addTableRow(id, {});
 }
 
 void Content::createDataDirectoryIfItDoesNotExist()
