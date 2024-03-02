@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
+    <width>885</width>
     <height>394</height>
    </rect>
   </property>
@@ -106,7 +106,23 @@ QLineEdit:enabled {
       </spacer>
      </item>
      <item>
+      <widget class="CheckBox" name="showStarredCheckBox">
+       <property name="text">
+        <string>Только избранные</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="SearchLine" name="searchLine" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
          <width>200</width>
@@ -145,7 +161,7 @@ QLineEdit:enabled {
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>640</width>
+        <width>863</width>
         <height>177</height>
        </rect>
       </property>
@@ -178,7 +194,14 @@ QLineEdit:enabled {
    <header>widgets/CollectionTable.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>CheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/elements/CheckBox.h</header>
+  </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

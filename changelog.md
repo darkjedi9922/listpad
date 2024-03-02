@@ -2,6 +2,7 @@
 
 ### New features
   - implement star buttons for table rows
+  - implement filtering by starred flag
 
 ### Fixes
   - fix content block vertical size causing unnecessary scroll bar

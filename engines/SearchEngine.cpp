@@ -1,12 +1,14 @@
 #include "engines/SearchEngine.h"
 #include <QStringList>
 
-SearchEngine::SearchEngine(QLineEdit *searchLine, CollectionTable *table) :
+SearchEngine::SearchEngine(QLineEdit *searchLine, CheckBox* showStarred, CollectionTable *table) :
     loggingCategory("SearchEngine")
 {
     this->searchLine = searchLine;
+    this->showStarred = showStarred;
     this->table = table;
-    initTextChangedHanler();
+    QObject::connect(searchLine, &QLineEdit::textChanged, this, &SearchEngine::updateSearchResult);
+    QObject::connect(showStarred, &CheckBox::toggled, this, &SearchEngine::updateSearchResult);
 }
 
 void SearchEngine::reset()
@@ -14,21 +16,14 @@ void SearchEngine::reset()
     searchLine->setText("");
 }
 
-void SearchEngine::initTextChangedHanler()
+void SearchEngine::updateSearchResult()
 {
-    QObject::connect(searchLine, &QLineEdit::textChanged, [&] (const QString &searchPattern) {
-        doShowEachTableRow([&] (const QString &title) {
-            if (searchPattern == "") return true;
-            return title.contains(searchPattern, Qt::CaseInsensitive);
-        });
-    });
-}
-
-void SearchEngine::doShowEachTableRow(std::function<bool (const QString &title)> check)
-{
+    auto searchPattern = searchLine->text();
     int rowCount = table->getRowCount();
     for (int i = 1; i < rowCount; ++i) {
-        bool doShow = check(table->getRow(i).title);
+        auto rowData = table->getRow(i);
+        bool doShow = (searchPattern == "" || rowData.title.contains(searchPattern, Qt::CaseInsensitive)) &&
+            (!showStarred->isChecked() || rowData.starred);
         table->setRowVisible(i, doShow);
     }
     emit searchResultsChanged();

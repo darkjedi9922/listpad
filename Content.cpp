@@ -42,7 +42,7 @@ Content::Content(QWidget *parent) :
         });
     });
 
-    eSearch = new SearchEngine(ui->searchLine->getSearchLine(), ui->table);
+    eSearch = new SearchEngine(ui->searchLine->getSearchLine(), ui->showStarredCheckBox, ui->table);
 }
 Content::~Content()
 {
@@ -75,6 +75,7 @@ void Content::show()
 void Content::hide()
 {
     ui->table->uncheckRows();
+    ui->showStarredCheckBox->setChecked(false);
     QWidget::hide();
     eSearch->reset();
 }
