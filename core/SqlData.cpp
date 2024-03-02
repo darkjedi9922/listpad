@@ -84,7 +84,8 @@ void SqlData::updateTableRow(size_t rowId, const Core::TableRow &row)
       title = :title,
       status = :status,
       rating = :rating,
-      comment = :comment
+      comment = :comment,
+      starred = :starred
     WHERE id = :row_id
   )");
   query.bindValue(":row_id", rowId);
@@ -92,6 +93,15 @@ void SqlData::updateTableRow(size_t rowId, const Core::TableRow &row)
   query.bindValue(":status", row.status);
   query.bindValue(":rating", row.rating);
   query.bindValue(":comment", row.comment);
+  query.bindValue(":starred", row.starred);
+  execDbQuery(query);
+}
+void SqlData::updateTableRowStarred(size_t rowId, bool starred)
+{
+  QSqlQuery query;
+  query.prepare("UPDATE rows SET starred = :starred WHERE id = :row_id");
+  query.bindValue(":starred", starred);
+  query.bindValue(":row_id", rowId);
   execDbQuery(query);
 }
 void SqlData::removeTableRow(size_t rowId)
@@ -117,6 +127,7 @@ void SqlData::createTables()
     CREATE TABLE rows (
       id INTEGER NOT NULL PRIMARY KEY,
       table_id INTEGER NOT NULL,
+      starred INTEGER,
       title TEXT NOT NULL,
       status TEXT NOT NULL,
       rating TEXT NOT NULL,

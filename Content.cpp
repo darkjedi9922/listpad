@@ -35,6 +35,7 @@ Content::Content(QWidget *parent) :
     QObject::connect(ui->table, SIGNAL(editingStarted(int)), this, SLOT(tableRowEditingStarted(int)));
     QObject::connect(ui->table, &CollectionTable::editingFinishedById, this, &Content::tableRowEditingFinished);
     QObject::connect(ui->table, &CollectionTable::rowTextEdited, this, &Content::tableRowTextEdited);
+    QObject::connect(ui->table, &CollectionTable::rowStarToggled, this, &Content::tableRowStarToggled);
     QObject::connect(ui->table, &CollectionTable::cellCursorPositionChanged, [&](LineEdit *cell) {
         QTimer::singleShot(25, [cell, this]() {
             adjustHorizontalScrollForCellCursor(cell);
@@ -84,6 +85,7 @@ void Content::loadTable(int id)
     QSqlQuery query = db->getTableRows(id);
     while (query.next()) {
         addTableRow(query.value("id").toULongLong(), {
+            query.value("starred").toBool(),
             query.value("title").toString(),
             query.value("status").toString(),
             query.value("rating").toString(),
@@ -145,6 +147,10 @@ void Content::tableRowTextEdited(Table::row_id rowId)
 {
     ui->addButton->setEnabled(!ui->table->isStringsEmpty(rowId));
 }
+void Content::tableRowStarToggled(Table::row_id rowId, bool starred)
+{
+    db->updateTableRowStarred(rowId, starred);
+}
 void Content::resetTableState()
 {
     ui->table->uncheckRows();
@@ -153,7 +159,7 @@ void Content::resetTableState()
 
 void Content::addButtonClicked()
 {
-    auto rowId = db->addTableRow(tableId, {"", "", "", ""});
+    auto rowId = db->addTableRow(tableId, {false, "", "", "", ""});
     addTableEmptyRow(rowId);
     ui->addButton->setEnabled(false);
     ui->table->startRowEditing(rowId);
@@ -185,7 +191,7 @@ void Content::paintEvent(QPaintEvent *)
 // ==== PRIVATE ====
 void Content::addTableRow(Table::row_id id, const Core::TableRow &data)
 {
-    qCDebug(loggingCategory) << "Adding table row";
+    qCDebug(loggingCategory) << "Adding table row with starred =" << data.starred;
     if (ui->scrollArea->isHidden()) ui->scrollArea->show();
 
     if (ui->table->getCheckedRow() == -1) {

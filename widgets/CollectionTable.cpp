@@ -21,8 +21,16 @@ void CollectionTable::insertRowAfter(Table::row_id id, const Core::TableRow &dat
 {
   QList<QWidget*> items;
 
-  items.append(new StarButton(this));
-
+  auto starButton = new StarButton(this);
+  items.append(starButton);
+  if (data.starred) {
+    starButton->setChecked(true);
+  }
+  QObject::connect(starButton, &StarButton::toggled, [id, starButton, this]() {
+    qCInfo(loggingCategory) << "Star button toggled for row" << id;
+    emit rowStarToggled(id, starButton->isChecked());
+  });
+  
   QList<QString> stringColumns = {data.title, data.status, data.rating, data.comment};
   for (QList<QString>::const_iterator it = stringColumns.begin(); it != stringColumns.end(); it++) {
     auto newLineEdit = new LineEdit(*it, this);
@@ -62,6 +70,7 @@ Core::TableRow CollectionTable::getRow(Table::row_id rowId) const
 {
   auto values = Table::getRow(rowId);
   return {
+    static_cast<StarButton*>(values.at(0))->isChecked(),
     static_cast<QLineEdit*>(values.at(1))->text(),
     static_cast<QLineEdit*>(values.at(2))->text(),
     static_cast<QLineEdit*>(values.at(3))->text(),
@@ -72,6 +81,7 @@ Core::TableRow CollectionTable::getRow(int row) const
 {
   auto values = Table::getRow(row);
   return {
+    static_cast<StarButton*>(values.at(0))->isChecked(),
     static_cast<QLineEdit*>(values.at(1))->text(),
     static_cast<QLineEdit*>(values.at(2))->text(),
     static_cast<QLineEdit*>(values.at(3))->text(),

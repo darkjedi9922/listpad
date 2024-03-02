@@ -16,6 +16,7 @@ signals:
   void rowTextEdited(Table::row_id rowId);
   void editingStarted(int row);
   void editingFinishedById(Table::row_id rowId);
+  void rowStarToggled(Table::row_id rowId, bool starred);
 
 public:
   CollectionTable(QWidget *parent = nullptr);

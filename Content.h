@@ -35,6 +35,7 @@ public slots:
     void tableRowEditingStarted(int row);
     void tableRowEditingFinished(Table::row_id rowId);
     void tableRowTextEdited(Table::row_id rowId);
+    void tableRowStarToggled(Table::row_id rowId, bool starred);
     void resetTableState();
 
     void addButtonClicked();

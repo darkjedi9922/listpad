@@ -1,5 +1,8 @@
 ## 1.3.0
 
+### New features
+  - implement star buttons for table rows
+
 ### Fixes
   - fix content block vertical size causing unnecessary scroll bar
   - make menu more adaptive by replacing menu items implementation

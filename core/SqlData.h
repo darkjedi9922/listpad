@@ -12,6 +12,7 @@ namespace Core
 }
 
 struct Core::TableRow {
+  bool starred;
   QString title;
   QString status;
   QString rating;
@@ -37,6 +38,7 @@ public:
   void removeTable(int id);
   size_t addTableRow(int tableId, const Core::TableRow &row);
   void updateTableRow(size_t rowId, const Core::TableRow &row);
+  void updateTableRowStarred(size_t rowId, bool starred);
   void removeTableRow(size_t rowId);
 
 private:
