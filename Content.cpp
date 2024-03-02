@@ -207,14 +207,6 @@ void Content::addTableEmptyRow(Table::row_id id)
     addTableRow(id, {});
 }
 
-void Content::createDataDirectoryIfItDoesNotExist()
-{
-    QDir appDirectory("./");
-    if (!appDirectory.exists("data")) {
-        appDirectory.mkdir("data");
-    }
-}
-
 void Content::updateTableScrollingByRow(Table::row_id rowId)
 {
     QRect rowRect = ui->table->getRowRect(rowId);
