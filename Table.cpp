@@ -149,7 +149,7 @@ void Table::deleteRow(int row)
 {
     if (hasRow(row) && deletingRow != row)
     {
-        qCInfo(loggingCategory) << "Deleting row" << row;
+        qCDebug(loggingCategory) << "Deleting row" << row;
         deletingRow = row;
         if (row == checkedRow) uncheckRows();
         if (isRowVisible(row)) visibleRowCount -= 1;
