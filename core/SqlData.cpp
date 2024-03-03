@@ -13,7 +13,7 @@ SqlData::SqlData(const QString &filepath, const Data &initialData) :
   if (!db.open()) {
     throw db.lastError().text();
   }
-  enableForeignKeys();
+  configureDb();
   if (db.tables().size() == 0) {
     createTables();
     importData(initialData);
@@ -114,9 +114,6 @@ void SqlData::removeTableRow(size_t rowId)
 
 void SqlData::createTables()
 {
-  execDbQuery("PRAGMA foreign_keys = ON");
-  qCInfo(loggingCategory) << "Enabled foreign keys support";
-
   execDbQuery(R"(
     CREATE TABLE tables (
       id INTEGER NOT NULL PRIMARY KEY,
@@ -139,15 +136,25 @@ void SqlData::createTables()
     )
   )");
 }
-void SqlData::enableForeignKeys()
+void SqlData::configureDb()
 {
   execDbQuery("PRAGMA foreign_keys = ON");
-  qCInfo(loggingCategory) << "Enabled foreign keys support";
-  
   QSqlQuery query("PRAGMA foreign_keys");
   execDbQuery(query);
   query.next();
   qCInfo(loggingCategory) << "Foreign is enabled =" << query.value(0);
+
+  execDbQuery("PRAGMA journal_mode = WAL");
+  QSqlQuery journalModeQuery("PRAGMA journal_mode");
+  execDbQuery(journalModeQuery);
+  journalModeQuery.next();
+  qCInfo(loggingCategory) << "Journal mode is" << journalModeQuery.value(0).toString();
+
+  execDbQuery("PRAGMA synchronous = NORMAL");
+  QSqlQuery synchronousQuery("PRAGMA synchronous");
+  execDbQuery(synchronousQuery);
+  synchronousQuery.next();
+  qCInfo(loggingCategory) << "Synchronous is" << synchronousQuery.value(0);
 }
 void SqlData::importData(const Core::Data &data)
 {
@@ -159,18 +166,23 @@ void SqlData::importData(const Core::Data &data)
     execDbQuery(query);
 
     TableRows rows(table->getFilename());
-    for (auto &row : rows.getRows()) {
-      QSqlQuery query;
-      query.prepare(R"(
-        INSERT INTO rows (table_id, title, status, rating, comment)
-        VALUES (:table_id, :title, :status, :rating, :comment)
-      )");
-      query.bindValue(":table_id", table->getId());
-      query.bindValue(":title", row.at(0));
-      query.bindValue(":status", row.at(1));
-      query.bindValue(":rating", row.at(2));
-      query.bindValue(":comment", row.at(3));
-      execDbQuery(query);
+    auto rowsData = rows.getRows();
+    QSqlQuery insertRowQuery;
+    insertRowQuery.prepare(R"(
+      INSERT INTO rows (table_id, title, status, rating, comment)
+      VALUES (:table_id, :title, :status, :rating, :comment)
+    )");
+    for (int i = 0; i < rowsData.size(); ++i) {
+      auto row = rowsData.at(i);
+      insertRowQuery.bindValue(":table_id", table->getId());
+      insertRowQuery.bindValue(":title", row.at(0));
+      insertRowQuery.bindValue(":status", row.at(1));
+      insertRowQuery.bindValue(":rating", row.at(2));
+      insertRowQuery.bindValue(":comment", row.at(3));
+      execDbQuery(insertRowQuery);
+      if (i % 10 == 0) {
+        qCDebug(loggingCategory) << "Migrated" << i + 1 << "row of" << rowsData.size();
+      }
     }
   }
 }

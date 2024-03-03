@@ -43,7 +43,7 @@ public:
 
 private:
   void createTables();
-  void enableForeignKeys();
+  void configureDb();
   void importData(const Core::Data &data);
   void ensureDirExists(const QString &filepath);
 
